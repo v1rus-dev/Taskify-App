@@ -55,6 +55,9 @@ dependencies:
 
   # Database
   drift: ^2.30.0
+  sqlite3_flutter_libs: ^0.5.20
+  path_provider: ^2.1.4
+  path: ^1.9.0
 
   # SVG support
   flutter_svg: ^2.2.3
@@ -102,6 +105,7 @@ dev_dependencies:
 
   # Code generation tools
   build_runner: ^2.10.4
+  drift_dev: ^2.30.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

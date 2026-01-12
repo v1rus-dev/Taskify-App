@@ -3,6 +3,7 @@ import 'package:design/themes/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
 import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/app/router/router_paths.dart';
 import 'package:taskify/features/home/presentation/screen/home_screen_notifier.dart';
@@ -25,6 +26,14 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   _onChangeCalendarState(WidgetRef ref) {
     ref.read(homeScreenNotifierProvider.notifier).changeCalendarState();
+  }
+
+  _getDayShort(DateTime date) {
+    return '${DateFormat('E', 'en_US').format(date)}.';
+  }
+
+  _getMonthShort(DateTime date) {
+    return '${date.day} ${DateFormat('MMM').format(date)}';
   }
 
   @override
@@ -50,9 +59,25 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text(
-                'Today',
-                style: AppTypography.headlineLarge,
+              Row(
+                children: [
+                  Text(
+                    state.selectedDate.day == state.currentDate.day &&
+                            state.selectedDate.month == state.currentDate.month &&
+                            state.selectedDate.year == state.currentDate.year
+                        ? 'Today'
+                        : _getDayShort(state.selectedDate),
+                    style: AppTypography.headlineLarge,
+                  ),
+                  const Gap(16),
+                  Text(
+                    _getMonthShort(state.selectedDate),
+                    style: AppTypography.headlineLarge.copyWith(
+                      color: Colors.black.withOpacity(0.3),
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
               ),
               Row(
                 children: [

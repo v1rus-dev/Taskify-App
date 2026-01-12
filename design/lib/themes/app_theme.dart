@@ -51,6 +51,11 @@ class AppTheme {
         filled: true,
         fillColor: AppColors.surface,
       ),
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: Color(0xFF002FFF).withValues(alpha: 0.6),
+        selectionColor: Color(0xFF002FFF).withValues(alpha: 0.1),
+        selectionHandleColor: Color(0xFF002FFF).withValues(alpha: 0.6),
+      ),
       dividerTheme: const DividerThemeData(
         color: AppColors.divider,
         thickness: 1,

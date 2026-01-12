@@ -12,7 +12,7 @@ class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   _onAddTask() {
-    appRouter.push(RouterPaths.addTask);
+    appRouter.push(RouterPaths.editTask);
   }
 
   @override

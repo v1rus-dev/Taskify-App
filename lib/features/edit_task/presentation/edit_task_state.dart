@@ -1,17 +1,17 @@
-class AddTaskState {
+class EditTaskState {
   final String title;
   final String description;
 
-  AddTaskState({
+  EditTaskState({
     this.title = '',
     this.description = '',
   });
 
-  AddTaskState copyWith({
+  EditTaskState copyWith({
     String? title,
     String? description,
   }) {
-    return AddTaskState(
+    return EditTaskState(
       title: title ?? this.title,
       description: description ?? this.description,
     );

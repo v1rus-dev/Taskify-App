@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:taskify/app/router/router_paths.dart';
-import 'package:taskify/features/add_task/presentation/add_task_screen.dart';
+import 'package:taskify/features/edit_task/presentation/edit_task_screen.dart';
 import 'package:taskify/features/home/presentation/screen/home_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -12,10 +12,10 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const HomeScreen(),
     ),
     GoRoute(
-      path: RouterPaths.addTask,
+      path: RouterPaths.editTask,
       pageBuilder: (context, state) => CustomTransitionPage(
         key: state.pageKey,
-        child: const AddTaskScreen(),
+        child: EditTaskScreen(),
       ),
     ),
   ],

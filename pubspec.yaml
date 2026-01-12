@@ -35,6 +35,60 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  # Routing
+  go_router: ^17.0.1
+
+  # State management
+  flutter_riverpod: ^3.1.0
+  riverpod: ^3.1.0
+  hooks_riverpod: ^3.1.0
+  riverpod_lint: ^3.1.0
+
+  # Code generation
+  freezed_annotation: ^3.1.0
+
+  # Internationalization
+  intl: ^0.20.2
+
+  # HTTP client
+  dio: ^5.9.0
+
+  # Database
+  drift: ^2.30.0
+
+  # SVG support
+  flutter_svg: ^2.2.3
+
+  # Logging
+  talker: ^5.1.9
+  talker_dio_logger: ^5.1.9
+  talker_riverpod_logger: ^5.1.9
+
+  # Authentication
+  google_sign_in: ^7.2.0
+
+  # UI utilities
+  gap: ^3.0.1
+
+  # Image caching
+  cached_network_image: ^3.4.1
+
+  # Equality comparison
+  equatable: ^2.0.8
+
+  # Dependency injection
+  get_it: ^9.2.0
+
+  # Local storage
+  shared_preferences: ^2.5.4
+
+  # Utils
+  freezed: ^3.2.3
+
+  # Design system
+  design:
+    path: design
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -45,6 +99,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+
+  # Code generation tools
+  build_runner: ^2.10.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

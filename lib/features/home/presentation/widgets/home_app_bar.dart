@@ -1,0 +1,78 @@
+import 'package:design/constants/app_icons.dart';
+import 'package:design/themes/app_typography.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gap/gap.dart';
+import 'package:taskify/app/router/app_router.dart';
+import 'package:taskify/app/router/router_paths.dart';
+import 'package:taskify/features/home/presentation/screen/home_screen_notifier.dart';
+import 'package:taskify/features/home/presentation/widgets/home_app_bar_button.dart';
+
+class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
+  const HomeAppBar({super.key});
+
+  @override
+  Size get preferredSize {
+    // Минимальная высота: отступ 24 + Row высотой 44 = 68
+    // SafeArea будет добавлен автоматически через padding
+    // Используем достаточно большое значение для покрытия всех устройств
+    return const Size.fromHeight(120);
+  }
+
+  _openSettings() {
+    appRouter.push(RouterPaths.settings);
+  }
+
+  _onChangeCalendarState(WidgetRef ref) {
+    ref.read(homeScreenNotifierProvider.notifier).changeCalendarState();
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(homeScreenNotifierProvider);
+    final mediaQuery = MediaQuery.of(context);
+    final safeAreaTop = mediaQuery.padding.top;
+    
+    return Container(
+      padding: EdgeInsets.only(
+        top: safeAreaTop,
+        left: 20.0,
+        right: 20.0,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 24.0),
+        child: SizedBox(
+          height: 44.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                'Today',
+                style: AppTypography.headlineLarge,
+              ),
+              Row(
+                children: [
+                  HomeAppBarButton(
+                    svgIconPath: state.isHeaderExpanded ? AppIcons.arrowTop : AppIcons.arrowBottom,
+                    packageName: AppIcons.packageName,
+                    onPressed: () => _onChangeCalendarState(ref),
+                  ),
+                  const Gap(12),
+                  HomeAppBarButton(
+                    svgIconPath: AppIcons.settings,
+                    packageName: AppIcons.packageName,
+                    onPressed: _openSettings,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

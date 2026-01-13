@@ -18,7 +18,6 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
   }
 
   void deleteTask() {
-    // TODO: Реализовать логику удаления задачи
     TalkerService.instance.info('Delete task');
   }
 }

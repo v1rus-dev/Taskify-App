@@ -1,4 +1,3 @@
-import 'package:design/design.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:taskify/features/edit_task/presentation/edit_task_notifier.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_app_bar.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_bottom_part.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class EditTaskScreen extends ConsumerWidget {
   EditTaskScreen({super.key});
@@ -58,7 +58,7 @@ class EditTaskScreen extends ConsumerWidget {
                       style: Theme.of(context).textTheme.headlineLarge
                           ?.copyWith(fontWeight: FontWeight.w500),
                       decoration: InputDecoration(
-                        hintText: 'Write a new task...',
+                        hintText: AppLocalizations.of(context)?.writeANewTask ?? '',
                         border: InputBorder.none,
                         filled: false,
                         isCollapsed: true,
@@ -104,7 +104,7 @@ class EditTaskScreen extends ConsumerWidget {
                                             ).withValues(alpha: 0.8),
                                           ),
                                       decoration: InputDecoration(
-                                        hintText: 'Desciption',
+                                        hintText: AppLocalizations.of(context)?.description ?? '',
                                         border: InputBorder.none,
                                         filled: false,
                                         isCollapsed: true,

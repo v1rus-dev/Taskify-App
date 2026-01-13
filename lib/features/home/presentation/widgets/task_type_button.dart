@@ -42,7 +42,7 @@ class TaskTypeButton extends StatelessWidget {
                       ? Colors.white
                       : const Color(0xFF121212).withValues(alpha: 0.5),
                 ),
-                child: Text(tasksViewType.getTitle()),
+                child: Text(tasksViewType.getTitle(context)),
               ),
             ),
           ),

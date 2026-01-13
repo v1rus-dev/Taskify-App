@@ -1,0 +1,9 @@
+{
+  "appTitle": "Taskify",
+  "writeANewTask": "Новая задача...",
+  "description": "Описание",
+  "today": "Сегодня",
+  "tasks": "Задачи",
+  "timeline": "Таймлайн",
+  "save": "Сохранить"
+}

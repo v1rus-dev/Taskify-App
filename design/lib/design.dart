@@ -1,4 +1,4 @@
-library design;
+library;
 
 export 'colors/app_colors.dart';
 export 'themes/app_theme.dart';

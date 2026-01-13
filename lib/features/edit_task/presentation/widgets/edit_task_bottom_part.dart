@@ -4,15 +4,16 @@ import 'package:gap/gap.dart';
 import 'package:flutter/material.dart';
 import 'package:taskify/features/edit_task/presentation/edit_task_notifier.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_time_button.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class EditTaskBottomPart extends ConsumerWidget {
-  EditTaskBottomPart({super.key, required this.canSave});
+  const EditTaskBottomPart({super.key, required this.canSave});
 
   final bool canSave;
 
-  _onTimePressed() {}
+  void _onTimePressed() {}
 
-  _onSavePressed() {}
+  void _onSavePressed() {}
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,7 +27,7 @@ class EditTaskBottomPart extends ConsumerWidget {
           const Gap(8),
           Expanded(
             child: AppTextButton(
-              text: 'Save',
+              text: AppLocalizations.of(context)?.save ?? '',
               isEnabled: canSave,
               onPressed: _onSavePressed,
             ),

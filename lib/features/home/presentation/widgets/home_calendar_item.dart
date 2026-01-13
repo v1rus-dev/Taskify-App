@@ -128,7 +128,8 @@ class _HomeCalendarItemState extends State<HomeCalendarItem>
   }
 
   String _getDayName() {
-    return DateFormat('EEE', 'en_US').format(widget.date).toUpperCase();
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    return DateFormat('EEE', locale).format(widget.date).toUpperCase();
   }
 
   @override

@@ -1,5 +1,3 @@
-import 'package:drift/drift.dart';
-import 'package:taskify/data/database/tables/tasks.dart';
 
 /// Примеры миграций для базы данных
 /// 

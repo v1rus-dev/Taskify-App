@@ -2,6 +2,7 @@ import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/infrastructure/theme/theme_notifier.dart';
 
@@ -31,6 +32,8 @@ class TaskifyApp extends ConsumerWidget {
           loading: () => ThemeMode.system,
           error: (error, stackTrace) => ThemeMode.system,
         ),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
       ),
     );
   }

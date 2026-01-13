@@ -8,6 +8,7 @@ import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/app/router/router_paths.dart';
 import 'package:taskify/features/home/presentation/screen/home_screen_notifier.dart';
 import 'package:taskify/features/home/presentation/widgets/home_app_bar_button.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const HomeAppBar({super.key});
@@ -28,12 +29,18 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
     ref.read(homeScreenNotifierProvider.notifier).changeCalendarState();
   }
 
-  _getDayShort(DateTime date) {
-    return '${DateFormat('E', 'en_US').format(date)}.';
+  String _getDayShort(BuildContext context, DateTime date) {
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final day = DateFormat('E', locale).format(date);
+    final dayCapitalized = day.isNotEmpty
+        ? '${day[0].toUpperCase()}${day.substring(1)}'
+        : day;
+    return '$dayCapitalized.';
   }
 
-  _getMonthShort(DateTime date) {
-    return '${date.day} ${DateFormat('MMM').format(date)}';
+  String _getMonthShort(BuildContext context, DateTime date) {
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    return '${date.day} ${DateFormat('MMM', locale).format(date)}';
   }
 
   @override
@@ -41,13 +48,9 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final state = ref.watch(homeScreenNotifierProvider);
     final mediaQuery = MediaQuery.of(context);
     final safeAreaTop = mediaQuery.padding.top;
-    
+
     return Container(
-      padding: EdgeInsets.only(
-        top: safeAreaTop,
-        left: 20.0,
-        right: 20.0,
-      ),
+      padding: EdgeInsets.only(top: safeAreaTop, left: 20.0, right: 20.0),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
       ),
@@ -60,19 +63,24 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     state.selectedDate.day == state.currentDate.day &&
-                            state.selectedDate.month == state.currentDate.month &&
+                            state.selectedDate.month ==
+                                state.currentDate.month &&
                             state.selectedDate.year == state.currentDate.year
-                        ? 'Today'
-                        : _getDayShort(state.selectedDate),
+                        ? AppLocalizations.of(context)?.today ?? ''
+                        : _getDayShort(context, state.selectedDate),
+                    textAlign: TextAlign.left,
                     style: AppTypography.headlineLarge,
                   ),
-                  const Gap(16),
+                  const Gap(12),
                   Text(
-                    _getMonthShort(state.selectedDate),
-                    style: AppTypography.headlineLarge.copyWith(
+                    _getMonthShort(context, state.selectedDate),
+                    textAlign: TextAlign.left,
+                    style: AppTypography.headlineMedium.copyWith(
                       color: Colors.black.withOpacity(0.3),
                       fontWeight: FontWeight.w400,
                     ),
@@ -82,7 +90,9 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
               Row(
                 children: [
                   HomeAppBarButton(
-                    svgIconPath: state.isHeaderExpanded ? AppIcons.arrowTop : AppIcons.arrowBottom,
+                    svgIconPath: state.isHeaderExpanded
+                        ? AppIcons.arrowTop
+                        : AppIcons.arrowBottom,
                     packageName: AppIcons.packageName,
                     onPressed: () => _onChangeCalendarState(ref),
                   ),

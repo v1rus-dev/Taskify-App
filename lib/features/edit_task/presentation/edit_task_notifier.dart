@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taskify/features/edit_task/presentation/edit_task_state.dart';
-import 'package:taskify/infrastructure/services/talker_service.dart';
+import 'package:taskify/core/services/talker_service.dart';
 
 final editTaskNotifierProvider = NotifierProvider.autoDispose<EditTaskNotifier, EditTaskState>(
   () => EditTaskNotifier(),

@@ -101,6 +101,7 @@ dependencies:
   # Design system
   design:
     path: design
+  dart_either: ^2.0.0
 
 dev_dependencies:
   flutter_test:

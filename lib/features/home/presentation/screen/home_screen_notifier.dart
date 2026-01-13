@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taskify/domain/models/tasks_view_type.dart';
 import 'package:taskify/features/home/presentation/screen/home_screen_state.dart';
-import 'package:taskify/infrastructure/services/talker_service.dart';
+import 'package:taskify/core/services/talker_service.dart';
 
 final homeScreenNotifierProvider = NotifierProvider<HomeScreenNotifier, HomeScreenState>(() => HomeScreenNotifier());
 

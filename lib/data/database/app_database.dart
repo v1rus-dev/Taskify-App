@@ -4,7 +4,7 @@ import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:taskify/data/database/tables/tasks.dart';
-import 'package:taskify/infrastructure/services/talker_service.dart';
+import 'package:taskify/core/services/talker_service.dart';
 
 part 'app_database.g.dart';
 

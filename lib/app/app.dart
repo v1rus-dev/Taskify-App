@@ -1,10 +1,11 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 import 'package:taskify/app/router/app_router.dart';
-import 'package:taskify/infrastructure/theme/theme_notifier.dart';
+import 'package:taskify/core/theme/theme_notifier.dart';
 
 class TaskifyApp extends ConsumerWidget {
   const TaskifyApp({super.key});

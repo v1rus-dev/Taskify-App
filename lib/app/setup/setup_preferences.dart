@@ -1,4 +1,4 @@
-import 'package:taskify/infrastructure/preferences/app_preferences.dart';
+import 'package:taskify/data/preferences/app_preferences.dart';
 
 Future<void> setupPreferences() async {
   await AppPreferences.init();

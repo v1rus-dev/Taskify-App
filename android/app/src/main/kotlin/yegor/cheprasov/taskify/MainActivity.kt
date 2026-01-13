@@ -1,4 +1,4 @@
-package yegor.cheprasov.taskify.taskify
+package yegor.cheprasov.taskify
 
 import io.flutter.embedding.android.FlutterActivity
 

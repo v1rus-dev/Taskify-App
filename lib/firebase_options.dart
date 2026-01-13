@@ -59,10 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyACe4Vzev3-c1U5bMt5NHwO-16VhpdvOrs',
-    appId: '1:707987312696:ios:9d4fbbb9c5aa7fca5096cd',
+    appId: '1:707987312696:ios:1f1073ab1149e8b95096cd',
     messagingSenderId: '707987312696',
     projectId: 'taskify-50d54',
     storageBucket: 'taskify-50d54.firebasestorage.app',
-    iosBundleId: 'yegor.cheprasov.taskify.taskify',
+    iosBundleId: 'yegor.cheprasov.taskify.ios',
   );
+
 }

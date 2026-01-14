@@ -59,6 +59,7 @@ class _TaskCardState extends State<TaskCard> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AppShadow(
       borderRadius: BorderRadius.circular(16),
       child: Material(
@@ -75,7 +76,7 @@ class _TaskCardState extends State<TaskCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.task.title, style: AppTypography.titleMedium),
+                      Text(widget.task.title, style: theme.textTheme.titleMedium),
                     ],
                   ),
                 ),

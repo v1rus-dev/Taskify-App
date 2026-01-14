@@ -1,93 +1,87 @@
+import 'package:design/themes/theme_extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:design/design.dart';
 
 class AppTypography {
-  AppTypography._();
+  static const String fontFamilyInter = 'Inter';
+  static const String fontFamilyInterDisplay = 'InterDisplay';
 
-  static const String fontFamily = 'Nunito';
+  static TextStyle header(AppColorSchemeExtension scheme) {
+    return TextStyle(
+      fontFamily: fontFamilyInterDisplay,
+      fontSize: 36,
+      fontWeight: FontWeight.w800,
+      height: 43.2 / 36,
+      color: scheme.textPrimary,
+    );
+  }
 
-  static const TextStyle headlineLarge = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 36,
-    fontWeight: FontWeight.bold,
-    letterSpacing: -0.5,
-  );
+  static TextStyle title(AppColorSchemeExtension scheme) {
+    return TextStyle(
+      fontFamily: fontFamilyInter,
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+      height: 22.4 / 16,
+      color: scheme.textPrimary,
+    );
+  }
 
-  static const TextStyle headlineMedium = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 28,
-    fontWeight: FontWeight.bold,
-    letterSpacing: -0.5,
-  );
+  static TextStyle body(AppColorSchemeExtension scheme) {
+    return TextStyle(
+      fontFamily: fontFamilyInter,
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
+      height: 24 / 16,
+      color: scheme.textPrimary,
+    );
+  }
 
-  static const TextStyle headlineSmall = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 24,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0,
-  );
+  static TextStyle bodyLarge(AppColorSchemeExtension scheme) {
+    return TextStyle(
+      fontFamily: fontFamilyInter,
+      fontSize: 20,
+      fontWeight: FontWeight.w400,
+      height: 30 / 20,
+      color: scheme.textPrimary,
+    );
+  }
 
-  static const TextStyle titleLarge = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 22,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0,
-  );
+  static TextStyle button(AppColorSchemeExtension scheme) {
+    return TextStyle(
+      fontFamily: fontFamilyInter,
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      height: 19.6 / 14,
+      color: scheme.buttonPrimaryText,
+    );
+  }
 
-  static const TextStyle titleMedium = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
-    color: AppColors.onSecondary,
-    letterSpacing: 0.15,
-  );
+  static TextStyle caption(AppColorSchemeExtension scheme) {
+    return TextStyle(
+      fontFamily: fontFamilyInter,
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      height: 18 / 14,
+      color: scheme.textSecondary,
+    );
+  }
 
-  static const TextStyle titleSmall = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.1,
-  );
+  static TextStyle tag(AppColorSchemeExtension scheme) {
+    return TextStyle(
+      fontFamily: fontFamilyInter,
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+      height: 14.4 / 12,
+      color: scheme.textSecondary,
+    );
+  }
 
-  static const TextStyle bodyLarge = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 16,
-    fontWeight: FontWeight.normal,
-    letterSpacing: 0.5,
-  );
-
-  static const TextStyle bodyMedium = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.normal,
-    letterSpacing: 0.25,
-  );
-
-  static const TextStyle bodySmall = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 12,
-    fontWeight: FontWeight.normal,
-    letterSpacing: 0.4,
-  );
-
-  static const TextStyle labelLarge = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.1,
-  );
-
-  static const TextStyle labelMedium = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-  );
-
-  static const TextStyle labelSmall = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 11,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-  );
+  static TextStyle editingHeader(AppColorSchemeExtension scheme) {
+    return TextStyle(
+      fontFamily: fontFamilyInterDisplay,
+      fontSize: 36,
+      fontWeight: FontWeight.w800,
+      height: 43.2 / 36,
+      color: scheme.textPrimary,
+    );
+  }
 }

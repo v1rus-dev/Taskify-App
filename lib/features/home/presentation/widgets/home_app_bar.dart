@@ -45,6 +45,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final state = ref.watch(homeScreenNotifierProvider);
     final mediaQuery = MediaQuery.of(context);
     final safeAreaTop = mediaQuery.padding.top;
@@ -74,7 +75,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
                         ? AppLocalizations.of(context)?.today ?? ''
                         : _getDayShort(context, state.selectedDate),
                     textAlign: TextAlign.left,
-                    style: AppTypography.headlineLarge,
+                    style: theme.textTheme.displayLarge,
                   ),
                   const Gap(12),
                   Padding(
@@ -82,7 +83,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
                     child: Text(
                       _getMonthShort(context, state.selectedDate),
                       textAlign: TextAlign.left,
-                      style: AppTypography.headlineMedium.copyWith(
+                      style: theme.textTheme.headlineSmall?.copyWith(
                         color: Colors.black.withOpacity(0.3),
                         fontWeight: FontWeight.w400,
                       ),

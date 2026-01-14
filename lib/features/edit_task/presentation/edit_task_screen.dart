@@ -122,7 +122,7 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
                       controller: titleController,
                       focusNode: titleFocusNode,
                       maxLines: null,
-                      maxLength: 255,
+                      maxLength: 155,
                       maxLengthEnforcement: MaxLengthEnforcement.enforced,
                       style: Theme.of(context).textTheme.headlineLarge
                           ?.copyWith(fontWeight: FontWeight.w500),

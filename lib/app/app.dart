@@ -25,8 +25,8 @@ class TaskifyApp extends ConsumerWidget {
       ),
       child: MaterialApp.router(
         routerConfig: appRouter,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
+        theme: themeFromScheme(lightScheme),
+        darkTheme: themeFromScheme(darkScheme),
         themeMode: themeState.when(
           data: (data) => data.isDark ? ThemeMode.dark : ThemeMode.light,
           loading: () => ThemeMode.system,

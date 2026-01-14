@@ -134,6 +134,7 @@ class _HomeCalendarItemState extends State<HomeCalendarItem>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AppShadow(
       borderRadius: BorderRadius.circular(12),
       child: AnimatedBuilder(
@@ -166,7 +167,7 @@ class _HomeCalendarItemState extends State<HomeCalendarItem>
                     Flexible(
                       child: Text(
                         _getDayName(),
-                        style: AppTypography.bodySmall.copyWith(
+                        style: theme.textTheme.bodySmall?.copyWith(
                           color: _textColorAnimation?.value ?? _getTextColor(),
                         ),
                         maxLines: 1,
@@ -176,7 +177,7 @@ class _HomeCalendarItemState extends State<HomeCalendarItem>
                     const SizedBox(height: 8),
                     Text(
                       widget.date.day.toString(),
-                      style: AppTypography.titleSmall.copyWith(
+                      style: theme.textTheme.titleSmall?.copyWith(
                         color: _textColorAnimation?.value ?? _getTextColor(),
                       ),
                     ),

@@ -16,6 +16,7 @@ class TaskTypeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AppShadow(
       borderRadius: BorderRadius.circular(8),
       child: AnimatedContainer(
@@ -37,7 +38,7 @@ class TaskTypeButton extends StatelessWidget {
               child: AnimatedDefaultTextStyle(
                 duration: const Duration(milliseconds: 360),
                 curve: Curves.easeInOut,
-                style: AppTypography.bodyMedium.copyWith(
+                style: theme.textTheme.bodyMedium!.copyWith(
                   color: isSelected
                       ? Colors.white
                       : const Color(0xFF121212).withValues(alpha: 0.5),

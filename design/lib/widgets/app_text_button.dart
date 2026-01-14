@@ -1,4 +1,3 @@
-import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 
 class AppTextButton extends StatelessWidget {
@@ -19,11 +18,9 @@ class AppTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return ConstrainedBox(
-      constraints: const BoxConstraints(
-        minHeight: 60,
-        maxHeight: 60,
-      ),
+      constraints: const BoxConstraints(minHeight: 60, maxHeight: 60),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
@@ -43,11 +40,10 @@ class AppTextButton extends StatelessWidget {
                 child: AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 200),
                   curve: Curves.easeInOut,
-                  style: AppTypography.bodyLarge.copyWith(color: _getTextColor()),
-                  child: Text(
-                    text,
-                    textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge!.copyWith(
+                    color: _getTextColor(),
                   ),
+                  child: Text(text, textAlign: TextAlign.center),
                 ),
               ),
             ),

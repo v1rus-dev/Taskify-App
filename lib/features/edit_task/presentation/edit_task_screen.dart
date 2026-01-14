@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/features/edit_task/presentation/providers/edit_task_notifier.dart';
 import 'package:taskify/features/edit_task/presentation/providers/edit_task_state.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_app_bar.dart';

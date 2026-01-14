@@ -9,7 +9,7 @@ import 'package:taskify/features/home/presentation/widgets/home_calendar_part.da
 class HomeHidedHeader extends ConsumerWidget {
   const HomeHidedHeader({super.key});
 
-  _onChangeTasksViewType(WidgetRef ref, TasksViewType tasksViewType) {
+  void _onChangeTasksViewType(WidgetRef ref, TasksViewType tasksViewType) {
     ref.read(homeScreenNotifierProvider.notifier).changeTasksViewType(tasksViewType);
   }
 

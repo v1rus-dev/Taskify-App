@@ -6,12 +6,18 @@ import 'package:taskify/features/edit_task/presentation/widgets/edit_task_time_b
 import 'package:taskify/l10n/app_localizations.dart';
 
 class EditTaskBottomPart extends ConsumerWidget {
-  const EditTaskBottomPart({super.key, required this.canSave, required this.onSavePressed});
+  const EditTaskBottomPart({
+    super.key,
+    required this.canSave,
+    required this.onSavePressed,
+  });
 
   final bool canSave;
   final VoidCallback onSavePressed;
 
-  void _onTimePressed() {}
+  void _onTimePressed(BuildContext context) {
+
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,7 +28,10 @@ class EditTaskBottomPart extends ConsumerWidget {
         padding: const EdgeInsets.all(20),
         child: Row(
           children: [
-            EditTaskTimeButton(isEnabled: canSave, onPressed: _onTimePressed),
+            EditTaskTimeButton(
+              isEnabled: canSave,
+              onPressed: () => _onTimePressed(context),
+            ),
             const Gap(8),
             Expanded(
               child: AppTextButton(

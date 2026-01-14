@@ -21,11 +21,11 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
     return const Size.fromHeight(120);
   }
 
-  _openSettings() {
+  void _openSettings() {
     appRouter.push(RouterPaths.settings);
   }
 
-  _onChangeCalendarState(WidgetRef ref) {
+  void _onChangeCalendarState(WidgetRef ref) {
     ref.read(homeScreenNotifierProvider.notifier).changeCalendarState();
   }
 

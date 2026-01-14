@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:taskify/features/select_task_date/presentation/providers/select_task_state.dart';
+import 'package:taskify/features/select_task_date/presentation/providers/select_task/select_task_state.dart';
 
 final selectTaskNotifierProvider =
     NotifierProvider.family<SelectTaskNotifier, SelectTaskState, (DateTime?, bool?)>(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:taskify/features/home/presentation/screen/home_screen_notifier.dart';
+import 'package:taskify/features/home/presentation/providers/home_screen_notifier.dart';
 import 'package:taskify/features/home/presentation/widgets/home_calendar_item.dart';
 
 class HomeCalendarPart extends ConsumerStatefulWidget {
@@ -22,7 +22,8 @@ class _HomeCalendarPartState extends ConsumerState<HomeCalendarPart> {
   @override
   void initState() {
     super.initState();
-    _calculateDateRange();
+    final selectedDate = ref.read(homeScreenNotifierProvider).selectedDate;
+    _calculateDateRange(selectedDate);
     _pageController = PageController(initialPage: _currentWeekIndex);
   }
 
@@ -32,35 +33,27 @@ class _HomeCalendarPartState extends ConsumerState<HomeCalendarPart> {
     super.dispose();
   }
 
-  void _calculateDateRange() {
-    final now = DateTime.now();
-    
-    // Минимальная дата для выбора: первое число месяца, который был два месяца назад
-    _minSelectableDate = DateTime(now.year, now.month - 2, 1);
-    
-    // Максимальная дата для выбора: конец месяца через 2 месяца
-    _maxSelectableDate = DateTime(now.year, now.month + 3, 0);
-    
-    // Начало календаря: начало недели предыдущего месяца (чтобы можно было скроллить назад на месяц)
-    // Находим первый день предыдущего месяца
-    final previousMonth = DateTime(now.year, now.month - 1, 1);
-    // Находим начало недели, которая содержит первый день предыдущего месяца
+  void _calculateDateRange(DateTime baseDate) {
+    final base = DateTime(baseDate.year, baseDate.month, baseDate.day);
+
+    _minSelectableDate = DateTime(base.year, base.month - 2, 1);
+
+    _maxSelectableDate = DateTime(base.year, base.month + 3, 0);
+
+    final previousMonth = DateTime(base.year, base.month - 1, 1);
     final daysFromMonday = previousMonth.weekday - 1;
     _startDate = previousMonth.subtract(Duration(days: daysFromMonday));
-    
-    // Конец календаря: конец недели, которая содержит последний день месяца через 2 месяца
+
     final lastDayOfFutureMonth = _maxSelectableDate;
     final daysToSunday = 7 - lastDayOfFutureMonth.weekday;
     _endDate = lastDayOfFutureMonth.add(Duration(days: daysToSunday));
-    
-    // Вычисляем количество недель
+
     final daysDifference = _endDate.difference(_startDate).inDays;
     _totalWeeks = (daysDifference / 7).ceil();
-    
-    // Вычисляем индекс текущей недели
-    final today = DateTime.now();
-    final todayStartOfWeek = today.subtract(Duration(days: today.weekday - 1));
-    _currentWeekIndex = todayStartOfWeek.difference(_startDate).inDays ~/ 7;
+
+    final selectedStartOfWeek =
+        base.subtract(Duration(days: base.weekday - 1));
+    _currentWeekIndex = selectedStartOfWeek.difference(_startDate).inDays ~/ 7;
   }
 
   List<DateTime> _getWeekDays(int weekIndex) {

@@ -6,7 +6,7 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/app/router/router_paths.dart';
-import 'package:taskify/features/home/presentation/screen/home_screen_notifier.dart';
+import 'package:taskify/features/home/presentation/providers/home_screen_notifier.dart';
 import 'package:taskify/features/home/presentation/widgets/home_app_bar_button.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
@@ -64,7 +64,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     state.selectedDate.day == state.currentDate.day &&
@@ -77,12 +77,15 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
                     style: AppTypography.headlineLarge,
                   ),
                   const Gap(12),
-                  Text(
-                    _getMonthShort(context, state.selectedDate),
-                    textAlign: TextAlign.left,
-                    style: AppTypography.headlineMedium.copyWith(
-                      color: Colors.black.withOpacity(0.3),
-                      fontWeight: FontWeight.w400,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      _getMonthShort(context, state.selectedDate),
+                      textAlign: TextAlign.left,
+                      style: AppTypography.headlineMedium.copyWith(
+                        color: Colors.black.withOpacity(0.3),
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],

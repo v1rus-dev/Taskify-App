@@ -19,18 +19,16 @@ class HomeScreenNotifier extends Notifier<HomeScreenState> {
   StreamSubscription<List<Task>>? _tasksSubscription;
 
   @override
-  HomeScreenState build() {
+  HomeScreenState build() { 
 
-    final initialState = HomeScreenState(
+    _observeTasks();
+
+    return HomeScreenState(
       isLoading: true,
       selectedDate: DateTime.now(),
       currentDate: DateTime.now(),
       tasks: [],
     );
-
-    _observeTasks();
-
-    return initialState;
   }
 
   void updateLoading() {

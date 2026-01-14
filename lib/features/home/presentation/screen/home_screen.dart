@@ -7,6 +7,7 @@ import 'package:taskify/features/home/presentation/providers/home_screen_notifie
 import 'package:taskify/features/home/presentation/widgets/add_task_button.dart';
 import 'package:taskify/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:taskify/features/home/presentation/widgets/home_hided_header.dart';
+import 'package:taskify/features/home/presentation/widgets/taks_card.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -28,22 +29,28 @@ class HomeScreen extends ConsumerWidget {
           SliverToBoxAdapter(
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 360),
+              switchInCurve: Curves.easeOutCubic,
+              switchOutCurve: Curves.easeInCubic,
               transitionBuilder: (child, animation) => FadeTransition(
                 opacity: animation,
-                child: SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, -0.2),
-                    end: Offset.zero,
-                  ).animate(CurvedAnimation(
-                    parent: animation,
-                    curve: Curves.easeInOut,
-                  )),
+                child: SizeTransition(
+                  sizeFactor: animation,
+                  axisAlignment: -1.0,
                   child: child,
                 ),
               ),
               child: state.isHeaderExpanded
-                  ? const HomeHidedHeader(key: ValueKey('HeaderVisible'))
-                  : const SizedBox(key: ValueKey('HeaderHidden')),
+                  ? const HomeHidedHeader(key: ValueKey('header'))
+                  : const SizedBox(key: ValueKey('empty')),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            sliver: SliverList.separated(
+              separatorBuilder: (context, index) => const Gap(12),
+              itemBuilder: (context, index) =>
+                  TaskCard(task: state.tasks[index]),
+              itemCount: state.tasks.length,
             ),
           ),
         ],

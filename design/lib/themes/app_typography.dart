@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:design/design.dart';
 
 class AppTypography {
   AppTypography._();
@@ -37,6 +38,7 @@ class AppTypography {
     fontFamily: fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w600,
+    color: AppColors.onSecondary,
     letterSpacing: 0.15,
   );
 

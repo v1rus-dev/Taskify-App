@@ -1,23 +1,65 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/features/edit_task/presentation/edit_task_notifier.dart';
+import 'package:taskify/features/edit_task/presentation/providers/edit_task_notifier.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_app_bar.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_bottom_part.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
-class EditTaskScreen extends ConsumerWidget {
-  EditTaskScreen({super.key});
+class EditTaskScreen extends ConsumerStatefulWidget {
+  const EditTaskScreen({super.key});
 
+  @override
+  ConsumerState<EditTaskScreen> createState() => _EditTaskScreenState();
+}
+
+class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final FocusNode titleFocusNode = FocusNode();
   final FocusNode descriptionFocusNode = FocusNode();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Создаем Notifier при открытии экрана
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    titleFocusNode.dispose();
+    descriptionFocusNode.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveTask({
+    required EditTaskNotifier notifier,
+    required BuildContext context,
+  }) async {
+    final completer = Completer<void>();
+
+    notifier.saveTask(
+      title: titleController.text,
+      description: descriptionController.text,
+      completer: completer,
+    );
+
+    try {
+      await completer.future;
+
+      if (!context.mounted) return;
+
+      Navigator.pop(context);
+    } catch (e) {
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to save task: $e')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     ref.watch(editTaskNotifierProvider);
     final notifier = ref.read(editTaskNotifierProvider.notifier);
 
@@ -33,7 +75,11 @@ class EditTaskScreen extends ConsumerWidget {
         child: ValueListenableBuilder<TextEditingValue>(
           valueListenable: titleController,
           builder: (context, value, child) {
-            return EditTaskBottomPart(canSave: value.text.isNotEmpty);
+            return EditTaskBottomPart(
+              canSave: value.text.isNotEmpty,
+              onSavePressed: () =>
+                  _saveTask(notifier: notifier, context: context),
+            );
           },
         ),
       ),
@@ -58,7 +104,8 @@ class EditTaskScreen extends ConsumerWidget {
                       style: Theme.of(context).textTheme.headlineLarge
                           ?.copyWith(fontWeight: FontWeight.w500),
                       decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context)?.writeANewTask ?? '',
+                        hintText:
+                            AppLocalizations.of(context)?.writeANewTask ?? '',
                         border: InputBorder.none,
                         filled: false,
                         isCollapsed: true,
@@ -104,7 +151,11 @@ class EditTaskScreen extends ConsumerWidget {
                                             ).withValues(alpha: 0.8),
                                           ),
                                       decoration: InputDecoration(
-                                        hintText: AppLocalizations.of(context)?.description ?? '',
+                                        hintText:
+                                            AppLocalizations.of(
+                                              context,
+                                            )?.description ??
+                                            '',
                                         border: InputBorder.none,
                                         filled: false,
                                         isCollapsed: true,

@@ -1,6 +1,6 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
-import 'package:taskify/domain/models/tasks_view_type.dart';
+import 'package:taskify/domain/entities/tasks_view_type.dart';
 
 class TaskTypeButton extends StatelessWidget {
   const TaskTypeButton({

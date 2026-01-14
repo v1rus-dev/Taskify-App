@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/domain/models/tasks_view_type.dart';
+import 'package:taskify/domain/entities/tasks_view_type.dart';
 import 'package:taskify/features/home/presentation/screen/home_screen_notifier.dart';
 import 'package:taskify/features/home/presentation/widgets/task_type_button.dart';
 import 'package:taskify/features/home/presentation/widgets/home_calendar_part.dart';

@@ -15,7 +15,7 @@ final GoRouter appRouter = GoRouter(
       path: RouterPaths.editTask,
       pageBuilder: (context, state) => CustomTransitionPage(
         key: state.pageKey,
-        child: EditTaskScreen(),
+        child: const EditTaskScreen(),
       ),
     ),
   ],

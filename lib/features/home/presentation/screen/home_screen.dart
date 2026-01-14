@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/app/router/router_paths.dart';
-import 'package:taskify/features/home/presentation/screen/home_screen_notifier.dart';
+import 'package:taskify/features/home/presentation/providers/home_screen_notifier.dart';
 import 'package:taskify/features/home/presentation/widgets/add_task_button.dart';
 import 'package:taskify/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:taskify/features/home/presentation/widgets/home_hided_header.dart';
@@ -11,7 +11,7 @@ import 'package:taskify/features/home/presentation/widgets/home_hided_header.dar
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  _onAddTask() {
+  void _onAddTask() {
     appRouter.push(RouterPaths.editTask);
   }
 
@@ -24,7 +24,7 @@ class HomeScreen extends ConsumerWidget {
       floatingActionButton: AddTaskButton(onPressed: _onAddTask),
       body: CustomScrollView(
         slivers: [
-         const SliverGap(32.0),
+          const SliverGap(32.0),
           SliverToBoxAdapter(
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 360),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:taskify/features/edit_task/presentation/edit_task_notifier.dart';
+import 'package:taskify/features/edit_task/presentation/providers/edit_task_notifier.dart';
 
 class EditTaskAppBar extends ConsumerWidget {
   const EditTaskAppBar({super.key});

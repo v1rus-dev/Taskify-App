@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:taskify/data/database/app_database.dart';
 import 'package:taskify/data/database/database_di.dart';
+import 'package:taskify/features/home/data/home_di.dart';
 
 final locator = GetIt.instance;
 
@@ -15,7 +16,7 @@ Future<void> initDatabase(AppDatabase appDatabase) async {
 }
 
 Future<void> initRepositories() async {
-
+  initHomeDependencies();
 }
 
 Future<void> initDio() async {

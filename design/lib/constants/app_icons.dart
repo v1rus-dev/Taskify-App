@@ -9,4 +9,6 @@ class AppIcons {
   static const String trash = 'assets/icons/ic_trash.svg';
   static const String check = 'assets/icons/ic_check.svg';
   static const String clockPlus = 'assets/icons/ic_clock_plus.svg';
+  static const String circle = 'assets/icons/ic_circle.svg';
+  static const String fillChecked = 'assets/icons/ic_fill_checked.svg';
 }

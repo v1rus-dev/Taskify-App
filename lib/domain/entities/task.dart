@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-class Task extends Equatable {
+class TaskEntity extends Equatable {
   final int? id;
   final int? networkId;
   final String title;
@@ -12,7 +12,7 @@ class Task extends Equatable {
   final DateTime createdAt;
   final DateTime? updatedAt;
 
-  const Task({
+  const TaskEntity({
     this.id,
     this.networkId,
     required this.title,
@@ -25,7 +25,7 @@ class Task extends Equatable {
     this.updatedAt,
   });
 
-  Task copyWith({
+  TaskEntity copyWith({
     int? id,
     int? networkId,
     String? title,
@@ -37,7 +37,7 @@ class Task extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Task(
+    return TaskEntity(
       id: id ?? this.id,
       networkId: networkId ?? this.networkId,
       title: title ?? this.title,

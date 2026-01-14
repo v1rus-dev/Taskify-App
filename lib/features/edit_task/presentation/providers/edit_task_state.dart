@@ -7,5 +7,6 @@ abstract class EditTaskState with _$EditTaskState {
   const factory EditTaskState({
     @Default('') String title,
     @Default('') String description,
+    @Default(null) int? taskId,
   }) = _EditTaskState;
 }

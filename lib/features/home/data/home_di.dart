@@ -1,8 +1,8 @@
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/data/database/app_database.dart';
 import 'package:taskify/features/home/data/datasources/task_local_datasource.dart';
-import 'package:taskify/features/home/data/repositories/task_repository_impl.dart';
-import 'package:taskify/features/home/domain/repositories/task_repository.dart';
+import 'package:taskify/data/repositories/task_repository_impl.dart';
+import 'package:taskify/domain/repository/task_repository.dart';
 import 'package:taskify/features/home/domain/usecases/create_task.dart';
 import 'package:taskify/features/home/domain/usecases/delete_task.dart';
 import 'package:taskify/features/home/domain/usecases/get_tasks.dart';

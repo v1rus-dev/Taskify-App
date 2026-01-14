@@ -10,7 +10,9 @@ import 'package:taskify/features/edit_task/presentation/widgets/edit_task_bottom
 import 'package:taskify/l10n/app_localizations.dart';
 
 class EditTaskScreen extends ConsumerStatefulWidget {
-  const EditTaskScreen({super.key});
+  const EditTaskScreen({super.key, this.taskId});
+
+  final int? taskId;
 
   @override
   ConsumerState<EditTaskScreen> createState() => _EditTaskScreenState();
@@ -37,7 +39,7 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
   }) async {
     final completer = Completer<void>();
 
-    notifier.saveTask(
+    notifier.onSaveTask(
       title: titleController.text,
       description: descriptionController.text,
       completer: completer,
@@ -60,8 +62,8 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(editTaskNotifierProvider);
-    final notifier = ref.read(editTaskNotifierProvider.notifier);
+    ref.watch(editTaskNotifierProvider(widget.taskId));
+    final notifier = ref.read(editTaskNotifierProvider(widget.taskId).notifier);
 
     final mediaQuery = MediaQuery.of(context);
     final bottomPadding = mediaQuery.viewInsets.bottom;
@@ -85,7 +87,7 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
       ),
       body: Column(
         children: [
-          const EditTaskAppBar(),
+          EditTaskAppBar(taskId: widget.taskId),
           Expanded(
             child: SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,

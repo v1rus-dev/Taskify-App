@@ -8,6 +8,7 @@ import 'package:taskify/features/home/presentation/widgets/add_task_button.dart'
 import 'package:taskify/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:taskify/features/home/presentation/widgets/home_hided_header.dart';
 import 'package:taskify/features/home/presentation/widgets/taks_card.dart';
+import 'package:taskify/domain/entities/task.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -16,9 +17,14 @@ class HomeScreen extends ConsumerWidget {
     appRouter.push(RouterPaths.editTask);
   }
 
+  void _onTaskClicked(TaskEntity task) {
+    appRouter.push(RouterPaths.editTask, extra: task.id);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(homeScreenNotifierProvider);
+    final notifier = ref.read(homeScreenNotifierProvider.notifier);
 
     return Scaffold(
       appBar: const HomeAppBar(),
@@ -49,7 +55,7 @@ class HomeScreen extends ConsumerWidget {
             sliver: SliverList.separated(
               separatorBuilder: (context, index) => const Gap(12),
               itemBuilder: (context, index) =>
-                  TaskCard(task: state.tasks[index]),
+                  TaskCard(task: state.tasks[index], onTaskClicked: () => _onTaskClicked(state.tasks[index]), onCheckboxPressed: () => notifier.updateTaskCompletion(state.tasks[index])),
               itemCount: state.tasks.length,
             ),
           ),

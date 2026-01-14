@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-class Tasks extends Table {
+class TasksTable extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get networkId => integer().nullable()();
   TextColumn get title => text().withLength(min: 1, max: 255)();

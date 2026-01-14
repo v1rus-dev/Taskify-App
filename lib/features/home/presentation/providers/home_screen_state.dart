@@ -10,7 +10,7 @@ abstract class HomeScreenState with _$HomeScreenState {
     @Default(false) bool isHeaderExpanded,
     required DateTime selectedDate,
     required DateTime currentDate,
-    required List<Task> tasks,
+    required List<TaskEntity> tasks,
     @Default(TasksViewType.tasks) TasksViewType tasksViewType,
     @Default(false) bool isLoading,
     @Default('') String message,

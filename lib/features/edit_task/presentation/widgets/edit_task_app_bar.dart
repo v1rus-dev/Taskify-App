@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:design/constants/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,15 +8,19 @@ import 'package:go_router/go_router.dart';
 import 'package:taskify/features/edit_task/presentation/providers/edit_task_notifier.dart';
 
 class EditTaskAppBar extends ConsumerWidget {
-  const EditTaskAppBar({super.key});
+  const EditTaskAppBar({super.key, required this.taskId});
+
+  final int? taskId;
 
   void _onClose(BuildContext context) {
     context.pop();
   }
 
-  void _onDelete(BuildContext context, WidgetRef ref) {
-    // TODO: Реализовать логику удаления задачи
-    ref.read(editTaskNotifierProvider.notifier).deleteTask();
+  void _onDelete(BuildContext context, WidgetRef ref) async {
+    final completer = Completer<void>();
+    ref.read(editTaskNotifierProvider(taskId).notifier).onDeleteTask(taskId: taskId!, completer: completer);
+    await completer.future;
+    if (!context.mounted) return;
     context.pop();
   }
 
@@ -55,9 +61,7 @@ class EditTaskAppBar extends ConsumerWidget {
         right: 12,
         bottom: 16.0,
       ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-      ),
+      decoration: BoxDecoration(color: Colors.white),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -66,10 +70,11 @@ class EditTaskAppBar extends ConsumerWidget {
             iconPath: AppIcons.close,
             onPressed: () => _onClose(context),
           ),
-          _buildIconButton(
-            iconPath: AppIcons.trash,
-            onPressed: () => _onDelete(context, ref),
-          ),
+          if (taskId != null)
+            _buildIconButton(
+              iconPath: AppIcons.trash,
+              onPressed: () => _onDelete(context, ref),
+            ),
         ],
       ),
     );

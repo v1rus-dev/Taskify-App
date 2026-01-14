@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-class Subtasks extends Table {
+class SubtasksTable extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get networkId => integer().nullable()();
   IntColumn get taskId => integer()();

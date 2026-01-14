@@ -5,18 +5,20 @@ import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/domain/entities/tasks_view_type.dart';
 import 'package:taskify/domain/entities/task.dart';
 import 'package:taskify/features/home/domain/usecases/observe_tasks.dart';
+import 'package:taskify/features/home/domain/usecases/update_task.dart';
 import 'package:taskify/features/home/presentation/providers/home_screen_state.dart';
 
 final homeScreenNotifierProvider =
     NotifierProvider<HomeScreenNotifier, HomeScreenState>(
-  () => HomeScreenNotifier(observeTasks: locator<ObserveTasks>()),
+  () => HomeScreenNotifier(observeTasks: locator<ObserveTasks>(), updateTask: locator<UpdateTask>()),
 );
 
 class HomeScreenNotifier extends Notifier<HomeScreenState> {
-  HomeScreenNotifier({required this.observeTasks}) : super();
+  HomeScreenNotifier({required this.observeTasks, required this.updateTask}) : super();
 
   final ObserveTasks observeTasks;
-  StreamSubscription<List<Task>>? _tasksSubscription;
+  final UpdateTask updateTask;
+  StreamSubscription<List<TaskEntity>>? _tasksSubscription;
 
   @override
   HomeScreenState build() { 
@@ -50,6 +52,14 @@ class HomeScreenNotifier extends Notifier<HomeScreenState> {
 
   void changeTasksViewType(TasksViewType tasksViewType) {
     state = state.copyWith(tasksViewType: tasksViewType);
+  }
+
+  void updateTaskCompletion(TaskEntity task) async {
+    final result = await updateTask.call(task.copyWith(isCompleted: !task.isCompleted));
+    result.fold(
+      ifLeft: (failure) => TalkerService.instance.error(failure.message),
+      ifRight: (task) => TalkerService.instance.info('Task updated: ${task.id}'),
+    );
   }
 
   void _observeTasks() {

@@ -3,12 +3,13 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import 'package:taskify/data/database/tables/tasks.dart';
+import 'package:taskify/data/database/tables/tasks_table.dart';
+import 'package:taskify/data/database/tables/subtasks_table.dart';
 import 'package:taskify/core/services/talker_service.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [Tasks])
+@DriftDatabase(tables: [TasksTable, SubtasksTable])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 

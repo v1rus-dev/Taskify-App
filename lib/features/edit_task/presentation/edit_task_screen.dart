@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
+import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/features/edit_task/presentation/providers/edit_task_notifier.dart';
+import 'package:taskify/features/edit_task/presentation/providers/edit_task_state.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_app_bar.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_bottom_part.dart';
 import 'package:taskify/l10n/app_localizations.dart';
@@ -53,17 +55,37 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
       Navigator.pop(context);
     } catch (e) {
       if (!context.mounted) return;
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to save task: $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(editTaskNotifierProvider(widget.taskId));
+    final state = ref.watch(editTaskNotifierProvider(widget.taskId));
     final notifier = ref.read(editTaskNotifierProvider(widget.taskId).notifier);
+
+    if (state.title.isNotEmpty && titleController.text.isEmpty) {
+      titleController.text = state.title;
+    }
+    if (state.description.isNotEmpty && descriptionController.text.isEmpty) {
+      descriptionController.text = state.description;
+    }
+
+    ref.listen<EditTaskState>(
+      editTaskNotifierProvider(widget.taskId),
+      (previous, next) {
+        if (previous != next) {
+          if (next.title.isNotEmpty && 
+              (titleController.text.isEmpty || titleController.text != next.title)) {
+            titleController.text = next.title;
+          }
+          if (next.description.isNotEmpty &&
+              (descriptionController.text.isEmpty || 
+               descriptionController.text != next.description)) {
+            descriptionController.text = next.description;
+          }
+        }
+      },
+    );
 
     final mediaQuery = MediaQuery.of(context);
     final bottomPadding = mediaQuery.viewInsets.bottom;

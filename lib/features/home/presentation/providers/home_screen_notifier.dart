@@ -19,15 +19,17 @@ class HomeScreenNotifier extends Notifier<HomeScreenState> {
   final ObserveTasks observeTasks;
   final UpdateTask updateTask;
   StreamSubscription<List<TaskEntity>>? _tasksSubscription;
+  List<TaskEntity> _allTasks = const [];
 
   @override
   HomeScreenState build() { 
+    final initialSelectedDate = _normalizeDate(DateTime.now());
 
     _observeTasks();
 
     return HomeScreenState(
       isLoading: true,
-      selectedDate: DateTime.now(),
+      selectedDate: initialSelectedDate,
       currentDate: DateTime.now(),
       tasks: [],
     );
@@ -47,7 +49,11 @@ class HomeScreenNotifier extends Notifier<HomeScreenState> {
   }
 
   void selectDate(DateTime date) {
-    state = state.copyWith(selectedDate: date);
+    final normalizedDate = _normalizeDate(date);
+    state = state.copyWith(
+      selectedDate: normalizedDate,
+      tasks: _filterTasksByDate(_allTasks, normalizedDate),
+    );
   }
 
   void changeTasksViewType(TasksViewType tasksViewType) {
@@ -64,12 +70,24 @@ class HomeScreenNotifier extends Notifier<HomeScreenState> {
 
   void _observeTasks() {
     _tasksSubscription = observeTasks.call().listen((tasks) {
+      _allTasks = tasks;
       TalkerService.instance.info('Tasks: ${tasks.length}');
-      state = state.copyWith(tasks: tasks);
+      state = state.copyWith(tasks: _filterTasksByDate(tasks, state.selectedDate));
     });
 
     ref.onDispose(() {
       _tasksSubscription?.cancel();
     });
+  }
+
+  DateTime _normalizeDate(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
+
+  List<TaskEntity> _filterTasksByDate(List<TaskEntity> tasks, DateTime selectedDate) {
+    final normalizedSelectedDate = _normalizeDate(selectedDate);
+    return tasks
+        .where((task) => _normalizeDate(task.date) == normalizedSelectedDate)
+        .toList();
   }
 }

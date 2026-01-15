@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:taskify/domain/entities/task_duration_type.dart';
+
 import '../providers/calendar/calendar_notifier.dart';
 import '../providers/select_task/select_task_notifier.dart';
 
@@ -103,11 +105,15 @@ class CalendarWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final calendarState = ref.watch(calendarNotifierProvider);
     final calendarNotifier = ref.read(calendarNotifierProvider.notifier);
+    final durationType = (isAllDay ?? true)
+        ? TaskDurationType.allDay
+        : TaskDurationType.period;
     final selectTaskState = ref.watch(
-      selectTaskNotifierProvider((selectedDate, isAllDay)),
+      selectTaskNotifierProvider((selectedDate, durationType, null, null)),
     );
     final selectTaskNotifier = ref.read(
-      selectTaskNotifierProvider((selectedDate, isAllDay)).notifier,
+      selectTaskNotifierProvider((selectedDate, durationType, null, null))
+          .notifier,
     );
 
     final currentMonth = calendarState.dateTime;

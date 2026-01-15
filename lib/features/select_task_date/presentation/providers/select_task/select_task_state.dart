@@ -1,4 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter/material.dart';
+import 'package:taskify/domain/entities/task_duration_type.dart';
 
 part 'select_task_state.freezed.dart';
 
@@ -6,6 +8,8 @@ part 'select_task_state.freezed.dart';
 abstract class SelectTaskState with _$SelectTaskState {
   const factory SelectTaskState({
     required DateTime selectedDate,
-    @Default(false) bool isAllDay,
+    @Default(TaskDurationType.allDay) TaskDurationType durationType,
+    TimeOfDay? startTime,
+    TimeOfDay? endTime,
   }) = _SelectTaskState;
 }

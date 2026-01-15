@@ -1,0 +1,4 @@
+enum TaskDurationType {
+  allDay,
+  period,
+}

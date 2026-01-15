@@ -8,6 +8,7 @@ class TasksTable extends Table {
   BoolColumn get isCompleted => boolean().withDefault(const Constant(false))();
   DateTimeColumn get date => dateTime()();
   DateTimeColumn get startTime => dateTime().nullable()();
+  DateTimeColumn get endTime => dateTime().nullable()();
   BoolColumn get isAllDay => boolean().withDefault(const Constant(true))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();

@@ -12,6 +12,7 @@ abstract class EditTaskState with _$EditTaskState {
     @Default(false) bool isCompleted,
     DateTime? selectedDate,
     DateTime? startTime,
+    DateTime? endTime,
     @Default(true) bool isAllDay,
     DateTime? createdAt,
     DateTime? updatedAt,

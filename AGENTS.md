@@ -26,6 +26,7 @@ Follow Dart/Flutter defaults and `flutter_lints`. Use 2-space indentation, `Pasc
 
 ## Coding limitations
 Try never using WidgetsBindingObserver.
+Don't create database migration. Just use only one scheme because this app in not production now.
 
 ## Flutter code style
 Always use Color.withValue() inseted of withOpacity because withOpacity is deprecated.

@@ -8,6 +8,7 @@ class TaskEntity extends Equatable {
   final bool isCompleted;
   final DateTime date;
   final DateTime? startTime;
+  final DateTime? endTime;
   final bool isAllDay;
   final DateTime createdAt;
   final DateTime? updatedAt;
@@ -20,6 +21,7 @@ class TaskEntity extends Equatable {
     this.isCompleted = false,
     required this.date,
     this.startTime,
+    this.endTime,
     this.isAllDay = true,
     required this.createdAt,
     this.updatedAt,
@@ -33,6 +35,7 @@ class TaskEntity extends Equatable {
     bool? isCompleted,
     DateTime? date,
     DateTime? startTime,
+    DateTime? endTime,
     bool? isAllDay,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -45,6 +48,7 @@ class TaskEntity extends Equatable {
       isCompleted: isCompleted ?? this.isCompleted,
       date: date ?? this.date,
       startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
       isAllDay: isAllDay ?? this.isAllDay,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -60,6 +64,7 @@ class TaskEntity extends Equatable {
         isCompleted,
         date,
         startTime,
+        endTime,
         isAllDay,
         createdAt,
         updatedAt,

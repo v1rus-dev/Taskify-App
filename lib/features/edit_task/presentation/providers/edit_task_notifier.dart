@@ -80,6 +80,7 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
       isCompleted: state.isCompleted,
       date: selectedDate,
       startTime: state.startTime,
+      endTime: state.endTime,
       isAllDay: state.isAllDay,
       createdAt: createdAt,
       updatedAt: updatedAt,
@@ -99,9 +100,18 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
     );
   }
 
-  void onSelectDate({required DateTime selectedDate, required bool isAllDay}) {
+  void onSelectDate({
+    required DateTime selectedDate,
+    required bool isAllDay,
+    DateTime? startTime,
+    DateTime? endTime,
+  }) {
+    final resolvedStartTime = isAllDay ? null : startTime;
+    final resolvedEndTime = isAllDay ? null : endTime;
     state = state.copyWith(
       selectedDate: selectedDate,
+      startTime: resolvedStartTime,
+      endTime: resolvedEndTime,
       isAllDay: isAllDay,
     );
   }
@@ -119,6 +129,7 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
           isCompleted: task.isCompleted,
           selectedDate: task.date,
           startTime: task.startTime,
+          endTime: task.endTime,
           isAllDay: task.isAllDay,
           createdAt: task.createdAt,
           updatedAt: task.updatedAt,

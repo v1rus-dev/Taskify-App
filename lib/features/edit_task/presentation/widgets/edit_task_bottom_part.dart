@@ -14,6 +14,8 @@ class EditTaskBottomPart extends ConsumerWidget {
     required this.onSavePressed,
     required this.selectedDate,
     required this.isAllDay,
+    required this.startTime,
+    required this.endTime,
     required this.onDateSelected,
   });
 
@@ -21,7 +23,15 @@ class EditTaskBottomPart extends ConsumerWidget {
   final VoidCallback onSavePressed;
   final DateTime selectedDate;
   final bool isAllDay;
-  final void Function(DateTime selectedDate, bool isAllDay) onDateSelected;
+  final DateTime? startTime;
+  final DateTime? endTime;
+  final void Function(
+    DateTime selectedDate,
+    bool isAllDay,
+    DateTime? startTime,
+    DateTime? endTime,
+  )
+  onDateSelected;
 
   void _onTimePressed(BuildContext context) {
     showAppModalBottomSheet(
@@ -31,6 +41,8 @@ class EditTaskBottomPart extends ConsumerWidget {
       child: SelectTaskDateBottomSheet(
         selectedDate: selectedDate,
         isAllDay: isAllDay,
+        startTime: startTime,
+        endTime: endTime,
         onSave: onDateSelected,
       ),
     );

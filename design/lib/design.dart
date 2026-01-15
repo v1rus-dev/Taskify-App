@@ -8,3 +8,5 @@ export 'themes/app_spacing.dart';
 export 'enums/app_theme_mode.dart';
 export 'widgets/app_shadow.dart';
 export 'widgets/app_text_button.dart';
+export 'widgets/app_bottom_sheet.dart';
+export 'themes/app_color_extensions.dart';

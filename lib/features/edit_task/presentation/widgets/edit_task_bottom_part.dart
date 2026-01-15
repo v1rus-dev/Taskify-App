@@ -1,8 +1,10 @@
+import 'package:design/widgets/app_bottom_sheet.dart';
 import 'package:design/widgets/app_text_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:flutter/material.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_time_button.dart';
+import 'package:taskify/features/select_task_date/presentation/select_task_date_bottom_sheet.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
 class EditTaskBottomPart extends ConsumerWidget {
@@ -16,7 +18,12 @@ class EditTaskBottomPart extends ConsumerWidget {
   final VoidCallback onSavePressed;
 
   void _onTimePressed(BuildContext context) {
-
+    showAppModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      child: SelectTaskDateBottomSheet(),
+    );
   }
 
   @override

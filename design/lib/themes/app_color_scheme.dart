@@ -16,6 +16,7 @@ class AppColorScheme {
   final Color error;
   final Color success;
   final Color pending;
+  final Color bottomSheetDragHandle;
 
   const AppColorScheme({
     required this.background,
@@ -33,5 +34,6 @@ class AppColorScheme {
     required this.error,
     required this.success,
     required this.pending,
+    required this.bottomSheetDragHandle,
   });
 }

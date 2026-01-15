@@ -128,6 +128,7 @@ class _AppBottomSheetContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
     Widget content = child;
 
     if (isScrollable) {
@@ -154,12 +155,17 @@ class _AppBottomSheetContent extends StatelessWidget {
       );
     }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (showDragHandle) _BottomSheetDragHandle(),
-        content,
-      ],
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 150),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.only(bottom: bottomInset),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (showDragHandle) _BottomSheetDragHandle(),
+          content,
+        ],
+      ),
     );
   }
 }

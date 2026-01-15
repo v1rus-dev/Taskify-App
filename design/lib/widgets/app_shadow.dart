@@ -12,9 +12,9 @@ class AppShadow extends StatelessWidget {
 
   static List<BoxShadow> get defaultShadow => [
         BoxShadow(
-          offset: Offset.zero, // x: 0, y: 0
-          blurRadius: 8, // Blur: 8
-          color: const Color(0xFF000000).withOpacity(0.05), // Color: 0xFF000000 alpha 5%
+          offset: Offset.zero,
+          blurRadius: 8,
+          color: const Color(0xFF000000).withValues(alpha: 0.05),
         ),
       ];
 

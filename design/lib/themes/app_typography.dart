@@ -55,6 +55,16 @@ class AppTypography {
     );
   }
 
+  static TextStyle buttonBold(AppColorSchemeExtension scheme) {
+    return TextStyle(
+      fontFamily: fontFamilyInter,
+      fontSize: 14,
+      fontWeight: FontWeight.w700,
+      height: 19.6 / 14,
+      color: scheme.buttonPrimaryText,
+    );
+  }
+
   static TextStyle caption(AppColorSchemeExtension scheme) {
     return TextStyle(
       fontFamily: fontFamilyInter,

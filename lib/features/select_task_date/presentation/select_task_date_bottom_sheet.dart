@@ -1,8 +1,8 @@
+import 'package:design/design.dart';
 import 'package:design/widgets/app_text_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:taskify/features/select_task_date/presentation/providers/select_task/select_task_notifier.dart';
-import 'package:taskify/features/select_task_date/presentation/widgets/calendar_part.dart';
 
 class SelectTaskDateBottomSheet extends ConsumerWidget {
   const SelectTaskDateBottomSheet({
@@ -15,6 +15,10 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
   final DateTime? selectedDate;
   final bool? isAllDay;
   final void Function(DateTime selectedDate, bool isAllDay)? onSave;
+
+  void _onDatePressed(BuildContext context) {}
+
+  void _onDurationPressed(BuildContext context) {}
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,28 +41,19 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text("When", style: theme.textTheme.displayMedium),
-                const SizedBox(height: 20),
-                CalendarPart(
-                  selectedDate: selectedDate,
-                  isAllDay: isAllDay,
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ChoiceChip(
-                      label: const Text('All day'),
-                      selected: selectTaskState.isAllDay,
-                      onSelected: (_) => selectTaskNotifier.onSelectAllDay(),
-                    ),
-                    const SizedBox(width: 12),
-                    ChoiceChip(
-                      label: const Text('With time'),
-                      selected: !selectTaskState.isAllDay,
-                      onSelected: (_) => selectTaskNotifier.onSelectDuration(),
-                    ),
-                  ],
-                ),
+                const SizedBox(height: 24),
+                CardWithActions(actions: [
+                  CardAction(
+                    title: 'Date',
+                    description: 'Today',
+                    onPressed: () => _onDatePressed(context),
+                  ),
+                  CardAction(
+                    title: 'Duration',
+                    description: 'All day',
+                    onPressed: () => _onDurationPressed(context),
+                  ),
+                ]),
               ],
             ),
           ),

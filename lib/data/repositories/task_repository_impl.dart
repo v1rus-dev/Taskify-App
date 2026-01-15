@@ -39,7 +39,7 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<Either<Failure, TaskEntity>> createTask(TaskEntity task) async {
-    final dataTask = TaskDomainMapper.fromDomain(task);
+    final dataTask = TaskDomainMapper.toInsertCompanion(task);
     final result = await localDataSource.createTask(dataTask);
     return result.fold(
       ifLeft: (failure) => Left(failure),

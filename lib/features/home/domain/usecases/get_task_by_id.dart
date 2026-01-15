@@ -8,7 +8,7 @@ class GetTaskById {
 
   GetTaskById(this.repository);
 
-  Future<Either<Failure, TaskEntity?>> call(int id) async {
+  Future<Either<Failure, TaskEntity>> call(int id) async {
     return await repository.getTaskById(id);
   }
 }

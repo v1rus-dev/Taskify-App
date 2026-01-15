@@ -24,6 +24,12 @@ Platform folders live in `android/` and `ios/`.
 ## Coding Style & Naming Conventions
 Follow Dart/Flutter defaults and `flutter_lints`. Use 2-space indentation, `PascalCase` for types, `camelCase` for variables/functions, and `snake_case` for file names (e.g., `home_screen_state.dart`). Keep files focused by feature under `lib/features/`.
 
+## Coding limitations
+Try never using WidgetsBindingObserver.
+
+## Flutter code style
+Always use Color.withValue() inseted of withOpacity because withOpacity is deprecated.
+
 ## Commit & Pull Request Guidelines
 Recent history shows short, plain commit subjects (e.g., “Update app theme”). Keep messages concise and descriptive, ideally referencing the main change or feature. For PRs, include a brief description, link related issues if available, and attach screenshots or recordings for UI changes.
 

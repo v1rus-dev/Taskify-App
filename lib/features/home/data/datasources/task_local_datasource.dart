@@ -1,5 +1,6 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
+import 'package:drift/drift.dart';
 import 'package:taskify/data/database/app_database.dart' as db;
 
 abstract class TaskLocalDataSource {
@@ -8,7 +9,9 @@ abstract class TaskLocalDataSource {
     DateTime date,
   );
   Future<Either<Failure, db.TasksTableData>> getTaskById(int id);
-  Future<Either<Failure, db.TasksTableData>> createTask(db.TasksTableData task);
+  Future<Either<Failure, db.TasksTableData>> createTask(
+    db.TasksTableCompanion task,
+  );
   Future<Either<Failure, db.TasksTableData>> updateTask(db.TasksTableData task);
   Future<Either<Failure, void>> deleteTask(int id);
   Stream<List<db.TasksTableData>> observeTasks();
@@ -37,13 +40,11 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource {
       final startOfDay = DateTime(date.year, date.month, date.day);
       final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
 
-      final allDriftTasks = await database.select(database.tasksTable).get();
-      final driftTasks = allDriftTasks.where((task) {
-        return task.date.isAfter(
-              startOfDay.subtract(const Duration(seconds: 1)),
-            ) &&
-            task.date.isBefore(endOfDay.add(const Duration(seconds: 1)));
-      }).toList();
+      final driftTasks = await (database.select(database.tasksTable)
+            ..where(
+              (task) => task.date.isBetweenValues(startOfDay, endOfDay),
+            ))
+          .get();
 
       return Right(driftTasks);
     } catch (e) {
@@ -65,11 +66,10 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource {
 
   @override
   Future<Either<Failure, db.TasksTableData>> createTask(
-    db.TasksTableData task,
+    db.TasksTableCompanion task,
   ) async {
     try {
-      final taskCompanion = task.toCompanion(true);
-      final id = await database.into(database.tasksTable).insert(taskCompanion);
+      final id = await database.into(database.tasksTable).insert(task);
       final createdDriftTask = await (database.select(
         database.tasksTable,
       )..where((t) => t.id.equals(id))).getSingle();

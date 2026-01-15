@@ -8,5 +8,12 @@ abstract class EditTaskState with _$EditTaskState {
     @Default('') String title,
     @Default('') String description,
     @Default(null) int? taskId,
+    int? networkId,
+    @Default(false) bool isCompleted,
+    DateTime? selectedDate,
+    DateTime? startTime,
+    @Default(true) bool isAllDay,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) = _EditTaskState;
 }

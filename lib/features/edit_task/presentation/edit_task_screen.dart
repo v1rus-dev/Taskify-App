@@ -102,6 +102,14 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
               canSave: value.text.isNotEmpty,
               onSavePressed: () =>
                   _saveTask(notifier: notifier, context: context),
+              selectedDate: state.selectedDate ?? DateTime.now(),
+              isAllDay: state.isAllDay,
+              onDateSelected: (selectedDate, isAllDay) {
+                notifier.onSelectDate(
+                  selectedDate: selectedDate,
+                  isAllDay: isAllDay,
+                );
+              },
             );
           },
         ),

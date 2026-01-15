@@ -12,17 +12,27 @@ class EditTaskBottomPart extends ConsumerWidget {
     super.key,
     required this.canSave,
     required this.onSavePressed,
+    required this.selectedDate,
+    required this.isAllDay,
+    required this.onDateSelected,
   });
 
   final bool canSave;
   final VoidCallback onSavePressed;
+  final DateTime selectedDate;
+  final bool isAllDay;
+  final void Function(DateTime selectedDate, bool isAllDay) onDateSelected;
 
   void _onTimePressed(BuildContext context) {
     showAppModalBottomSheet(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      child: SelectTaskDateBottomSheet(),
+      child: SelectTaskDateBottomSheet(
+        selectedDate: selectedDate,
+        isAllDay: isAllDay,
+        onSave: onDateSelected,
+      ),
     );
   }
 

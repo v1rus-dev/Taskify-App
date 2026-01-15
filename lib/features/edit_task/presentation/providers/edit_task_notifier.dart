@@ -43,7 +43,11 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
     if (taskId != null) {
       _getTaskById(taskId: taskId!);
     }
-    return EditTaskState(taskId: taskId);
+    return EditTaskState(
+      taskId: taskId,
+      selectedDate: DateTime.now(),
+      isAllDay: true,
+    );
   }
 
   void onDeleteTask({required int taskId, required Completer completer}) async {
@@ -64,13 +68,25 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
     required Completer completer,
   }) async {
     TalkerService.instance.info('Save task: $title $description');
+    final now = DateTime.now();
+    final selectedDate = state.selectedDate ?? now;
+    final createdAt = state.createdAt ?? now;
+    final updatedAt = taskId != null ? now : null;
     final task = TaskEntity(
+      id: taskId,
+      networkId: state.networkId,
       title: title,
       description: description,
-      createdAt: DateTime.now(),
-      date: DateTime.now(),
+      isCompleted: state.isCompleted,
+      date: selectedDate,
+      startTime: state.startTime,
+      isAllDay: state.isAllDay,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
     );
-    final result = await createTask.call(task);
+    final result = taskId == null
+        ? await createTask.call(task)
+        : await updateTask.call(task);
     result.fold(
       ifLeft: (failure) => {
         TalkerService.instance.error(failure.message),
@@ -83,15 +99,29 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
     );
   }
 
+  void onSelectDate({required DateTime selectedDate, required bool isAllDay}) {
+    state = state.copyWith(
+      selectedDate: selectedDate,
+      isAllDay: isAllDay,
+    );
+  }
+
   void _getTaskById({required int taskId}) async {
     final result = await getTaskById.call(taskId);
     result.fold(
       ifLeft: (failure) => TalkerService.instance.error(failure.message),
       ifRight: (task) => {
-        TalkerService.instance.info('Task: ${task?.id}'),
+        TalkerService.instance.info('Task: ${task.id}'),
         state = state.copyWith(
-          title: task?.title ?? '',
-          description: task?.description ?? '',
+          title: task.title,
+          description: task.description ?? '',
+          networkId: task.networkId,
+          isCompleted: task.isCompleted,
+          selectedDate: task.date,
+          startTime: task.startTime,
+          isAllDay: task.isAllDay,
+          createdAt: task.createdAt,
+          updatedAt: task.updatedAt,
         ),
       },
     );

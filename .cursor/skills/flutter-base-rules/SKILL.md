@@ -194,6 +194,26 @@ extension EitherExtensions<L, R> on Either<L, R> {
 - Document public APIs and complex logic
 - Implement proper null safety
 - Use value objects for domain-specific types
+- On pressed function ALWAYS do in specific function
+
+```
+class ExampleWidget extends StatelessWidget {
+  const ExampleWidget({super.key});
+
+  void _onPressed(BuildContext context) {
+    debugPrint('Button pressed');
+    // here is ALWAYS executed logic
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () => _onPressed(context),
+      child: const Text('Press me'),
+    );
+  }
+}
+```
 
 ## Implementation Examples
 

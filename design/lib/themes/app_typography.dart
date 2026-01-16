@@ -45,6 +45,16 @@ class AppTypography {
     );
   }
 
+  static TextStyle screenTitle(AppColorSchemeExtension scheme) {
+    return TextStyle(
+      fontFamily: fontFamilyInter,
+      fontSize: 24,
+      fontWeight: FontWeight.w700,
+      height: 28.8 / 24,
+      color: scheme.textPrimary,
+    );
+  }
+
   static TextStyle button(AppColorSchemeExtension scheme) {
     return TextStyle(
       fontFamily: fontFamilyInter,

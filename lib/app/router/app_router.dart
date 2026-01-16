@@ -3,6 +3,7 @@ import 'package:taskify/app/router/app_transitions.dart';
 import 'package:taskify/app/router/router_paths.dart';
 import 'package:taskify/features/edit_task/presentation/edit_task_screen.dart';
 import 'package:taskify/features/home/presentation/screen/home_screen.dart';
+import 'package:taskify/features/settings/presentation/settings_screen.dart';
 import 'package:flutter/material.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -18,6 +19,10 @@ final GoRouter appRouter = GoRouter(
         key: state.pageKey,
         child: EditTaskScreen(taskId: state.extra as int?),
       ),
+    ),
+    GoRoute(
+      path: RouterPaths.settings,
+      builder: (context, state) => const SettingsScreen(),
     ),
   ],
 );

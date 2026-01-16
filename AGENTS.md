@@ -29,7 +29,27 @@ Try never using WidgetsBindingObserver.
 Don't create database migration. Just use only one scheme because this app in not production now.
 
 ## Flutter code style
-Always use Color.withValue() inseted of withOpacity because withOpacity is deprecated.
+- Always use Color.withValue() inseted of withOpacity because withOpacity is deprecated.
+- On pressed function ALWAYS do in specific function
+
+```
+class ExampleWidget extends StatelessWidget {
+  const ExampleWidget({super.key});
+
+  void _onPressed(BuildContext context) {
+    debugPrint('Button pressed');
+    // here is ALWAYS executed logic
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () => _onPressed(context),
+      child: const Text('Press me'),
+    );
+  }
+}
+```
 
 ## Commit & Pull Request Guidelines
 Recent history shows short, plain commit subjects (e.g., “Update app theme”). Keep messages concise and descriptive, ideally referencing the main change or feature. For PRs, include a brief description, link related issues if available, and attach screenshots or recordings for UI changes.

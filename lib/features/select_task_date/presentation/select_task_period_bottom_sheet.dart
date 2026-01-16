@@ -17,15 +17,20 @@ class SelectTaskPeriodBottomSheet extends StatelessWidget {
     return selectedType == type ? 'Selected' : '';
   }
 
+  Color? _descriptionColorFor(BuildContext context, TaskDurationType type) {
+    return type == selectedType ? AppColorExtensions.getPrimaryAccentColor(context) : null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          const Gap(12),
           Text('Period', style: theme.textTheme.displayMedium),
           const SizedBox(height: 24),
           CardWithActions(
@@ -33,6 +38,7 @@ class SelectTaskPeriodBottomSheet extends StatelessWidget {
               CardAction(
                 title: 'All day',
                 description: _descriptionFor(TaskDurationType.allDay),
+                descriptionColor: _descriptionColorFor(context, TaskDurationType.allDay),
                 onPressed: () {
                   onSelected(TaskDurationType.allDay);
                   Navigator.of(context).pop();
@@ -41,6 +47,7 @@ class SelectTaskPeriodBottomSheet extends StatelessWidget {
               CardAction(
                 title: 'Period',
                 description: _descriptionFor(TaskDurationType.period),
+                descriptionColor: _descriptionColorFor(context, TaskDurationType.period),
                 onPressed: () {
                   onSelected(TaskDurationType.period);
                   Navigator.of(context).pop();
@@ -48,7 +55,7 @@ class SelectTaskPeriodBottomSheet extends StatelessWidget {
               ),
             ],
           ),
-          const Gap(20)
+          const Gap(40)
         ],
       ),
     );

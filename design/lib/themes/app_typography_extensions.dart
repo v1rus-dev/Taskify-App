@@ -11,6 +11,7 @@ class AppTypographyExtension extends ThemeExtension<AppTypographyExtension> {
   TextTheme get textTheme => TextTheme(
         displayLarge: AppTypography.header(colorScheme),
         displayMedium: AppTypography.header(colorScheme),
+        titleLarge: AppTypography.screenTitle(colorScheme),
         titleMedium: AppTypography.title(colorScheme),
         titleSmall: AppTypography.title(colorScheme),
         bodyMedium: AppTypography.body(colorScheme),
@@ -22,6 +23,7 @@ class AppTypographyExtension extends ThemeExtension<AppTypographyExtension> {
 
   TextStyle get headlineLarge => textTheme.displayLarge!;
   TextStyle get headlineMedium => textTheme.displayMedium!;
+  TextStyle get titleLarge => textTheme.titleLarge!;
   TextStyle get titleMedium => textTheme.titleMedium!;
   TextStyle get titleSmall => textTheme.titleSmall!;
   TextStyle get bodyMedium => textTheme.bodyMedium!;

@@ -3,18 +3,19 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:taskify/data/database/tables/app_configurations_table.dart';
 import 'package:taskify/data/database/tables/tasks_table.dart';
 import 'package:taskify/data/database/tables/subtasks_table.dart';
 import 'package:taskify/core/services/talker_service.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [TasksTable, SubtasksTable])
+@DriftDatabase(tables: [TasksTable, SubtasksTable, AppConfigurationsTable])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
@@ -27,8 +28,7 @@ class AppDatabase extends _$AppDatabase {
         TalkerService.instance.info('Database upgrade from $from to $to');
         
         if (from < 2) {
-          // Пример миграции для версии 2
-          // await m.addColumn(tasks, tasks.newColumn);
+          await m.createTable(appConfigurationsTable);
         }
       },
     );

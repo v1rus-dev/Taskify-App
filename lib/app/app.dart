@@ -12,7 +12,6 @@ class TaskifyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeState = ref.watch(themeNotifierProvider);
-
     WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
         () {
           ref.read(themeNotifierProvider.notifier).onSystemThemeChanged();

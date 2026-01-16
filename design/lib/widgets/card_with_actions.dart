@@ -41,7 +41,7 @@ class _CardWithActionsState extends State<CardWithActions> {
             action.description,
             textAlign: TextAlign.right,
             style: theme.textTheme.labelLarge!.copyWith(
-              color: AppColorExtensions.getTextPrimaryColor(context),
+              color: action.descriptionColor ?? AppColorExtensions.getTextPrimaryColor(context),
               fontWeight: FontWeight.w700,
             ),
           );

@@ -19,7 +19,7 @@ Future<T?> showAppModalBottomSheet<T>({
 }) => showModalBottomSheet<T>(
   context: context,
   isScrollControlled: isScrollControlled,
-  useSafeArea: useSafeArea,
+  useSafeArea: false,
   backgroundColor:
       backgroundColor ?? AppColorExtensions.getBackgroundColor(context),
   shape: shape,
@@ -31,6 +31,7 @@ Future<T?> showAppModalBottomSheet<T>({
       scrollPhysics: scrollPhysics,
       minContentHeight: minContentHeight,
       maxContentHeight: maxContentHeight,
+      includeBottomSafeArea: useSafeArea,
       child: child,
     );
   },
@@ -116,6 +117,7 @@ class _AppBottomSheetContent extends StatelessWidget {
     required this.scrollPhysics,
     required this.minContentHeight,
     required this.maxContentHeight,
+    required this.includeBottomSafeArea,
   });
 
   final Widget child;
@@ -125,10 +127,14 @@ class _AppBottomSheetContent extends StatelessWidget {
   final ScrollPhysics? scrollPhysics;
   final double? minContentHeight;
   final double? maxContentHeight;
+  final bool includeBottomSafeArea;
 
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final bottomSafeArea = includeBottomSafeArea
+        ? MediaQuery.viewPaddingOf(context).bottom
+        : 0.0;
     Widget content = child;
 
     if (isScrollable) {
@@ -158,7 +164,7 @@ class _AppBottomSheetContent extends StatelessWidget {
     return AnimatedPadding(
       duration: const Duration(milliseconds: 150),
       curve: Curves.easeOut,
-      padding: EdgeInsets.only(bottom: bottomInset),
+      padding: EdgeInsets.only(bottom: bottomInset + bottomSafeArea),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

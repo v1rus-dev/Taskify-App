@@ -1,13 +1,10 @@
-import 'dart:io';
-
 import 'package:design/design.dart';
 import 'package:design/widgets/app_bottom_sheet.dart';
 import 'package:design/widgets/app_text_button.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/time_format/time_format_notifier.dart';
 import 'package:taskify/domain/entities/task_duration_type.dart';
@@ -56,45 +53,7 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
     SelectTaskNotifier notifier,
     DateTime initialDate,
   ) async {
-    if (Platform.isIOS) {
-      DateTime selected = initialDate;
-      await showCupertinoModalPopup<void>(
-        context: context,
-        builder: (context) {
-          return Container(
-            height: 320,
-            padding: const EdgeInsets.only(top: 8),
-            color: AppColorExtensions.getBackgroundColor(context),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: AppTextButton(
-                    text: 'Done',
-                    onPressed: () {
-                      notifier.selectDate(selected);
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: CupertinoDatePicker(
-                    mode: CupertinoDatePickerMode.date,
-                    initialDateTime: initialDate,
-                    onDateTimeChanged: (date) {
-                      selected = date;
-                    },
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-      return;
-    }
-
-    final picked = await showDatePicker(
+    final picked = await AppDateTimePicker.pickDate(
       context: context,
       initialDate: initialDate,
       firstDate: DateTime(2000),
@@ -127,19 +86,11 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
     bool use24Hour,
   ) async {
     TalkerService.instance.info('use24Hour: $use24Hour');
-    final picked = await showTimePicker(
+    final picked = await AppDateTimePicker.pickTime(
       context: context,
       initialTime: initialTime ?? TimeOfDay.now(),
-      builder: (context, child) {
-        return Localizations.override(
-          context: context,
-          locale: const Locale('en', 'US'),
-          child: MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: use24Hour),
-            child: child!,
-          ),
-        );
-      },
+      use24hFormat: use24Hour,
+      localeOverride: const Locale('en', 'US'),
     );
     if (picked != null) {
       notifier.selectStartTime(picked);
@@ -153,19 +104,11 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
     bool use24Hour,
   ) async {
     TalkerService.instance.info('use24Hour: $use24Hour');
-    final picked = await showTimePicker(
+    final picked = await AppDateTimePicker.pickTime(
       context: context,
       initialTime: initialTime ?? TimeOfDay.now(),
-      builder: (context, child) {
-        return Localizations.override(
-          context: context,
-          locale: const Locale('en', 'US'),
-          child: MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: use24Hour),
-            child: child!,
-          ),
-        );
-      },
+      use24hFormat: use24Hour,
+      localeOverride: const Locale('en', 'US'),
     );
     if (picked != null) {
       notifier.selectEndTime(picked);

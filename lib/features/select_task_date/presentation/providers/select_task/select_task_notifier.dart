@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taskify/domain/entities/task_duration_type.dart';
 import 'package:taskify/features/select_task_date/presentation/providers/select_task/select_task_state.dart';
 
-final selectTaskNotifierProvider = NotifierProvider.family<
+final selectTaskNotifierProvider = NotifierProvider.autoDispose.family<
   SelectTaskNotifier,
   SelectTaskState,
   (DateTime?, TaskDurationType?, TimeOfDay?, TimeOfDay?)
@@ -35,6 +35,7 @@ class SelectTaskNotifier extends Notifier<SelectTaskState> {
     final isPeriod = resolvedDurationType == TaskDurationType.period;
     final defaultStartTime = const TimeOfDay(hour: 9, minute: 0);
     final defaultEndTime = const TimeOfDay(hour: 10, minute: 0);
+
     return SelectTaskState(
       selectedDate: selectedDate ?? DateTime.now(),
       durationType: resolvedDurationType,

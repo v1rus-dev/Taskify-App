@@ -4,7 +4,7 @@ class AppConfigurationsTable extends Table {
   static const int defaultId = 0;
 
   IntColumn get id =>
-      integer().withDefault(const Constant(defaultId))();
+      integer().withDefault(const Constant(AppConfigurationsTable.defaultId))();
   BoolColumn get use24Hour => boolean().withDefault(const Constant(true))();
 
   @override

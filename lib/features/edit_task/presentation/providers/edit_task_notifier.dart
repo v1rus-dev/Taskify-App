@@ -11,7 +11,7 @@ import 'package:taskify/features/home/domain/usecases/update_task.dart';
 import 'package:taskify/domain/entities/task.dart';
 
 final editTaskNotifierProvider =
-    NotifierProvider.family<EditTaskNotifier, EditTaskState, int?>(
+    NotifierProvider.autoDispose.family<EditTaskNotifier, EditTaskState, int?>(
       (int? taskId) => EditTaskNotifier(
         taskId: taskId,
         getTaskById: locator<GetTaskById>(),
@@ -43,6 +43,7 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
     if (taskId != null) {
       _getTaskById(taskId: taskId!);
     }
+    TalkerService.instance.info('EditTaskNotifier build');
     return EditTaskState(
       taskId: taskId,
       selectedDate: DateTime.now(),

@@ -6,6 +6,7 @@ import 'package:taskify/data/api/api_di.dart';
 import 'package:taskify/features/home/data/home_di.dart';
 import 'package:taskify/core/services/dio_client.dart';
 import 'package:taskify/core/auth/access_token_provider.dart';
+import 'package:taskify/features/edit_task/data/edit_task_di.dart';
 
 final locator = GetIt.instance;
 
@@ -24,6 +25,7 @@ Future<void> initDatabase(AppDatabase appDatabase) async {
 Future<void> initRepositories() async {
   initHomeDependencies();
   initAuthDependencies();
+  initEditTaskDependencies();
 }
 
 Future<void> initDio() async {

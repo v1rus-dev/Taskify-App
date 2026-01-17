@@ -1,59 +1,63 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dart_either/dart_either.dart';
+import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/services/locator.dart';
+import 'package:taskify/features/edit_task/domain/entities/sub_task.dart';
 import 'package:taskify/features/edit_task/presentation/providers/edit_task_state.dart';
-import 'package:taskify/features/home/domain/usecases/create_task.dart';
-import 'package:taskify/features/home/domain/usecases/delete_task.dart';
-import 'package:taskify/features/home/domain/usecases/get_task_by_id.dart';
-import 'package:taskify/features/home/domain/usecases/update_task.dart';
+import 'package:taskify/features/edit_task/presentation/models/sub_task_ui_model.dart';
+import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
+import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 import 'package:taskify/domain/entities/task.dart';
 
 final editTaskNotifierProvider =
     NotifierProvider.autoDispose.family<EditTaskNotifier, EditTaskState, int?>(
       (int? taskId) => EditTaskNotifier(
         taskId: taskId,
-        getTaskById: locator<GetTaskById>(),
-        createTask: locator<CreateTask>(),
-        updateTask: locator<UpdateTask>(),
-        deleteTask: locator<DeleteTask>(),
+        taskInteractor: locator<TaskInteractor>(),
+        subTaskInteractor: locator<SubTaskInteractor>(),
       ),
     );
 
 class EditTaskNotifier extends Notifier<EditTaskState> {
   EditTaskNotifier({
     required this.taskId,
-    required this.getTaskById,
-    required this.createTask,
-    required this.updateTask,
-    required this.deleteTask,
+    required this.taskInteractor,
+    required this.subTaskInteractor,
   }) : super() {
     TalkerService.instance.info('EditTaskNotifier initialized');
   }
 
   final int? taskId;
-  final GetTaskById getTaskById;
-  final CreateTask createTask;
-  final UpdateTask updateTask;
-  final DeleteTask deleteTask;
+  final TaskInteractor taskInteractor;
+  final SubTaskInteractor subTaskInteractor;
+  DateTime? _createdAt;
+  List<int> _initialSubTaskIds = const [];
 
   @override
   EditTaskState build() {
-    if (taskId != null) {
-      _getTaskById(taskId: taskId!);
-    }
     TalkerService.instance.info('EditTaskNotifier build');
-    return EditTaskState(
+    final initialState = EditTaskState(
       taskId: taskId,
       selectedDate: DateTime.now(),
       isAllDay: true,
     );
+    
+    if (taskId != null) {
+      Future.microtask(() {
+        _getTaskById(taskId: taskId!);
+        _loadSubTasks(taskId: taskId!);
+      });
+    }
+    
+    return initialState;
   }
 
   void onDeleteTask({required int taskId, required Completer completer}) async {
     TalkerService.instance.info('Delete task: $taskId');
-    final result = await deleteTask.call(taskId);
+    final result = await taskInteractor.deleteTask(taskId);
     result.fold(
       ifLeft: (failure) => TalkerService.instance.error(failure.message),
       ifRight: (_) => {
@@ -71,7 +75,7 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
     TalkerService.instance.info('Save task: $title $description');
     final now = DateTime.now();
     final selectedDate = state.selectedDate ?? now;
-    final createdAt = state.createdAt ?? now;
+    final createdAt = _createdAt ?? now;
     final updatedAt = taskId != null ? now : null;
     final task = TaskEntity(
       id: taskId,
@@ -87,16 +91,27 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
       updatedAt: updatedAt,
     );
     final result = taskId == null
-        ? await createTask.call(task)
-        : await updateTask.call(task);
+        ? await taskInteractor.createTask(task)
+        : await taskInteractor.updateTask(task);
     result.fold(
       ifLeft: (failure) => {
         TalkerService.instance.error(failure.message),
         completer.completeError(failure),
       },
-      ifRight: (task) => {
-        TalkerService.instance.info('Task saved: ${task.id}'),
-        completer.complete(),
+      ifRight: (savedTask) async {
+        final subTaskResult = await _saveSubTasks(taskId: savedTask.id);
+        Failure? subTaskFailure;
+        subTaskResult.fold(
+          ifLeft: (left) => subTaskFailure = left,
+          ifRight: (_) {},
+        );
+        if (subTaskFailure != null) {
+          TalkerService.instance.error(subTaskFailure!.message);
+          completer.completeError(subTaskFailure!);
+          return;
+        }
+        TalkerService.instance.info('Task saved: ${savedTask.id}');
+        completer.complete();
       },
     );
   }
@@ -118,11 +133,12 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
   }
 
   void _getTaskById({required int taskId}) async {
-    final result = await getTaskById.call(taskId);
+    final result = await taskInteractor.getTaskById(taskId);
     result.fold(
       ifLeft: (failure) => TalkerService.instance.error(failure.message),
       ifRight: (task) => {
         TalkerService.instance.info('Task: ${task.id}'),
+        _createdAt = task.createdAt,
         state = state.copyWith(
           title: task.title,
           description: task.description ?? '',
@@ -132,10 +148,163 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
           startTime: task.startTime,
           endTime: task.endTime,
           isAllDay: task.isAllDay,
-          createdAt: task.createdAt,
-          updatedAt: task.updatedAt,
         ),
       },
     );
+  }
+
+  void _loadSubTasks({required int taskId}) async {
+    final result = await subTaskInteractor.getSubTasksByTaskId(taskId);
+    result.fold(
+      ifLeft: (failure) => TalkerService.instance.error(failure.message),
+      ifRight: (subTasks) => {
+        _initialSubTaskIds = subTasks
+            .map((subTask) => subTask.id)
+            .whereType<int>()
+            .toList(),
+        state = state.copyWith(
+          subTasks: subTasks
+              .map(
+                (subTask) => SubTaskUiModel(
+                  id: subTask.id,
+                  title: subTask.title,
+                  isCompleted: subTask.isCompleted,
+                ),
+              )
+              .toList(),
+        ),
+      },
+    );
+  }
+
+  Future<Either<Failure, void>> _saveSubTasks({required int? taskId}) async {
+    if (taskId == null) {
+      return const Left(ValidationFailure('Task id is required'));
+    }
+
+    final uiSubTasks = state.subTasks
+        .map((subTask) => subTask.title.trim().isEmpty
+            ? null
+            : subTask)
+        .whereType<SubTaskUiModel>()
+        .toList();
+
+    final existing = uiSubTasks
+        .where((subTask) => subTask.id != null)
+        .map(
+          (subTask) => SubTaskEntity(
+            id: subTask.id,
+            taskId: taskId,
+            title: subTask.title,
+            isCompleted: subTask.isCompleted,
+          ),
+        )
+        .toList();
+
+    final created = uiSubTasks
+        .where((subTask) => subTask.id == null)
+        .map(
+          (subTask) => SubTaskEntity(
+            taskId: taskId,
+            title: subTask.title,
+            isCompleted: subTask.isCompleted,
+          ),
+        )
+        .toList();
+
+    if (existing.isNotEmpty) {
+      final updateResult = await subTaskInteractor.updateSubTasks(existing);
+      Failure? updateFailure;
+      updateResult.fold(
+        ifLeft: (left) => updateFailure = left,
+        ifRight: (_) {},
+      );
+      if (updateFailure != null) {
+        return Left(updateFailure!);
+      }
+    }
+
+    if (created.isNotEmpty) {
+      final insertResult = await subTaskInteractor.insertSubTasks(created);
+      Failure? insertFailure;
+      insertResult.fold(
+        ifLeft: (left) => insertFailure = left,
+        ifRight: (_) {},
+      );
+      if (insertFailure != null) {
+        return Left(insertFailure!);
+      }
+    }
+
+    final currentIds = existing
+        .map((subTask) => subTask.id)
+        .whereType<int>()
+        .toSet();
+    final removedIds = _initialSubTaskIds
+        .where((id) => !currentIds.contains(id))
+        .toList();
+    if (removedIds.isNotEmpty) {
+      final removeResult =
+          await subTaskInteractor.removeSubTasks(removedIds);
+      Failure? removeFailure;
+      removeResult.fold(
+        ifLeft: (left) => removeFailure = left,
+        ifRight: (_) {},
+      );
+      if (removeFailure != null) {
+        return Left(removeFailure!);
+      }
+    }
+
+    _initialSubTaskIds = currentIds.toList();
+    return const Right(null);
+  }
+
+  void onSubTaskTextChanged({required int index, required String text}) {
+    final current = state.subTasks;
+    if (index < current.length) {
+      final updated = [...current];
+      final existing = updated[index];
+      updated[index] = SubTaskUiModel(
+        id: existing.id,
+        title: text,
+        isCompleted: existing.isCompleted,
+      );
+      state = state.copyWith(subTasks: updated);
+      return;
+    }
+
+    if (index == current.length && text.isNotEmpty) {
+      state = state.copyWith(
+        subTasks: [
+          ...current,
+          SubTaskUiModel(id: null, title: text, isCompleted: false),
+        ],
+      );
+    }
+  }
+
+  void onSubTaskToggle({required int index}) {
+    final current = state.subTasks;
+    if (index >= current.length) {
+      return;
+    }
+    final updated = [...current];
+    final existing = updated[index];
+    updated[index] = SubTaskUiModel(
+      id: existing.id,
+      title: existing.title,
+      isCompleted: !existing.isCompleted,
+    );
+    state = state.copyWith(subTasks: updated);
+  }
+
+  void onSubTaskRemoved({required int index}) {
+    final current = state.subTasks;
+    if (index >= current.length) {
+      return;
+    }
+    final updated = [...current]..removeAt(index);
+    state = state.copyWith(subTasks: updated);
   }
 }

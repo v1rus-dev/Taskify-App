@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:taskify/features/edit_task/presentation/models/sub_task_ui_model.dart';
 
 part 'edit_task_state.freezed.dart';
 
@@ -14,7 +15,6 @@ abstract class EditTaskState with _$EditTaskState {
     DateTime? startTime,
     DateTime? endTime,
     @Default(true) bool isAllDay,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    @Default([]) List<SubTaskUiModel> subTasks,
   }) = _EditTaskState;
 }

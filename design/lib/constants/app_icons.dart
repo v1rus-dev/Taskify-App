@@ -15,4 +15,6 @@ class AppIcons {
   static const String apple = 'assets/icons/ic_apple.svg';
   static const String google = 'assets/icons/ic_google.svg';
   static const String logout = 'assets/icons/ic_log_out.svg';
+  static const String subtaskCheckBoxEmpty = 'assets/icons/ic_subtask_check_box_empty.svg';
+  static const String subtaskCheckBoxChecked = 'assets/icons/ic_subtask_check_box_checked.svg';
 }

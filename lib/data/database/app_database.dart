@@ -6,16 +6,22 @@ import 'package:path/path.dart' as p;
 import 'package:taskify/data/database/tables/app_configurations_table.dart';
 import 'package:taskify/data/database/tables/tasks_table.dart';
 import 'package:taskify/data/database/tables/subtasks_table.dart';
+import 'package:taskify/data/database/tables/users_table.dart';
 import 'package:taskify/core/services/talker_service.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [TasksTable, SubtasksTable, AppConfigurationsTable])
+@DriftDatabase(tables: [
+  TasksTable,
+  SubtasksTable,
+  AppConfigurationsTable,
+  UsersTable,
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
@@ -29,6 +35,9 @@ class AppDatabase extends _$AppDatabase {
         
         if (from < 2) {
           await m.createTable(appConfigurationsTable);
+        }
+        if (from < 3) {
+          await m.createTable(usersTable);
         }
       },
     );

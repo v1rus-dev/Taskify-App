@@ -5,11 +5,13 @@ import 'package:taskify/data/auth/auth_di.dart';
 import 'package:taskify/data/api/api_di.dart';
 import 'package:taskify/features/home/data/home_di.dart';
 import 'package:taskify/core/services/dio_client.dart';
+import 'package:taskify/core/auth/access_token_provider.dart';
 
 final locator = GetIt.instance;
 
 Future<void> initServiceLocator(AppDatabase appDatabase) async {
   await initDatabase(appDatabase);
+  initAuthStorageDependencies();
   await initDio();
   initApiDependencies();
   await initRepositories();
@@ -25,5 +27,8 @@ Future<void> initRepositories() async {
 }
 
 Future<void> initDio() async {
-  locator.registerSingleton(DioClient());
+  final tokenHandler = locator.isRegistered<AuthTokenHandler>()
+      ? locator<AuthTokenHandler>()
+      : null;
+  locator.registerSingleton(DioClient(authTokenHandler: tokenHandler));
 }

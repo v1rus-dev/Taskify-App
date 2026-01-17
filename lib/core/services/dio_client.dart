@@ -6,15 +6,16 @@ import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/network/api_result.dart';
 import 'package:taskify/core/utils/api_config.dart';
 import 'package:taskify/core/services/talker_service.dart';
+import 'package:taskify/core/auth/access_token_provider.dart';
+import 'dart:async';
 
 class DioClient {
-  DioClient() : _dio = _buildDio();
+  DioClient({AuthTokenHandler? authTokenHandler})
+      : _dio = _buildDio(authTokenHandler);
 
   final Dio _dio;
 
-  Dio get dio => _dio;
-
-  static Dio _buildDio() {
+  static Dio _buildDio(AuthTokenHandler? authTokenHandler) {
     if (apiBaseUrl.isEmpty) {
       throw StateError('API_BASE_URL is not set');
     }
@@ -42,6 +43,17 @@ class DioClient {
     );
 
     return dio;
+  }
+
+  static Dio _buildRawDio() {
+    return Dio(
+      BaseOptions(
+        baseUrl: apiBaseUrl,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        sendTimeout: const Duration(seconds: 10),
+      ),
+    );
   }
 
   Future<ApiResult<T>> post<T>({

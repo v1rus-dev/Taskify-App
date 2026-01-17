@@ -1,6 +1,7 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/dio_client.dart';
+import 'package:taskify/data/auth/models/auth_tokens_model.dart';
 
 class AuthApi {
   AuthApi(this._client);
@@ -19,6 +20,20 @@ class AuthApi {
         'id_token': idToken,
       },
       parser: parser,
+    );
+  }
+
+  Future<Either<Failure, AuthTokensModel>> refresh({
+    required String refreshToken,
+  }) {
+    return _client.post(
+      path: 'auth/refresh',
+      data: {
+        'refresh_token': refreshToken,
+      },
+      parser: (data) => AuthTokensModel.fromJson(
+        data as Map<String, dynamic>,
+      ),
     );
   }
 }

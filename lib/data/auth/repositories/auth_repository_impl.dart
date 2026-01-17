@@ -7,6 +7,9 @@ import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/utils/auth_config.dart';
 import 'package:taskify/data/api/auth_api.dart';
+import 'package:taskify/data/auth/models/auth_response_model.dart';
+import 'package:taskify/data/auth/sources/auth_local_data_source.dart';
+import 'package:taskify/data/auth/sources/auth_token_storage.dart';
 import 'package:taskify/domain/auth/models/auth_providers.dart';
 import 'package:taskify/domain/auth/models/auth_session.dart';
 import 'package:taskify/domain/auth/repositories/auth_repository.dart';
@@ -15,8 +18,14 @@ class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   final AuthApi authApi;
+  final AuthLocalDataSource authLocalDataSource;
+  final AuthTokenStorage authTokenStorage;
 
-  AuthRepositoryImpl({required this.authApi});
+  AuthRepositoryImpl({
+    required this.authApi,
+    required this.authLocalDataSource,
+    required this.authTokenStorage,
+  });
 
   bool _isGoogleSignInInitialized = false;
 
@@ -96,16 +105,50 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(const ServerFailure('Missing id token'));
       }
 
-      final authResult = await authApi.authenticate<void>(
+      final authResult = await authApi.authenticate<AuthResponseModel>(
         provider: provider.name,
         idToken: idToken,
-        parser: (_) => null,
+        parser: (data) => AuthResponseModel.fromJson(
+          data as Map<String, dynamic>,
+        ),
       );
 
-      return authResult.fold(
-        ifLeft: (failure) => Left(failure),
-        ifRight: (_) => Right(session),
+      Failure? failure;
+      AuthResponseModel? response;
+      authResult.fold(
+        ifLeft: (left) => failure = left,
+        ifRight: (right) => response = right,
       );
+      if (failure != null) {
+        return Left(failure!);
+      }
+
+      final tokenResult =
+          await authTokenStorage.saveTokens(
+            accessToken: response!.accessToken,
+            refreshToken: response!.refreshToken,
+          );
+      Failure? tokenFailure;
+      tokenResult.fold(
+        ifLeft: (left) => tokenFailure = left,
+        ifRight: (_) {},
+      );
+      if (tokenFailure != null) {
+        return Left(tokenFailure!);
+      }
+
+      final saveUserResult =
+          await authLocalDataSource.saveUser(response!.user.toEntity());
+      Failure? saveUserFailure;
+      saveUserResult.fold(
+        ifLeft: (left) => saveUserFailure = left,
+        ifRight: (_) {},
+      );
+      if (saveUserFailure != null) {
+        return Left(saveUserFailure!);
+      }
+
+      return Right(session);
     } catch (e) {
       TalkerService.instance.error('Sign-in failed', e);
       return Left(ServerFailure(e.toString()));
@@ -184,6 +227,8 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       await _googleSignIn.signOut();
       await _auth.signOut();
+      await authTokenStorage.clearTokens();
+      await authLocalDataSource.clearUser();
       return Right(null);
     } catch (e) {
       TalkerService.instance.error('Sign-out failed', e);

@@ -4,20 +4,18 @@ import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/domain/entities/tasks_view_type.dart';
 import 'package:taskify/domain/entities/task.dart';
-import 'package:taskify/features/home/domain/usecases/observe_tasks.dart';
-import 'package:taskify/features/home/domain/usecases/update_task.dart';
+import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 import 'package:taskify/features/home/presentation/providers/home_screen_state.dart';
 
 final homeScreenNotifierProvider =
     NotifierProvider<HomeScreenNotifier, HomeScreenState>(
-  () => HomeScreenNotifier(observeTasks: locator<ObserveTasks>(), updateTask: locator<UpdateTask>()),
+  () => HomeScreenNotifier(taskInteractor: locator<TaskInteractor>()),
 );
 
 class HomeScreenNotifier extends Notifier<HomeScreenState> {
-  HomeScreenNotifier({required this.observeTasks, required this.updateTask}) : super();
+  HomeScreenNotifier({required this.taskInteractor}) : super();
 
-  final ObserveTasks observeTasks;
-  final UpdateTask updateTask;
+  final TaskInteractor taskInteractor;
   StreamSubscription<List<TaskEntity>>? _tasksSubscription;
   List<TaskEntity> _allTasks = const [];
 
@@ -61,7 +59,8 @@ class HomeScreenNotifier extends Notifier<HomeScreenState> {
   }
 
   void updateTaskCompletion(TaskEntity task) async {
-    final result = await updateTask.call(task.copyWith(isCompleted: !task.isCompleted));
+    final result =
+        await taskInteractor.updateTask(task.copyWith(isCompleted: !task.isCompleted));
     result.fold(
       ifLeft: (failure) => TalkerService.instance.error(failure.message),
       ifRight: (task) => TalkerService.instance.info('Task updated: ${task.id}'),
@@ -69,7 +68,7 @@ class HomeScreenNotifier extends Notifier<HomeScreenState> {
   }
 
   void _observeTasks() {
-    _tasksSubscription = observeTasks.call().listen((tasks) {
+    _tasksSubscription = taskInteractor.observeTasks().listen((tasks) {
       _allTasks = tasks;
       TalkerService.instance.info('Tasks: ${tasks.length}');
       state = state.copyWith(tasks: _filterTasksByDate(tasks, state.selectedDate));

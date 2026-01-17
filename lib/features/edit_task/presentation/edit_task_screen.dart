@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:design/design.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,8 @@ import 'package:taskify/features/edit_task/presentation/providers/edit_task_noti
 import 'package:taskify/features/edit_task/presentation/providers/edit_task_state.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_app_bar.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_bottom_part.dart';
+import 'package:taskify/features/edit_task/presentation/widgets/edit_task_tags_part.dart';
+import 'package:taskify/features/edit_task/presentation/widgets/sub_task_part.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
 class EditTaskScreen extends ConsumerStatefulWidget {
@@ -57,8 +60,19 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
     }
   }
 
+  void _onTitleSubmitted(
+    BuildContext context,
+    String value,
+    FocusNode descriptionFocusNode,
+  ) {
+    if (titleController.text.isNotEmpty) {
+      descriptionFocusNode.requestFocus();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final state = ref.watch(editTaskNotifierProvider(widget.taskId));
     final notifier = ref.read(editTaskNotifierProvider(widget.taskId).notifier);
 
@@ -69,22 +83,23 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
       descriptionController.text = state.description;
     }
 
-    ref.listen<EditTaskState>(
-      editTaskNotifierProvider(widget.taskId),
-      (previous, next) {
-        if (previous != next) {
-          if (next.title.isNotEmpty && 
-              (titleController.text.isEmpty || titleController.text != next.title)) {
-            titleController.text = next.title;
-          }
-          if (next.description.isNotEmpty &&
-              (descriptionController.text.isEmpty || 
-               descriptionController.text != next.description)) {
-            descriptionController.text = next.description;
-          }
+    ref.listen<EditTaskState>(editTaskNotifierProvider(widget.taskId), (
+      previous,
+      next,
+    ) {
+      if (previous != next) {
+        if (next.title.isNotEmpty &&
+            (titleController.text.isEmpty ||
+                titleController.text != next.title)) {
+          titleController.text = next.title;
         }
-      },
-    );
+        if (next.description.isNotEmpty &&
+            (descriptionController.text.isEmpty ||
+                descriptionController.text != next.description)) {
+          descriptionController.text = next.description;
+        }
+      }
+    });
 
     final mediaQuery = MediaQuery.of(context);
     final bottomPadding = mediaQuery.viewInsets.bottom;
@@ -92,6 +107,7 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
+      appBar: EditTaskAppBar(taskId: widget.taskId),
       bottomNavigationBar: AnimatedPadding(
         duration: const Duration(milliseconds: 100),
         padding: EdgeInsets.only(bottom: bottomPadding),
@@ -120,7 +136,6 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
       ),
       body: Column(
         children: [
-          EditTaskAppBar(taskId: widget.taskId),
           Expanded(
             child: SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
@@ -129,15 +144,21 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Gap(32),
+                    const Gap(20),
                     TextField(
                       controller: titleController,
                       focusNode: titleFocusNode,
                       maxLines: null,
                       maxLength: 155,
                       maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                      style: Theme.of(context).textTheme.headlineLarge
-                          ?.copyWith(fontWeight: FontWeight.w500),
+                      style: theme.textTheme.headlineLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColorExtensions.getTextPrimaryColor(context),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onSubmitted: (value) {
+                        _onTitleSubmitted(context, value, descriptionFocusNode);
+                      },
                       decoration: InputDecoration(
                         hintText:
                             AppLocalizations.of(context)?.writeANewTask ?? '',
@@ -146,74 +167,63 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
                         isCollapsed: true,
                         contentPadding: EdgeInsets.zero,
                         counterText: '',
-                        hintStyle: Theme.of(context).textTheme.headlineLarge
-                            ?.copyWith(
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF121212).withValues(alpha: 0.4),
-                            ),
+                        hintStyle: theme.textTheme.headlineLarge?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: AppColorExtensions.getTextSecondaryColor(
+                            context,
+                          ),
+                        ),
                       ),
                     ),
                     ValueListenableBuilder<TextEditingValue>(
                       valueListenable: titleController,
                       builder: (context, value, child) {
                         final shouldShow = value.text.isNotEmpty;
-                        return AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          transitionBuilder:
-                              (Widget child, Animation<double> animation) {
-                                return FadeTransition(
-                                  opacity: animation,
-                                  child: child,
-                                );
-                              },
-                          child: shouldShow
-                              ? Column(
-                                  key: const ValueKey('desc_fields_shown'),
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Gap(32),
-                                    TextField(
-                                      controller: descriptionController,
-                                      focusNode: descriptionFocusNode,
-                                      maxLines: null,
-                                      style: Theme.of(context)
+                        return shouldShow
+                            ? Column(
+                                key: const ValueKey('desc_fields_shown'),
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Gap(24),
+                                  TextField(
+                                    controller: descriptionController,
+                                    focusNode: descriptionFocusNode,
+                                    maxLines: null,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          fontSize: 20,
+                                          color: AppColorExtensions.getTextPrimaryColor(context),
+                                        ),
+                                    decoration: InputDecoration(
+                                      hintText:
+                                          AppLocalizations.of(
+                                            context,
+                                          )?.description ??
+                                          '',
+                                      border: InputBorder.none,
+                                      filled: false,
+                                      isCollapsed: true,
+                                      contentPadding: EdgeInsets.zero,
+                                      hintStyle: Theme.of(context)
                                           .textTheme
                                           .bodyMedium
                                           ?.copyWith(
                                             fontSize: 20,
-                                            color: Color(
-                                              0xFF121212,
-                                            ).withValues(alpha: 0.8),
+                                            color: AppColorExtensions.getTextSecondaryColor(context),
                                           ),
-                                      decoration: InputDecoration(
-                                        hintText:
-                                            AppLocalizations.of(
-                                              context,
-                                            )?.description ??
-                                            '',
-                                        border: InputBorder.none,
-                                        filled: false,
-                                        isCollapsed: true,
-                                        contentPadding: EdgeInsets.zero,
-                                        hintStyle: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.copyWith(
-                                              fontSize: 20,
-                                              color: Color(
-                                                0xFF121212,
-                                              ).withValues(alpha: 0.4),
-                                            ),
-                                      ),
                                     ),
-                                  ],
-                                )
-                              : const SizedBox.shrink(
-                                  key: ValueKey('desc_fields_hidden'),
-                                ),
-                        );
+                                  ),
+                                  const Gap(24),
+                                  SubTaskPart(taskId: widget.taskId),
+                                ],
+                              )
+                            : const SizedBox.shrink();
                       },
                     ),
+                    const Gap(24),
+                    EditTaskTagsPart(taskId: widget.taskId),
                   ],
                 ),
               ),

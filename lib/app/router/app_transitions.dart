@@ -25,17 +25,9 @@ class BottomUpTransitionPage<T> extends Page<T> {
           end: Offset.zero,
         ).animate(curvedAnimation);
 
-        final fadeAnimation = Tween<double>(
-          begin: 0.0,
-          end: 1.0,
-        ).animate(curvedAnimation);
-
-        return FadeTransition(
-          opacity: fadeAnimation,
-          child: SlideTransition(
-            position: slideAnimation,
-            child: child,
-          ),
+        return SlideTransition(
+          position: slideAnimation,
+          child: child,
         );
       },
       transitionDuration: const Duration(milliseconds: 350),

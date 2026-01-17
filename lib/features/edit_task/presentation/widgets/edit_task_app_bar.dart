@@ -7,10 +7,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taskify/features/edit_task/presentation/providers/edit_task_notifier.dart';
 
-class EditTaskAppBar extends ConsumerWidget {
+class EditTaskAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const EditTaskAppBar({super.key, required this.taskId});
 
   final int? taskId;
+
+  @override
+  Size get preferredSize {
+    return const Size.fromHeight(96);
+  }
 
   void _onClose(BuildContext context) {
     context.pop();
@@ -53,29 +58,33 @@ class EditTaskAppBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaQuery = MediaQuery.of(context);
     final safeAreaTop = mediaQuery.padding.top;
+    final preferredHeight = safeAreaTop + 16.0 + 36.0 + 16.0;
 
-    return Container(
-      padding: EdgeInsets.only(
-        top: safeAreaTop + 16.0,
-        left: 12,
-        right: 12,
-        bottom: 16.0,
-      ),
-      decoration: BoxDecoration(color: Colors.white),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _buildIconButton(
-            iconPath: AppIcons.close,
-            onPressed: () => _onClose(context),
-          ),
-          if (taskId != null)
+    return PreferredSize(
+      preferredSize: Size.fromHeight(preferredHeight),
+      child: Container(
+        padding: EdgeInsets.only(
+          top: safeAreaTop + 16.0,
+          left: 12,
+          right: 12,
+          bottom: 16.0,
+        ),
+        decoration: const BoxDecoration(color: Colors.white),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
             _buildIconButton(
-              iconPath: AppIcons.trash,
-              onPressed: () => _onDelete(context, ref),
+              iconPath: AppIcons.close,
+              onPressed: () => _onClose(context),
             ),
-        ],
+            if (taskId != null)
+              _buildIconButton(
+                iconPath: AppIcons.trash,
+                onPressed: () => _onDelete(context, ref),
+              ),
+          ],
+        ),
       ),
     );
   }

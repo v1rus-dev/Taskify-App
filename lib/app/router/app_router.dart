@@ -4,7 +4,6 @@ import 'package:taskify/app/router/router_paths.dart';
 import 'package:taskify/features/edit_task/presentation/edit_task_screen.dart';
 import 'package:taskify/features/home/presentation/screen/home_screen.dart';
 import 'package:taskify/features/settings/presentation/settings_screen.dart';
-import 'package:flutter/material.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: RouterPaths.home,

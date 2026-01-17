@@ -12,7 +12,20 @@
           "package_name": "yegor.cheprasov.taskify.android"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "707987312696-luvj2ucro24gm8c0ifrn334c79sqqk51.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "yegor.cheprasov.taskify.android",
+            "certificate_hash": "42c0fb998a6fc0845e8b930c94a62df35b074ef1"
+          }
+        },
+        {
+          "client_id": "707987312696-1t3id1vgnt8skps00r2j1kq75tuq4vei.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyC8H0uNPKMUbud8uIJXCV5SFZ3p100ooNA"
@@ -20,7 +33,63 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "707987312696-1t3id1vgnt8skps00r2j1kq75tuq4vei.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "707987312696-482bnoc3oqqvv1monn6e5vn5b1blvcn9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "yegor.cheprasov.taskify.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:707987312696:android:40d4c35d883d57895096cd",
+        "android_client_info": {
+          "package_name": "yegor.cheprasov.taskify.android.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "707987312696-nd9v1uv2mmuspapip6qsd4mlj9feqlmu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "yegor.cheprasov.taskify.android.debug",
+            "certificate_hash": "42c0fb998a6fc0845e8b930c94a62df35b074ef1"
+          }
+        },
+        {
+          "client_id": "707987312696-1t3id1vgnt8skps00r2j1kq75tuq4vei.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8H0uNPKMUbud8uIJXCV5SFZ3p100ooNA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "707987312696-1t3id1vgnt8skps00r2j1kq75tuq4vei.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "707987312696-482bnoc3oqqvv1monn6e5vn5b1blvcn9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "yegor.cheprasov.taskify.ios"
+              }
+            }
+          ]
         }
       }
     }

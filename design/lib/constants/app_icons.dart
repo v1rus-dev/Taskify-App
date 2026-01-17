@@ -12,4 +12,6 @@ class AppIcons {
   static const String circle = 'assets/icons/ic_circle.svg';
   static const String fillChecked = 'assets/icons/ic_fill_checked.svg';
   static const String arrowRightSmall = 'assets/icons/ic_arrow_right_small.svg';
+  static const String apple = 'assets/icons/ic_apple.svg';
+  static const String google = 'assets/icons/ic_google.svg';
 }

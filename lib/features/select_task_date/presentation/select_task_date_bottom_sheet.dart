@@ -1,6 +1,4 @@
 import 'package:design/design.dart';
-import 'package:design/widgets/app_bottom_sheet.dart';
-import 'package:design/widgets/app_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';

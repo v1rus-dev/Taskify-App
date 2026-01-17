@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/domain/entities/time_format_type.dart';
-import 'package:taskify/features/settings/providers/settings_notifier.dart';
+import 'package:taskify/features/settings/providers/settings/settings_notifier.dart';
 
 class SelectTimeFormatBottomSheet extends ConsumerWidget {
   const SelectTimeFormatBottomSheet({super.key});

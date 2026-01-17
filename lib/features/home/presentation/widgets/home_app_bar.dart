@@ -1,5 +1,4 @@
 import 'package:design/constants/app_icons.dart';
-import 'package:design/themes/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';

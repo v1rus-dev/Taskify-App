@@ -5,7 +5,7 @@ import 'package:taskify/data/interactors/app_configuration_interactor.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/data/database/app_database.dart';
 import 'package:taskify/domain/entities/time_format_type.dart';
-import 'package:taskify/features/settings/providers/settings_state.dart';
+import 'package:taskify/features/settings/providers/settings/settings_state.dart';
 
 final settingsNotifierProvider =
     NotifierProvider<SettingsNotifier, SettingsState>(

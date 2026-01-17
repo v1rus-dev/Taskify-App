@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 import 'package:taskify/app/router/app_router.dart';
+import 'package:taskify/core/auth/auth_notifier.dart';
 import 'package:taskify/core/theme/theme_notifier.dart';
 
 class TaskifyApp extends ConsumerWidget {
@@ -11,6 +12,7 @@ class TaskifyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(authNotifierProvider);
     final themeState = ref.watch(themeNotifierProvider);
     WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
         () {

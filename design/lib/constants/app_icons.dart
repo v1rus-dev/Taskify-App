@@ -14,4 +14,5 @@ class AppIcons {
   static const String arrowRightSmall = 'assets/icons/ic_arrow_right_small.svg';
   static const String apple = 'assets/icons/ic_apple.svg';
   static const String google = 'assets/icons/ic_google.svg';
+  static const String logout = 'assets/icons/ic_log_out.svg';
 }

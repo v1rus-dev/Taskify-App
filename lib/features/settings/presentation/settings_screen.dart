@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:taskify/core/widgets/screen_app_bar.dart';
 import 'package:taskify/domain/entities/time_format_type.dart';
 import 'package:taskify/features/settings/presentation/select_time_format_bottom_sheet.dart';
+import 'package:taskify/features/settings/presentation/widgets/account_part.dart';
 import 'package:taskify/features/settings/presentation/widgets/sign_in_part.dart';
 import 'package:taskify/features/settings/providers/settings/settings_notifier.dart';
 
@@ -35,7 +36,6 @@ class SettingsScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
-                  const Gap(24),
                   const SignInPart(),
                   const Gap(24),
                   CardWithActions(
@@ -48,6 +48,7 @@ class SettingsScreen extends ConsumerWidget {
                     ],
                   ),
                   const Gap(24),
+                  AccountPart(),
                 ],
               ),
             ),

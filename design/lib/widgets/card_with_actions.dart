@@ -30,21 +30,27 @@ class _CardWithActionsState extends State<CardWithActions> {
         return const BorderRadius.vertical(bottom: Radius.circular(16));
       case _ActionPositionType.middle:
         return BorderRadius.zero;
+      case _ActionPositionType.single:
+        return BorderRadius.circular(16);
     }
   }
 
   Widget _buildAction(CardAction action, _ActionPositionType positionType) {
     final theme = Theme.of(context);
-    final trailing = action.icon != null
-        ? Icon(action.icon)
-        : Text(
-            action.description,
+    final trailing = action.description != null
+        ? Text(
+            action.description!,
             textAlign: TextAlign.right,
             style: theme.textTheme.labelLarge!.copyWith(
-              color: action.descriptionColor ?? AppColorExtensions.getTextPrimaryColor(context),
+              color:
+                  action.descriptionColor ??
+                  AppColorExtensions.getTextPrimaryColor(context),
               fontWeight: FontWeight.w700,
             ),
-          );
+          )
+        : action.icon != null
+        ? action.icon!
+        : SizedBox.shrink();
     final radius = _borderRadiusForPosition(positionType);
     return Material(
       color: Colors.transparent,
@@ -65,7 +71,7 @@ class _CardWithActionsState extends State<CardWithActions> {
                       child: Text(
                         action.title,
                         style: theme.textTheme.bodySmall!.copyWith(
-                          color: AppColorExtensions.getTextPrimaryColor(context),
+                          color: action.titleColor ?? AppColorExtensions.getTextPrimaryColor(context),
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -94,10 +100,12 @@ class _CardWithActionsState extends State<CardWithActions> {
     final children = <Widget>[];
     for (var i = 0; i < widget.actions.length; i++) {
       final positionType = i == 0
-          ? _ActionPositionType.top
+          ? widget.actions.length == 1
+          ? _ActionPositionType.single
+          : _ActionPositionType.top
           : i == widget.actions.length - 1
-              ? _ActionPositionType.bottom
-              : _ActionPositionType.middle;
+          ? _ActionPositionType.bottom
+          : _ActionPositionType.middle;
       children.add(_buildAction(widget.actions[i], positionType));
       if (i != widget.actions.length - 1) {
         children.add(
@@ -132,8 +140,4 @@ class _CardWithActionsState extends State<CardWithActions> {
   }
 }
 
-enum _ActionPositionType {
-  top,
-  middle,
-  bottom,
-}
+enum _ActionPositionType { top, middle, bottom, single }

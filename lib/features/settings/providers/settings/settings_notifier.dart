@@ -47,4 +47,6 @@ class SettingsNotifier extends Notifier<SettingsState> {
   Future<void> setTimeFormat(TimeFormatType type) async {
     return await interactor.setTimeFormat(type);
   }
+
+  Future<void> deleteAccount() async => Future.value();
 }

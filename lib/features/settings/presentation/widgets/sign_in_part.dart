@@ -21,6 +21,11 @@ class SignInPart extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authNotifier = ref.read(authNotifierProvider.notifier);
+    final authState = ref.watch(authNotifierProvider);
+
+    if (authState.session != null) {
+      return SizedBox.shrink();
+    }
 
     if (Platform.isAndroid) {
       return GoogleSignInButton(
@@ -28,18 +33,23 @@ class SignInPart extends ConsumerWidget {
       );
     }
 
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: GoogleSignInButton(
-            onPressed: () => _signInWithGoogle(authNotifier),
-          ),
-        ),
-        const Gap(16),
-        Expanded(
-          child: AppleSignInButton(
-            onPressed: () => _signInWithApple(authNotifier),
-          ),
+        const Gap(24),
+        Row(
+          children: [
+            Expanded(
+              child: GoogleSignInButton(
+                onPressed: () => _signInWithGoogle(authNotifier),
+              ),
+            ),
+            const Gap(16),
+            Expanded(
+              child: AppleSignInButton(
+                onPressed: () => _signInWithApple(authNotifier),
+              ),
+            ),
+          ],
         ),
       ],
     );

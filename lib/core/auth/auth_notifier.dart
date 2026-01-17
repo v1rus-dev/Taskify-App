@@ -61,6 +61,7 @@ class AuthNotifier extends Notifier<AuthState> {
   Future<void> _loadSession() async {
     try {
       final session = await _authRepository.getSession();
+      TalkerService.instance.info('Load session: ${session?.toString()}');
       if (session != null) {
         state = state.copyWith(session: session);
       }

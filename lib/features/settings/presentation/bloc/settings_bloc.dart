@@ -27,7 +27,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState>
     on<_Started>(_onStarted);
     on<_OnTimeFormatChanged>(_onTimeFormatChanged);
     on<_UpdateTimeFormat>(_onUpdateTimeFormat);
-    on<_OnShowLoadingDialog>(_onShowLoadingDialog);
+    on<_OnRemoveAccount>(_onRemoveAccount);
   }
 
   void _onStarted(_Started event, Emitter<SettingsState> emit) {
@@ -48,12 +48,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState>
     emit(state.copyWith(timeFormat: event.timeFormat));
   }
 
-  void _onShowLoadingDialog(
-    _OnShowLoadingDialog event,
-    Emitter<SettingsState> emit,
-  ) {
-    _sideEffectController.add(SettingsSideEffect.showLoadingDialog());
-  }
+  void _onRemoveAccount(_OnRemoveAccount event, Emitter<SettingsState> emit) {}
 
   void _observeTimeFormat() {
     _configSubscription = appConfigurationInteractor

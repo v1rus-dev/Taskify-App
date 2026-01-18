@@ -7,7 +7,7 @@ import 'package:taskify/domain/auth/repositories/auth_repository.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit(this._authRepository) : super(const AuthState()) {
-    _loadSession(); // вместо Future.microtask в build()
+    _loadSession();
   }
 
   final AuthRepository _authRepository;

@@ -5,6 +5,7 @@ import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
+import 'package:keyboard_safe/keyboard_safe.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_app_bar.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_bottom_part.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/sub_task_part.dart';
@@ -120,19 +121,17 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final mq = MediaQuery.of(context);
-    final keyboardBottom = mq.viewInsets.bottom;
-    final safeBottom = mq.padding.bottom;
-    final bottomInset = keyboardBottom > 0 ? keyboardBottom : safeBottom;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: EditTaskAppBar(taskId: widget.taskId),
-      bottomNavigationBar: AnimatedPadding(
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
-        padding: EdgeInsets.only(bottom: bottomInset),
+      bottomNavigationBar: KeyboardSafe(
+        scroll: true,
+        autoScrollToFocused: true,
+        dismissOnTapOutside: true,
+        safeArea: true,
+        keyboardAnimationDuration: const Duration(milliseconds: 120),
         child: EditTaskBottomPart(
           onSavePressed: () => _saveTask(context: context),
           onDateSelected: (d, isAllDay, start, end) {

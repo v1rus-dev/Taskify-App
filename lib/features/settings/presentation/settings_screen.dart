@@ -57,29 +57,32 @@ class SettingsScreen extends StatelessWidget {
             showDialog(
               context: context,
               barrierDismissible: false,
-              builder: (context) => Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: SizedBox(
-                      width: 28,
-                      height: 28,
-                      child: CircularProgressIndicator.adaptive(
-                        strokeWidth: 2,
+              builder: (context) {
+                return PopScope(
+                  canPop: false,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: CircularProgressIndicator.adaptive(
+                          strokeWidth: 2,
+                        ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                );
+              },
             );
           },
-          dismissLoadingDialog: () {},
+          dismissLoadingDialog: () {
+            Navigator.pop(context);
+          },
         );
       },
       child: Scaffold(

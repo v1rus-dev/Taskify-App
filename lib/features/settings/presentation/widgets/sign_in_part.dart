@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/features/settings/presentation/widgets/google_sign_in_button.dart';
 import 'package:taskify/features/settings/presentation/widgets/apple_sign_in_button.dart';
-import 'package:taskify/core/auth/auth_notifier.dart';
+import 'package:taskify/core/auth/auth_cubit.dart';
 
 class SignInPart extends StatelessWidget {
   const SignInPart({super.key});

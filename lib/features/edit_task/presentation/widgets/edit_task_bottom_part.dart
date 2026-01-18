@@ -25,7 +25,8 @@ class EditTaskBottomPart extends StatelessWidget {
     DateTime? endTime,
   ) onDateSelected;
 
-  void _onTimePressed(BuildContext context, EditTaskState state) {
+  Future<void> _onTimePressed(BuildContext context, EditTaskState state) async {
+    await _dismissKeyboard(context);
     showAppModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -38,6 +39,25 @@ class EditTaskBottomPart extends StatelessWidget {
         onSave: onDateSelected,
       ),
     );
+  }
+
+  Future<void> _dismissKeyboard(BuildContext context) async {
+    final focus = FocusManager.instance.primaryFocus;
+    if (focus != null && focus.hasFocus) {
+      focus.unfocus();
+    }
+
+    const step = Duration(milliseconds: 16);
+    const maxWait = Duration(milliseconds: 300);
+    final end = DateTime.now().add(maxWait);
+
+    while (DateTime.now().isBefore(end)) {
+      await Future.delayed(step);
+      if (!context.mounted) return;
+      if (MediaQuery.viewInsetsOf(context).bottom == 0) {
+        return;
+      }
+    }
   }
 
   @override

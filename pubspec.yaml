@@ -85,6 +85,7 @@ dependencies:
 
   # Utils
   freezed: ^3.2.3
+  keyboard_safe: ^1.0.0
 
   # Firebase
   firebase_core: ^4.3.0

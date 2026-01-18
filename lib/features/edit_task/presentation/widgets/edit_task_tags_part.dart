@@ -14,12 +14,8 @@ class EditTaskTagsPart extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<EditTaskBloc, EditTaskState>(
       builder: (context, state) {
-        final isVisible = state.maybeMap(
-          loaded: (state) => state.titleIsNotEmpty,
-          orElse: () => false,
-        );
         return AnimatedVisibility(
-          visible: isVisible,
+          visible: state.titleIsNotEmpty,
           enter:
               slideInVertically(curve: Curves.easeInOut) +
               fadeIn(curve: Curves.easeInOut),

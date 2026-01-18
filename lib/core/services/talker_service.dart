@@ -1,3 +1,5 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:talker_bloc_logger/talker_bloc_logger.dart';
 import 'package:talker/talker.dart';
 
 class TalkerService {
@@ -20,5 +22,12 @@ class TalkerService {
 
   static void init() {
     instance;
+    Bloc.observer = TalkerBlocObserver(
+      settings: TalkerBlocLoggerSettings(
+        enabled: true,
+        printChanges: true,
+        printStateFullData: true,
+      )
+    );
   }
 }

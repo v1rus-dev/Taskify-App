@@ -19,7 +19,9 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeBloc(taskInteractor: locator<TaskInteractor>()),
+      create: (context) =>
+          HomeBloc(taskInteractor: locator<TaskInteractor>())
+            ..add(const HomeEvent.started()),
       child: const HomeScreen(),
     );
   }

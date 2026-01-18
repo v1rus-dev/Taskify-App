@@ -94,11 +94,13 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   Future<void> _saveTask({required BuildContext context}) async {
     final completer = Completer<void>();
 
-    // notifier.onSaveTask(
-    //   title: titleController.text,
-    //   description: descriptionController.text,
-    //   completer: completer,
-    // );
+    context.read<EditTaskBloc>().add(
+      EditTaskEvent.saveTask(
+        completer,
+        titleController.text,
+        descriptionController.text,
+      ),
+    );
 
     try {
       await completer.future;

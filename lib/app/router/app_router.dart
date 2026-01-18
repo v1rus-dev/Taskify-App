@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taskify/app/router/app_transitions.dart';
 import 'package:taskify/app/router/router_paths.dart';
@@ -14,10 +15,14 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPaths.editTask,
-      pageBuilder: (context, state) => BottomUpTransitionPage(
-        key: state.pageKey,
-        child: EditTaskScreen(taskId: state.extra as int?),
-      ),
+      pageBuilder: (context, state) {
+        final taskId = state.extra as int?;
+        return bottomUpTransitionBuilder(
+          ValueKey('editTask-$taskId'),
+          context,
+          EditTaskScreen(taskId: taskId),
+        );
+      },
     ),
     GoRoute(
       path: RouterPaths.settings,
@@ -25,4 +30,3 @@ final GoRouter appRouter = GoRouter(
     ),
   ],
 );
-

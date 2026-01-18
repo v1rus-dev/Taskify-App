@@ -4,7 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:taskify/core/services/talker_service.dart';
-import 'package:taskify/core/time_format/time_format_notifier.dart';
+import 'package:taskify/core/providers/time_format_notifier.dart';
 import 'package:taskify/domain/entities/task_duration_type.dart';
 import 'package:taskify/core/utils/time_format_utils.dart';
 import 'package:taskify/features/select_task_date/presentation/providers/select_task/select_task_notifier.dart';

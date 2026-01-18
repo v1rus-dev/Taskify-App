@@ -40,7 +40,7 @@ class AppTextButton extends StatelessWidget {
                 child: AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 200),
                   curve: Curves.easeInOut,
-                  style: theme.textTheme.bodyLarge!.copyWith(
+                  style: theme.textTheme.bodyMedium!.copyWith(
                     color: _getTextColor(),
                   ),
                   child: Text(text, textAlign: TextAlign.center),

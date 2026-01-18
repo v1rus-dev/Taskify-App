@@ -16,9 +16,4 @@ class AuthSession {
   final String? authCode;
   final String? email;
   final String? displayName;
-
-  @override
-  String toString() {
-    return 'AuthSession(provider: $provider, uid: $uid, idToken: $idToken, authCode: $authCode, email: $email, displayName: $displayName)';
-  }
 }

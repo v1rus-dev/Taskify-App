@@ -9,13 +9,13 @@ import 'package:taskify/features/settings/providers/settings/settings_state.dart
 
 final settingsNotifierProvider =
     NotifierProvider<SettingsNotifier, SettingsState>(
-  () => SettingsNotifier(db: locator<AppDatabase>()),
-);
+      () => SettingsNotifier(db: locator<AppDatabase>()),
+    );
 
 class SettingsNotifier extends Notifier<SettingsState> {
   SettingsNotifier({required this.db})
-      : interactor = AppConfigurationInteractor(db),
-        super();
+    : interactor = AppConfigurationInteractor(db),
+      super();
 
   final AppDatabase db;
   final AppConfigurationInteractor interactor;
@@ -23,20 +23,16 @@ class SettingsNotifier extends Notifier<SettingsState> {
 
   @override
   SettingsState build() {
+
     _observeTimeFormat();
 
-    return const SettingsState(
-      timeFormat: TimeFormatType.hour24,
-    );
+    return SettingsState(timeFormat: TimeFormatType.hour24);
   }
 
-  void _observeTimeFormat() {
-    _configSubscription =
-        interactor.observeConfiguration().listen((config) {
+  void _observeTimeFormat() async {
+    _configSubscription = interactor.observeConfiguration().listen((config) {
       final timeFormat = timeFormatTypeFromBool(config?.use24Hour ?? true);
-      state = state.copyWith(
-        timeFormat: timeFormat,
-      );
+      state = state.copyWith(timeFormat: timeFormat);
     });
 
     ref.onDispose(() {

@@ -1,5 +1,5 @@
 import 'package:design/models/card_action.dart';
-import 'package:design/themes/app_color_extensions.dart';
+import 'package:design/themes/color/app_color_extensions.dart';
 import 'package:design/constants/app_icons.dart';
 import 'package:design/widgets/app_shadow.dart';
 import 'package:flutter/material.dart';

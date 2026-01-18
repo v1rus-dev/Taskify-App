@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:design/themes/app_color_extensions.dart';
+import 'package:design/themes/color/app_color_extensions.dart';
 import 'package:design/widgets/app_text_button.dart';
 
 class AppDateTimePicker {

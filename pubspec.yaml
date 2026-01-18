@@ -104,6 +104,7 @@ dependencies:
     path: design
   dart_either: ^2.0.0
   sliver_tools: ^0.2.12
+  animated_visibility: ^0.0.4
 
 dev_dependencies:
   flutter_test:

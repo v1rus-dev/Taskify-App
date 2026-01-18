@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
@@ -54,8 +55,12 @@ class HomeScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             sliver: SliverList.separated(
               separatorBuilder: (context, index) => const Gap(12),
-              itemBuilder: (context, index) =>
-                  TaskCard(task: state.tasks[index], onTaskClicked: () => _onTaskClicked(state.tasks[index]), onCheckboxPressed: () => notifier.updateTaskCompletion(state.tasks[index])),
+              itemBuilder: (context, index) => TaskCard(
+                task: state.tasks[index],
+                onTaskClicked: () => _onTaskClicked(state.tasks[index]),
+                onCheckboxPressed: () =>
+                    notifier.updateTaskCompletion(state.tasks[index]),
+              ),
               itemCount: state.tasks.length,
             ),
           ),

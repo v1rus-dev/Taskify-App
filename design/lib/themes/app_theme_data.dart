@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'app_color_scheme.dart';
-import 'app_typography_extensions.dart';
+import 'color/app_color_scheme.dart';
+import 'typography/app_typography_extensions.dart';
 import 'theme_extensions.dart';
 
 ThemeData themeFromScheme(AppColorScheme scheme) {
@@ -30,6 +30,7 @@ ThemeData themeFromScheme(AppColorScheme scheme) {
     dividerColor: scheme.divider,
     primaryColor: scheme.primaryAccent,
     textTheme: typographyExtension.textTheme,
+    textSelectionTheme: typographyExtension.textSelectionTheme,
     extensions: [
       colorSchemeExtension,
       typographyExtension,

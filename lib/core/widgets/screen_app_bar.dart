@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:design/constants/app_icons.dart';
-import 'package:design/themes/app_color_extensions.dart';
+import 'package:design/themes/color/app_color_extensions.dart';
 import 'package:design/widgets/app_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

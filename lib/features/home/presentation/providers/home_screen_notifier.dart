@@ -67,6 +67,11 @@ class HomeScreenNotifier extends Notifier<HomeScreenState> {
     );
   }
 
+  Future<void> updateTasks(Completer<void> completer) async {
+    await Future.delayed(const Duration(seconds: 3));
+    completer.complete();
+  }
+
   void _observeTasks() {
     _tasksSubscription = taskInteractor.observeTasks().listen((tasks) {
       _allTasks = tasks;

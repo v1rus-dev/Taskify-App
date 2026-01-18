@@ -26,7 +26,7 @@ class EditTaskPage extends StatelessWidget {
         taskId: taskId,
         taskInteractor: locator<TaskInteractor>(),
         subTaskInteractor: locator<SubTaskInteractor>(),
-      ),
+      )..add(const EditTaskEvent.started()),
       child: const EditTaskScreen(),
     );
   }

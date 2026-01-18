@@ -18,7 +18,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) => BlocProvider(
     create: (context) => SettingsBloc(
       appConfigurationInteractor: locator<AppConfigurationInteractor>(),
-    ),
+    )..add(const SettingsEvent.started()),
     child: const SettingsScreen(),
   );
 }

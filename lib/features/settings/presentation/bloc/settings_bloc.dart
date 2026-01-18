@@ -18,6 +18,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     : super(_SettingsState()) {
     on<_Started>(_onStarted);
     on<_TimeFormatChanged>(_onTimeFormatChanged);
+    on<_SetTimeFormat>(_onSetTimeFormat);
   }
 
   void _onStarted(_Started event, Emitter<SettingsState> emit) {
@@ -31,9 +32,16 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     emit(state.copyWith(timeFormat: event.timeFormat));
   }
 
+  void _onSetTimeFormat(
+    _SetTimeFormat event,
+    Emitter<SettingsState> emit,
+  ) {
+    appConfigurationInteractor.setTimeFormat(event.timeFormat);
+  }
+
   void _observeTimeFormat() {
     _configSubscription = appConfigurationInteractor.observeConfiguration().listen((config) {
-      emit(state.copyWith(timeFormat: timeFormatTypeFromBool(config?.use24Hour ?? true)));
+      add(SettingsEvent.setTimeFormat(timeFormatTypeFromBool(config?.use24Hour ?? true)));
     });
   }
 

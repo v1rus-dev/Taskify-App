@@ -3,6 +3,7 @@ import 'package:taskify/data/database/app_database.dart';
 import 'package:taskify/data/database/database_di.dart';
 import 'package:taskify/data/auth/auth_di.dart';
 import 'package:taskify/data/api/api_di.dart';
+import 'package:taskify/data/interactors/interactors_di.dart';
 import 'package:taskify/features/home/data/home_di.dart';
 import 'package:taskify/core/services/dio_client.dart';
 import 'package:taskify/core/auth/access_token_provider.dart';
@@ -16,6 +17,7 @@ Future<void> initServiceLocator(AppDatabase appDatabase) async {
   await initDio();
   initApiDependencies();
   await initRepositories();
+  initInteractors();
 }
 
 Future<void> initDatabase(AppDatabase appDatabase) async {

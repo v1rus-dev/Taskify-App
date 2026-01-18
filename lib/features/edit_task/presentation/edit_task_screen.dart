@@ -2,26 +2,45 @@ import 'dart:async';
 
 import 'package:animated_visibility/animated_visibility.dart';
 import 'package:design/design.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/features/edit_task/presentation/providers/edit_task_notifier.dart';
-import 'package:taskify/features/edit_task/presentation/providers/edit_task_state.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_app_bar.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_bottom_part.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/sub_task_part.dart';
 import 'package:taskify/l10n/app_localizations.dart';
+import 'package:taskify/core/services/locator.dart';
+import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
+import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taskify/features/edit_task/presentation/bloc/edit_task_bloc.dart';
 
-class EditTaskScreen extends ConsumerStatefulWidget {
+class EditTaskPage extends StatelessWidget {
+  const EditTaskPage({super.key, required this.taskId});
+  final int? taskId;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => EditTaskBloc(
+        taskId: taskId,
+        taskInteractor: locator<TaskInteractor>(),
+        subTaskInteractor: locator<SubTaskInteractor>(),
+      ),
+      child: const EditTaskScreen(),
+    );
+  }
+}
+
+class EditTaskScreen extends StatefulWidget {
   const EditTaskScreen({super.key, this.taskId});
   final int? taskId;
 
   @override
-  ConsumerState<EditTaskScreen> createState() => _EditTaskScreenState();
+  State<EditTaskScreen> createState() => _EditTaskScreenState();
 }
 
-class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
+class _EditTaskScreenState extends State<EditTaskScreen> {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final titleFocusNode = FocusNode();
@@ -31,29 +50,29 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
   void initState() {
     super.initState();
 
-    ref.listenManual<EditTaskState>(editTaskNotifierProvider(widget.taskId), (
-      previous,
-      next,
-    ) {
-      if (next.title.isNotEmpty && titleController.text != next.title) {
-        final selection = titleController.selection;
-        titleController.value = titleController.value.copyWith(
-          text: next.title,
-          selection: _clampSelection(selection, next.title),
-          composing: TextRange.empty,
-        );
-      }
+    // ref.listenManual<EditTaskState>(editTaskNotifierProvider(widget.taskId), (
+    //   previous,
+    //   next,
+    // ) {
+    //   if (next.title.isNotEmpty && titleController.text != next.title) {
+    //     final selection = titleController.selection;
+    //     titleController.value = titleController.value.copyWith(
+    //       text: next.title,
+    //       selection: _clampSelection(selection, next.title),
+    //       composing: TextRange.empty,
+    //     );
+    //   }
 
-      if (next.description.isNotEmpty &&
-          descriptionController.text != next.description) {
-        final selection = descriptionController.selection;
-        descriptionController.value = descriptionController.value.copyWith(
-          text: next.description,
-          selection: _clampSelection(selection, next.description),
-          composing: TextRange.empty,
-        );
-      }
-    });
+    //   if (next.description.isNotEmpty &&
+    //       descriptionController.text != next.description) {
+    //     final selection = descriptionController.selection;
+    //     descriptionController.value = descriptionController.value.copyWith(
+    //       text: next.description,
+    //       selection: _clampSelection(selection, next.description),
+    //       composing: TextRange.empty,
+    //     );
+    //   }
+    // });
   }
 
   static TextSelection _clampSelection(TextSelection selection, String text) {
@@ -72,17 +91,14 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
     super.dispose();
   }
 
-  Future<void> _saveTask({
-    required EditTaskNotifier notifier,
-    required BuildContext context,
-  }) async {
+  Future<void> _saveTask({required BuildContext context}) async {
     final completer = Completer<void>();
 
-    notifier.onSaveTask(
-      title: titleController.text,
-      description: descriptionController.text,
-      completer: completer,
-    );
+    // notifier.onSaveTask(
+    //   title: titleController.text,
+    //   description: descriptionController.text,
+    //   completer: completer,
+    // );
 
     try {
       await completer.future;
@@ -103,10 +119,6 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final state = ref.watch(editTaskNotifierProvider(widget.taskId));
-
-    final notifier = ref.read(editTaskNotifierProvider(widget.taskId).notifier);
-
     final mq = MediaQuery.of(context);
     final keyboardBottom = mq.viewInsets.bottom;
     final safeBottom = mq.padding.bottom;
@@ -121,14 +133,10 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
         curve: Curves.easeOut,
         padding: EdgeInsets.only(bottom: bottomInset),
         child: EditTaskBottomPart(
-          taskId: widget.taskId,
-          onSavePressed: () => _saveTask(notifier: notifier, context: context),
+          onSavePressed: () => _saveTask(context: context),
           onDateSelected: (d, isAllDay, start, end) {
-            notifier.onSelectDate(
-              selectedDate: d,
-              isAllDay: isAllDay,
-              startTime: start,
-              endTime: end,
+            context.read<EditTaskBloc>().add(
+              EditTaskEvent.selectDate(d, isAllDay, start, end),
             );
           },
         ),
@@ -158,7 +166,9 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
                   ),
                   textInputAction: TextInputAction.next,
                   onSubmitted: _onTitleSubmitted,
-                  onChanged: notifier.onTitleChanged,
+                  onChanged: (value) => context.read<EditTaskBloc>().add(
+                    EditTaskEvent.titleChanged(value),
+                  ),
                   decoration: InputDecoration(
                     hintText: AppLocalizations.of(context)?.writeANewTask ?? '',
                     border: InputBorder.none,
@@ -172,45 +182,50 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
                   ),
                 ),
 
-                AnimatedVisibility(
-                  visible: state.title.isNotEmpty,
-                  enter: fadeIn(curve: Curves.easeIn),
-                  exit: fadeOut(curve: Curves.easeOut),
-                  child: Column(
-                    key: const ValueKey('desc_fields_shown'),
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Gap(24),
+                BlocBuilder<EditTaskBloc, EditTaskState>(
+                  builder: (context, state) {
+                    return AnimatedVisibility(
+                      visible: state.titleIsNotEmpty,
+                      enter: fadeIn(curve: Curves.easeIn),
+                      exit: fadeOut(curve: Curves.easeOut),
+                      child: Column(
+                        key: const ValueKey('desc_fields_shown'),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Gap(24),
 
-                      TextField(
-                        controller: descriptionController,
-                        focusNode: descriptionFocusNode,
-                        maxLines: null,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontSize: 20,
-                          color: AppColorExtensions.getTextPrimaryColor(
-                            context,
-                          ),
-                        ),
-                        decoration: InputDecoration(
-                          hintText:
-                              AppLocalizations.of(context)?.description ?? '',
-                          border: InputBorder.none,
-                          isCollapsed: true,
-                          contentPadding: EdgeInsets.zero,
-                          hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                            fontSize: 20,
-                            color: AppColorExtensions.getTextSecondaryColor(
-                              context,
+                          TextField(
+                            controller: descriptionController,
+                            focusNode: descriptionFocusNode,
+                            maxLines: null,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontSize: 20,
+                              color: AppColorExtensions.getTextPrimaryColor(
+                                context,
+                              ),
+                            ),
+                            decoration: InputDecoration(
+                              hintText:
+                                  AppLocalizations.of(context)?.description ??
+                                  '',
+                              border: InputBorder.none,
+                              isCollapsed: true,
+                              contentPadding: EdgeInsets.zero,
+                              hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                                fontSize: 20,
+                                color: AppColorExtensions.getTextSecondaryColor(
+                                  context,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
 
-                      const Gap(24),
-                      SubTaskPart(taskId: widget.taskId),
-                    ],
-                  ),
+                          const Gap(24),
+                          SubTaskPart(),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

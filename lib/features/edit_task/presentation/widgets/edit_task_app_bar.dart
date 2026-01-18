@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:design/constants/app_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taskify/features/edit_task/presentation/bloc/edit_task_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:taskify/features/edit_task/presentation/providers/edit_task_notifier.dart';
 
-class EditTaskAppBar extends ConsumerWidget implements PreferredSizeWidget {
+class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
   const EditTaskAppBar({super.key, required this.taskId});
 
   final int? taskId;
@@ -21,9 +21,9 @@ class EditTaskAppBar extends ConsumerWidget implements PreferredSizeWidget {
     context.pop();
   }
 
-  void _onDelete(BuildContext context, WidgetRef ref) async {
+  void _onDelete(BuildContext context, EditTaskBloc bloc,) async {
     final completer = Completer<void>();
-    ref.read(editTaskNotifierProvider(taskId).notifier).onDeleteTask(taskId: taskId!, completer: completer);
+    // ref.read(editTaskNotifierProvider(taskId).notifier).onDeleteTask(taskId: taskId!, completer: completer);
     await completer.future;
     if (!context.mounted) return;
     context.pop();
@@ -55,7 +55,7 @@ class EditTaskAppBar extends ConsumerWidget implements PreferredSizeWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final safeAreaTop = mediaQuery.padding.top;
     final preferredHeight = safeAreaTop + 16.0 + 36.0 + 16.0;
@@ -81,7 +81,7 @@ class EditTaskAppBar extends ConsumerWidget implements PreferredSizeWidget {
             if (taskId != null)
               _buildIconButton(
                 iconPath: AppIcons.trash,
-                onPressed: () => _onDelete(context, ref),
+                onPressed: () => _onDelete(context, context.read<EditTaskBloc>()),
               ),
           ],
         ),

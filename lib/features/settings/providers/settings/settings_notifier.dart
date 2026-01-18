@@ -1,48 +1,39 @@
-import 'dart:async';
+// final settingsNotifierProvider =
+//     NotifierProvider<SettingsNotifier, SettingsState>(
+//       () => SettingsNotifier(db: locator<AppDatabase>()),
+//     );
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:taskify/data/interactors/app_configuration_interactor.dart';
-import 'package:taskify/core/services/locator.dart';
-import 'package:taskify/data/database/app_database.dart';
-import 'package:taskify/domain/entities/time_format_type.dart';
-import 'package:taskify/features/settings/providers/settings/settings_state.dart';
+// class SettingsNotifier extends Notifier<SettingsState> {
+//   SettingsNotifier({required this.db})
+//     : interactor = AppConfigurationInteractor(db),
+//       super();
 
-final settingsNotifierProvider =
-    NotifierProvider<SettingsNotifier, SettingsState>(
-      () => SettingsNotifier(db: locator<AppDatabase>()),
-    );
+//   final AppDatabase db;
+//   final AppConfigurationInteractor interactor;
+//   StreamSubscription<AppConfigurationsTableData?>? _configSubscription;
 
-class SettingsNotifier extends Notifier<SettingsState> {
-  SettingsNotifier({required this.db})
-    : interactor = AppConfigurationInteractor(db),
-      super();
+//   @override
+//   SettingsState build() {
 
-  final AppDatabase db;
-  final AppConfigurationInteractor interactor;
-  StreamSubscription<AppConfigurationsTableData?>? _configSubscription;
+//     _observeTimeFormat();
 
-  @override
-  SettingsState build() {
+//     return SettingsState(timeFormat: TimeFormatType.hour24);
+//   }
 
-    _observeTimeFormat();
+//   void _observeTimeFormat() async {
+//     _configSubscription = interactor.observeConfiguration().listen((config) {
+//       final timeFormat = timeFormatTypeFromBool(config?.use24Hour ?? true);
+//       state = state.copyWith(timeFormat: timeFormat);
+//     });
 
-    return SettingsState(timeFormat: TimeFormatType.hour24);
-  }
+//     ref.onDispose(() {
+//       _configSubscription?.cancel();
+//     });
+//   }
 
-  void _observeTimeFormat() async {
-    _configSubscription = interactor.observeConfiguration().listen((config) {
-      final timeFormat = timeFormatTypeFromBool(config?.use24Hour ?? true);
-      state = state.copyWith(timeFormat: timeFormat);
-    });
+//   Future<void> setTimeFormat(TimeFormatType type) async {
+//     return await interactor.setTimeFormat(type);
+//   }
 
-    ref.onDispose(() {
-      _configSubscription?.cancel();
-    });
-  }
-
-  Future<void> setTimeFormat(TimeFormatType type) async {
-    return await interactor.setTimeFormat(type);
-  }
-
-  Future<void> deleteAccount() async => Future.value();
-}
+//   Future<void> deleteAccount() async => Future.value();
+// }

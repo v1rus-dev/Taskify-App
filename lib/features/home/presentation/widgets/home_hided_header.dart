@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/domain/entities/tasks_view_type.dart';
-import 'package:taskify/features/home/presentation/providers/home_screen_notifier.dart';
+import 'package:taskify/features/home/presentation/bloc/home_bloc.dart';
 import 'package:taskify/features/home/presentation/widgets/task_type_button.dart';
 import 'package:taskify/features/home/presentation/widgets/home_calendar_part.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomeHidedHeader extends ConsumerWidget {
+class HomeHidedHeader extends StatelessWidget {
   const HomeHidedHeader({super.key});
 
-  void _onChangeTasksViewType(WidgetRef ref, TasksViewType tasksViewType) {
-    ref.read(homeScreenNotifierProvider.notifier).changeTasksViewType(tasksViewType);
+  void _onChangeTasksViewType(BuildContext context, TasksViewType tasksViewType) {
+    context.read<HomeBloc>().add(HomeEvent.changeTasksViewType(tasksViewType));
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(homeScreenNotifierProvider);
+  Widget build(BuildContext context) {
+    final state = context.watch<HomeBloc>().state;
     return Column(
       children: [
         HomeCalendarPart(),
@@ -27,13 +27,13 @@ class HomeHidedHeader extends ConsumerWidget {
               TaskTypeButton(
                 tasksViewType: TasksViewType.tasks,
                 isSelected: state.tasksViewType == TasksViewType.tasks,
-                onPressed: () => _onChangeTasksViewType(ref, TasksViewType.tasks),
+                onPressed: () => _onChangeTasksViewType(context, TasksViewType.tasks),
               ),
               const Gap(12),
               TaskTypeButton(
                 tasksViewType: TasksViewType.timeline,
                 isSelected: state.tasksViewType == TasksViewType.timeline,
-                onPressed: () => _onChangeTasksViewType(ref, TasksViewType.timeline),
+                onPressed: () => _onChangeTasksViewType(context, TasksViewType.timeline),
               ),
             ],
           ),

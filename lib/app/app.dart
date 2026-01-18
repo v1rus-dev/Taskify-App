@@ -1,40 +1,70 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taskify/core/auth/auth_notifier.dart';
+import 'package:taskify/core/services/locator.dart';
+import 'package:taskify/domain/auth/repositories/auth_repository.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 import 'package:taskify/app/router/app_router.dart';
-import 'package:taskify/core/auth/auth_notifier.dart';
 import 'package:taskify/core/providers/theme_notifier.dart';
 
-class TaskifyApp extends ConsumerWidget {
+class TaskifyApp extends StatefulWidget {
   const TaskifyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    ref.read(authNotifierProvider);
-    final themeState = ref.watch(themeNotifierProvider);
-    WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
-        () {
-          ref.read(themeNotifierProvider.notifier).onSystemThemeChanged();
-        };
+  State<TaskifyApp> createState() => _TaskifyAppState();
+}
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-      ),
-      child: MaterialApp.router(
-        routerConfig: appRouter,
-        theme: themeFromScheme(lightScheme),
-        darkTheme: themeFromScheme(darkScheme),
-        themeMode: themeState.when(
-          data: (data) => data.isDark ? ThemeMode.dark : ThemeMode.light,
-          loading: () => ThemeMode.system,
-          error: (error, stackTrace) => ThemeMode.system,
+class _TaskifyAppState extends State<TaskifyApp> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
+        _onSystemThemeChanged;
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
+        null;
+    super.dispose();
+  }
+
+  void _onSystemThemeChanged() {
+    context.read<ThemeCubit>().onSystemThemeChanged();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ThemeCubit>(create: (_) => ThemeCubit()),
+        BlocProvider<AuthCubit>(
+          create: (_) => AuthCubit(locator<AuthRepository>()),
         ),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+      ],
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+        ),
+        child: BlocBuilder<ThemeCubit, ThemeState>(
+          builder: (context, themeState) {
+            return MaterialApp.router(
+              routerConfig: appRouter,
+              theme: themeFromScheme(lightScheme),
+              darkTheme: themeFromScheme(darkScheme),
+              themeMode: themeState.isLoading
+                  ? ThemeMode.system
+                  : themeState.isDark
+                  ? ThemeMode.dark
+                  : ThemeMode.light,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+            );
+          },
+        ),
       ),
     );
   }

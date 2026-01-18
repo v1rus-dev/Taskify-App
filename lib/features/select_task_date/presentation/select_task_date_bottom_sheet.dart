@@ -1,17 +1,16 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/providers/time_format_notifier.dart';
-import 'package:taskify/domain/entities/task_duration_type.dart';
+import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/utils/time_format_utils.dart';
-import 'package:taskify/features/select_task_date/presentation/providers/select_task/select_task_notifier.dart';
-import 'package:taskify/features/select_task_date/presentation/providers/select_task/select_task_state.dart';
+import 'package:taskify/domain/entities/task_duration_type.dart';
+import 'package:taskify/features/select_task_date/presentation/bloc/select_task_date_bloc.dart';
 import 'package:taskify/features/select_task_date/presentation/select_task_period_bottom_sheet.dart';
 
-class SelectTaskDateBottomSheet extends ConsumerWidget {
+class SelectTaskDateBottomSheet extends StatelessWidget {
   const SelectTaskDateBottomSheet({
     super.key,
     this.selectedDate,
@@ -33,22 +32,9 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
   )?
   onSave;
 
-  TaskDurationType _initialDurationType(bool? isAllDay) {
-    return (isAllDay ?? true)
-        ? TaskDurationType.allDay
-        : TaskDurationType.period;
-  }
-
-  TimeOfDay? _initialTimeOfDay(DateTime? time) {
-    if (time == null) {
-      return null;
-    }
-    return TimeOfDay.fromDateTime(time);
-  }
-
   Future<void> _onDatePressed(
     BuildContext context,
-    SelectTaskNotifier notifier,
+    SelectTaskDateBloc bloc,
     DateTime initialDate,
   ) async {
     final picked = await AppDateTimePicker.pickDate(
@@ -58,13 +44,13 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
       lastDate: DateTime(2100),
     );
     if (picked != null) {
-      notifier.selectDate(picked);
+      bloc.add(SelectTaskDateEvent.dateSelected(picked));
     }
   }
 
   Future<void> _onDurationPressed(
     BuildContext context,
-    SelectTaskNotifier notifier,
+    SelectTaskDateBloc bloc,
     TaskDurationType selectedType,
   ) async {
     await showAppModalBottomSheet<void>(
@@ -72,14 +58,15 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
       useSafeArea: true,
       child: SelectTaskPeriodBottomSheet(
         selectedType: selectedType,
-        onSelected: notifier.selectDurationType,
+        onSelected: (type) =>
+            bloc.add(SelectTaskDateEvent.durationTypeSelected(type)),
       ),
     );
   }
 
   Future<void> _onStartTimePressed(
     BuildContext context,
-    SelectTaskNotifier notifier,
+    SelectTaskDateBloc bloc,
     TimeOfDay? initialTime,
     bool use24Hour,
   ) async {
@@ -91,13 +78,13 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
       localeOverride: const Locale('en', 'US'),
     );
     if (picked != null) {
-      notifier.selectStartTime(picked);
+      bloc.add(SelectTaskDateEvent.startTimeSelected(picked));
     }
   }
 
   Future<void> _onEndTimePressed(
     BuildContext context,
-    SelectTaskNotifier notifier,
+    SelectTaskDateBloc bloc,
     TimeOfDay? initialTime,
     bool use24Hour,
   ) async {
@@ -109,7 +96,7 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
       localeOverride: const Locale('en', 'US'),
     );
     if (picked != null) {
-      notifier.selectEndTime(picked);
+      bloc.add(SelectTaskDateEvent.endTimeSelected(picked));
     }
   }
 
@@ -120,8 +107,8 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
 
   List<CardAction> _buildCardActions(
     BuildContext context,
-    SelectTaskState selectTaskState,
-    SelectTaskNotifier selectTaskNotifier,
+    SelectTaskDateState selectTaskState,
+    SelectTaskDateBloc selectTaskBloc,
     bool isPeriod,
     bool use24Hour,
   ) {
@@ -131,7 +118,7 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
         description: _formatDate(context, selectTaskState.selectedDate),
         onPressed: () => _onDatePressed(
           context,
-          selectTaskNotifier,
+          selectTaskBloc,
           selectTaskState.selectedDate,
         ),
       ),
@@ -142,7 +129,7 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
             : 'Period',
         onPressed: () => _onDurationPressed(
           context,
-          selectTaskNotifier,
+          selectTaskBloc,
           selectTaskState.durationType,
         ),
       ),
@@ -156,7 +143,7 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
           ),
           onPressed: () => _onStartTimePressed(
             context,
-            selectTaskNotifier,
+            selectTaskBloc,
             selectTaskState.startTime,
             use24Hour,
           ),
@@ -171,7 +158,7 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
           ),
           onPressed: () => _onEndTimePressed(
             context,
-            selectTaskNotifier,
+            selectTaskBloc,
             selectTaskState.endTime,
             use24Hour,
           ),
@@ -181,31 +168,30 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
 
   void _onSavePressed(
     BuildContext context,
-    SelectTaskState selectTaskState,
-    SelectTaskNotifier selectTaskNotifier,
+    SelectTaskDateState selectTaskState,
   ) {
     final startDateTime =
         selectTaskState.durationType == TaskDurationType.period &&
-            selectTaskState.startTime != null
-        ? DateTime(
-            selectTaskState.selectedDate.year,
-            selectTaskState.selectedDate.month,
-            selectTaskState.selectedDate.day,
-            selectTaskState.startTime!.hour,
-            selectTaskState.startTime!.minute,
-          )
-        : null;
+                selectTaskState.startTime != null
+            ? DateTime(
+                selectTaskState.selectedDate.year,
+                selectTaskState.selectedDate.month,
+                selectTaskState.selectedDate.day,
+                selectTaskState.startTime!.hour,
+                selectTaskState.startTime!.minute,
+              )
+            : null;
     final endDateTime =
         selectTaskState.durationType == TaskDurationType.period &&
-            selectTaskState.endTime != null
-        ? DateTime(
-            selectTaskState.selectedDate.year,
-            selectTaskState.selectedDate.month,
-            selectTaskState.selectedDate.day,
-            selectTaskState.endTime!.hour,
-            selectTaskState.endTime!.minute,
-          )
-        : null;
+                selectTaskState.endTime != null
+            ? DateTime(
+                selectTaskState.selectedDate.year,
+                selectTaskState.selectedDate.month,
+                selectTaskState.selectedDate.day,
+                selectTaskState.endTime!.hour,
+                selectTaskState.endTime!.minute,
+              )
+            : null;
     onSave?.call(
       selectTaskState.selectedDate,
       selectTaskState.durationType == TaskDurationType.allDay,
@@ -216,66 +202,54 @@ class SelectTaskDateBottomSheet extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final initialDurationType = _initialDurationType(isAllDay);
-    final initialStartTime = _initialTimeOfDay(startTime);
-    final initialEndTime = _initialTimeOfDay(endTime);
-    final selectTaskState = ref.watch(
-      selectTaskNotifierProvider((
-        selectedDate,
-        initialDurationType,
-        initialStartTime,
-        initialEndTime,
-      )),
+    final use24Hour = context.select<TimeFormatCubit, bool>(
+      (cubit) => cubit.state.use24Hour,
     );
-    final selectTaskNotifier = ref.read(
-      selectTaskNotifierProvider((
-        selectedDate,
-        initialDurationType,
-        initialStartTime,
-        initialEndTime,
-      )).notifier,
-    );
-    final isPeriod = selectTaskState.durationType == TaskDurationType.period;
-    final use24Hour = ref.watch(timeFormatProvider).value?.use24Hour ?? true;
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: SizedBox(
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Gap(12),
-                Text("When", style: theme.textTheme.displayMedium),
-                const SizedBox(height: 24),
-                CardWithActions(
-                  actions: _buildCardActions(
-                    context,
-                    selectTaskState,
-                    selectTaskNotifier,
-                    isPeriod,
-                    use24Hour,
-                  ),
+    return BlocBuilder<SelectTaskDateBloc, SelectTaskDateState>(
+      builder: (context, selectTaskState) {
+        final selectTaskBloc = context.read<SelectTaskDateBloc>();
+        final isPeriod = selectTaskState.durationType == TaskDurationType.period;
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Gap(12),
+                    Text("When", style: theme.textTheme.displayMedium),
+                    const SizedBox(height: 24),
+                    CardWithActions(
+                      actions: _buildCardActions(
+                        context,
+                        selectTaskState,
+                        selectTaskBloc,
+                        isPeriod,
+                        use24Hour,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-        const Gap(48),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
-          child: AppTextButton(
-            text: "Save",
-            onPressed: () =>
-                _onSavePressed(context, selectTaskState, selectTaskNotifier),
-          ),
-        ),
-      ],
+            const Gap(48),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+              child: AppTextButton(
+                text: "Save",
+                onPressed: () => _onSavePressed(context, selectTaskState),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

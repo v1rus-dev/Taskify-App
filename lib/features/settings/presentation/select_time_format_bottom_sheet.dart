@@ -1,31 +1,27 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/domain/entities/time_format_type.dart';
-import 'package:taskify/features/settings/providers/settings/settings_notifier.dart';
 
-class SelectTimeFormatBottomSheet extends ConsumerWidget {
-  const SelectTimeFormatBottomSheet({super.key});
+class SelectTimeFormatBottomSheet extends StatelessWidget {
+  const SelectTimeFormatBottomSheet({super.key, required this.selectedType});
 
-  void _onTimeFormatPressed(BuildContext context, SettingsNotifier notifier, TimeFormatType type) async {
-    await notifier.setTimeFormat(type);
-    if (!context.mounted) return;
-    Navigator.of(context).pop();
+  final TimeFormatType selectedType;
+
+  void _onTimeFormatPressed(BuildContext context, TimeFormatType type) {
+    Navigator.of(context).pop(type == selectedType ? null : type);
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final state = ref.watch(settingsNotifierProvider);
-    final notifier = ref.read(settingsNotifierProvider.notifier);
 
     String descriptionFor(TimeFormatType type) {
-      return state.timeFormat == type ? 'Selected' : '';
+      return selectedType == type ? 'Selected' : '';
     }
 
     Color? descriptionColorFor(BuildContext context, TimeFormatType type) {
-      return type == state.timeFormat
+      return type == selectedType
           ? AppColorExtensions.getPrimaryAccentColor(context)
           : null;
     }
@@ -45,18 +41,14 @@ class SelectTimeFormatBottomSheet extends ConsumerWidget {
                 description: descriptionFor(TimeFormatType.hour24),
                 descriptionColor:
                     descriptionColorFor(context, TimeFormatType.hour24),
-                onPressed: () => _onTimeFormatPressed(context, notifier, TimeFormatType.hour24),
+                onPressed: () => _onTimeFormatPressed(context, TimeFormatType.hour24),
               ),
               CardAction(
                 title: TimeFormatType.hour12.label,
                 description: descriptionFor(TimeFormatType.hour12),
                 descriptionColor:
                     descriptionColorFor(context, TimeFormatType.hour12),
-                onPressed: () async {
-                  await notifier.setTimeFormat(TimeFormatType.hour12);
-                  if (!context.mounted) return;
-                  Navigator.of(context).pop();
-                },
+                onPressed: () => _onTimeFormatPressed(context, TimeFormatType.hour12),
               ),
             ],
           ),

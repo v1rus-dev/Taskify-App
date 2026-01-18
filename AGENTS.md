@@ -2,8 +2,7 @@
 
 # Overview
 
-You are an expert Flutter developer specializing in Clean Architecture with Feature-first organization and riverpod for state management.
-
+You are an expert Flutter developer specializing in Clean Architecture with Feature-first organization and Bloc for state management.
 
 ## Core Principles
 
@@ -12,7 +11,7 @@ You are an expert Flutter developer specializing in Clean Architecture with Feat
 - Follow the dependency rule: dependencies always point inward
 - Domain layer contains entities, repositories (interfaces), and use cases or interactors
 - Data layer implements repositories and contains data sources and models
-- Presentation layer contains UI components, riverpod and view models
+- Presentation layer contains UI components, bloc and view models
 - Use proper abstractions with interfaces/abstract classes for each component
 - Every feature should follow this layered architecture pattern
 
@@ -43,18 +42,6 @@ Platform folders live in `android/` and `ios/`.
 - `flutter build apk`: produce a release APK (adjust for iOS as needed).
 - `dart run build_runner build --delete-conflicting-outputs`: generate code for Freezed/Drift.
 - `dart run build_runner watch --delete-conflicting-outputs`: watch mode for codegen.
-
-## Riverpod Implementation
-- Use Providers for state management: StateNotifierProvider, StateProvider, FutureProvider, or StreamProvider depending on the use case.
-- Implement immutable state classes (using Freezed or plain Dart) to ensure predictable state updates.
-- Keep business logic inside Notifiers/Controllers, not in UI widgets.
-- Create granular, focused Notifiers/Providers for specific feature segments instead of one big provider.
-- Handle loading, error, and success states explicitly (e.g., with union types or AsyncValue).
-- Use ref.watch to read state reactively and ref.read for one-off actions.
-- Avoid direct UI updates inside Notifiers; let widgets rebuild based on state changes.
-- Use scoped Providers to inject dependencies for a subtree of widgets (ProviderScope overrides).
-- Use Riverpod observers or debug prints for logging state changes (ProviderObserver).
-- Separate state mutation and UI presentation, keeping Notifiers responsible only for logic and state.
 
 ## Dependency Injection
 - Use GetIt as a service locator for dependency injection
@@ -103,13 +90,16 @@ class ExampleWidget extends StatelessWidget {
 ## Coding Standards
 
 ### State Management
-- States should be immutable using Freezed.
-- Use union types for state representation (initial, loading, success, error).
-- Represent specific, typed error states with failure details.
-- Keep state classes small and focused.
-- Use copyWith for state transitions.
-- Handle side effects using ref.listen on providers.
-- Prefer selective ref.watch or select for optimized widget rebuilds
+- States must be immutable and implemented using Freezed.
+- Use union/sealed states to represent UI state:
+  initial, loading, success, error.
+- Errors should be strongly typed and contain detailed failure information.
+- Keep state classes small and focused on UI needs.
+- Perform state transitions via copyWith or by emitting new union states.
+- Do not store side effects in state.
+- Handle side effects (navigation, snackbars, dialogs) using BlocListener or BlocConsumer.
+- Optimize widget rebuilds using BlocSelector, buildWhen, or listenWhen.
+- Separate persistent UI state from one-shot UI events.
 
 ### Error Handling
 - Use Either<Failure, Success> from Dartz for functional error handling
@@ -188,4 +178,4 @@ extension EitherExtensions<L, R> on Either<L, R> {
 - Cache network resources appropriately
 - Profile and optimize render performance
 
-Refer to official Flutter and riverpod documentation for more detailed implementation guidelines.
+Refer to official Flutter and bloc documentation for more detailed implementation guidelines.

@@ -39,10 +39,7 @@ dependencies:
   go_router: ^17.0.1
 
   # State management
-  flutter_riverpod: ^3.1.0
-  riverpod: ^3.1.0
-  hooks_riverpod: ^3.1.0
-  riverpod_lint: ^3.1.0
+  flutter_bloc: ^9.1.1
 
   # Code generation
   freezed_annotation: ^3.1.0
@@ -65,7 +62,7 @@ dependencies:
   # Logging
   talker: ^5.1.9
   talker_dio_logger: ^5.1.9
-  talker_riverpod_logger: ^5.1.9
+  talker_bloc_logger: ^5.1.12
 
   # Authentication
   google_sign_in: ^7.2.0

@@ -1,58 +1,76 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design/design.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeState {
   final AppThemeMode themeMode;
   final bool isDark;
+  final bool isLoading;
 
-  ThemeState({
+  const ThemeState({
     required this.themeMode,
     required this.isDark,
+    required this.isLoading,
   });
 
   ThemeState copyWith({
     AppThemeMode? themeMode,
     bool? isDark,
+    bool? isLoading,
   }) {
     return ThemeState(
       themeMode: themeMode ?? this.themeMode,
       isDark: isDark ?? this.isDark,
+      isLoading: isLoading ?? this.isLoading,
     );
   }
 }
 
-final themeNotifierProvider = AsyncNotifierProvider<ThemeNotifier, ThemeState>(
-  () => ThemeNotifier(),
-);
-
-class ThemeNotifier extends AsyncNotifier<ThemeState> {
+class ThemeCubit extends Cubit<ThemeState> {
   static const String _themeModeKey = 'theme_mode';
 
-  @override
-  Future<ThemeState> build() async {
+  ThemeCubit() : super(_createInitialState()) {
+    _init();
+  }
+
+  static ThemeState _createInitialState() {
+    final Brightness systemBrightness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    final bool isSystemDark = systemBrightness == Brightness.dark;
+
+    return ThemeState(
+      themeMode: AppThemeMode.system,
+      isDark: isSystemDark,
+      isLoading: true,
+    );
+  }
+
+  Future<void> _init() async {
     final prefs = await SharedPreferences.getInstance();
     final int? storedIndex = prefs.getInt(_themeModeKey);
     final AppThemeMode mode = AppThemeMode.values[
       storedIndex ?? AppThemeMode.system.index
     ];
 
-    final Brightness systemBrightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    final Brightness systemBrightness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
     final bool isSystemDark = systemBrightness == Brightness.dark;
 
-    return ThemeState(
-      themeMode: mode,
-      isDark: _calculateIsDark(mode, isSystemDark),
+    emit(
+      ThemeState(
+        themeMode: mode,
+        isDark: _calculateIsDark(mode, isSystemDark),
+        isLoading: false,
+      ),
     );
   }
 
   Future<void> toggleTheme() async {
-    if (!state.hasValue) return;
-    final stateValue = state.value!;
+    if (state.isLoading) return;
 
-    final AppThemeMode newThemeMode = switch (stateValue.themeMode) {
+    final AppThemeMode newThemeMode = switch (state.themeMode) {
       AppThemeMode.light => AppThemeMode.dark,
       AppThemeMode.dark => AppThemeMode.system,
       AppThemeMode.system => AppThemeMode.light,
@@ -61,11 +79,12 @@ class ThemeNotifier extends AsyncNotifier<ThemeState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_themeModeKey, newThemeMode.index);
 
-    final Brightness systemBrightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    final Brightness systemBrightness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
     final bool isSystemDark = systemBrightness == Brightness.dark;
 
-    state = AsyncData(
-      stateValue.copyWith(
+    emit(
+      state.copyWith(
         themeMode: newThemeMode,
         isDark: _calculateIsDark(newThemeMode, isSystemDark),
       ),
@@ -73,17 +92,17 @@ class ThemeNotifier extends AsyncNotifier<ThemeState> {
   }
 
   Future<void> setThemeMode(AppThemeMode themeMode) async {
-    if (!state.hasValue) return;
-    final stateValue = state.value!;
+    if (state.isLoading) return;
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_themeModeKey, themeMode.index);
 
-    final Brightness systemBrightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    final Brightness systemBrightness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
     final bool isSystemDark = systemBrightness == Brightness.dark;
 
-    state = AsyncData(
-      stateValue.copyWith(
+    emit(
+      state.copyWith(
         themeMode: themeMode,
         isDark: _calculateIsDark(themeMode, isSystemDark),
       ),
@@ -91,15 +110,15 @@ class ThemeNotifier extends AsyncNotifier<ThemeState> {
   }
 
   void onSystemThemeChanged() {
-    if (!state.hasValue) return;
-    final stateValue = state.value!;
+    if (state.isLoading) return;
 
-    final Brightness systemBrightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    final Brightness systemBrightness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
     final bool isSystemDark = systemBrightness == Brightness.dark;
 
-    state = AsyncData(
-      stateValue.copyWith(
-        isDark: _calculateIsDark(stateValue.themeMode, isSystemDark),
+    emit(
+      state.copyWith(
+        isDark: _calculateIsDark(state.themeMode, isSystemDark),
       ),
     );
   }

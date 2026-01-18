@@ -11,7 +11,7 @@ final GoRouter appRouter = GoRouter(
   routes: [
     GoRoute(
       path: RouterPaths.home,
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) => const HomePage(),
     ),
     GoRoute(
       path: RouterPaths.editTask,
@@ -20,13 +20,13 @@ final GoRouter appRouter = GoRouter(
         return bottomUpTransitionBuilder(
           ValueKey('editTask-$taskId'),
           context,
-          EditTaskScreen(taskId: taskId),
+          EditTaskPage(taskId: taskId),
         );
       },
     ),
     GoRoute(
       path: RouterPaths.settings,
-      builder: (context, state) => const SettingsScreen(),
+      builder: (context, state) => const SettingsPage(),
     ),
   ],
 );

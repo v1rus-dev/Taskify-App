@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:animated_visibility/animated_visibility.dart';
 import 'package:design/design.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
@@ -9,13 +10,11 @@ import 'package:taskify/features/edit_task/presentation/providers/edit_task_noti
 import 'package:taskify/features/edit_task/presentation/providers/edit_task_state.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_app_bar.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_bottom_part.dart';
-import 'package:taskify/features/edit_task/presentation/widgets/edit_task_tags_part.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/sub_task_part.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
 class EditTaskScreen extends ConsumerStatefulWidget {
   const EditTaskScreen({super.key, this.taskId});
-
   final int? taskId;
 
   @override
@@ -23,10 +22,46 @@ class EditTaskScreen extends ConsumerStatefulWidget {
 }
 
 class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-  final FocusNode titleFocusNode = FocusNode();
-  final FocusNode descriptionFocusNode = FocusNode();
+  final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
+  final titleFocusNode = FocusNode();
+  final descriptionFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+
+    ref.listenManual<EditTaskState>(editTaskNotifierProvider(widget.taskId), (
+      previous,
+      next,
+    ) {
+      if (next.title.isNotEmpty && titleController.text != next.title) {
+        final selection = titleController.selection;
+        titleController.value = titleController.value.copyWith(
+          text: next.title,
+          selection: _clampSelection(selection, next.title),
+          composing: TextRange.empty,
+        );
+      }
+
+      if (next.description.isNotEmpty &&
+          descriptionController.text != next.description) {
+        final selection = descriptionController.selection;
+        descriptionController.value = descriptionController.value.copyWith(
+          text: next.description,
+          selection: _clampSelection(selection, next.description),
+          composing: TextRange.empty,
+        );
+      }
+    });
+  }
+
+  static TextSelection _clampSelection(TextSelection selection, String text) {
+    final max = text.length;
+    final base = selection.baseOffset.clamp(0, max);
+    final extent = selection.extentOffset.clamp(0, max);
+    return TextSelection(baseOffset: base, extentOffset: extent);
+  }
 
   @override
   void dispose() {
@@ -51,21 +86,16 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
 
     try {
       await completer.future;
-
       if (!context.mounted) return;
-
       Navigator.pop(context);
-    } catch (e) {
+    } catch (_) {
+      // тут можно показать snackbar/диалог, но ты просил без лишнего
       if (!context.mounted) return;
     }
   }
 
-  void _onTitleSubmitted(
-    BuildContext context,
-    String value,
-    FocusNode descriptionFocusNode,
-  ) {
-    if (titleController.text.isNotEmpty) {
+  void _onTitleSubmitted(String value) {
+    if (value.trim().isNotEmpty) {
       descriptionFocusNode.requestFocus();
     }
   }
@@ -74,162 +104,118 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final state = ref.watch(editTaskNotifierProvider(widget.taskId));
+
     final notifier = ref.read(editTaskNotifierProvider(widget.taskId).notifier);
 
-    if (state.title.isNotEmpty && titleController.text.isEmpty) {
-      titleController.text = state.title;
-    }
-    if (state.description.isNotEmpty && descriptionController.text.isEmpty) {
-      descriptionController.text = state.description;
-    }
-
-    ref.listen<EditTaskState>(editTaskNotifierProvider(widget.taskId), (
-      previous,
-      next,
-    ) {
-      if (previous != next) {
-        if (next.title.isNotEmpty &&
-            (titleController.text.isEmpty ||
-                titleController.text != next.title)) {
-          titleController.text = next.title;
-        }
-        if (next.description.isNotEmpty &&
-            (descriptionController.text.isEmpty ||
-                descriptionController.text != next.description)) {
-          descriptionController.text = next.description;
-        }
-      }
-    });
-
-    final mediaQuery = MediaQuery.of(context);
-    final bottomPadding = mediaQuery.viewInsets.bottom;
+    final mq = MediaQuery.of(context);
+    final keyboardBottom = mq.viewInsets.bottom;
+    final safeBottom = mq.padding.bottom;
+    final bottomInset = keyboardBottom > 0 ? keyboardBottom : safeBottom;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: EditTaskAppBar(taskId: widget.taskId),
       bottomNavigationBar: AnimatedPadding(
-        duration: const Duration(milliseconds: 100),
-        padding: EdgeInsets.only(bottom: bottomPadding),
-        child: ValueListenableBuilder<TextEditingValue>(
-          valueListenable: titleController,
-          builder: (context, value, child) {
-            return EditTaskBottomPart(
-              canSave: value.text.isNotEmpty,
-              onSavePressed: () =>
-                  _saveTask(notifier: notifier, context: context),
-              selectedDate: state.selectedDate ?? DateTime.now(),
-              isAllDay: state.isAllDay,
-              startTime: state.startTime,
-              endTime: state.endTime,
-              onDateSelected: (selectedDate, isAllDay, startTime, endTime) {
-                notifier.onSelectDate(
-                  selectedDate: selectedDate,
-                  isAllDay: isAllDay,
-                  startTime: startTime,
-                  endTime: endTime,
-                );
-              },
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.only(bottom: bottomInset),
+        child: EditTaskBottomPart(
+          taskId: widget.taskId,
+          onSavePressed: () => _saveTask(notifier: notifier, context: context),
+          onDateSelected: (d, isAllDay, start, end) {
+            notifier.onSelectDate(
+              selectedDate: d,
+              isAllDay: isAllDay,
+              startTime: start,
+              endTime: end,
             );
           },
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Gap(20),
-                    TextField(
-                      controller: titleController,
-                      focusNode: titleFocusNode,
-                      maxLines: null,
-                      maxLength: 155,
-                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                      style: theme.textTheme.headlineLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColorExtensions.getTextPrimaryColor(context),
-                      ),
-                      textInputAction: TextInputAction.next,
-                      onSubmitted: (value) {
-                        _onTitleSubmitted(context, value, descriptionFocusNode);
-                      },
-                      decoration: InputDecoration(
-                        hintText:
-                            AppLocalizations.of(context)?.writeANewTask ?? '',
-                        border: InputBorder.none,
-                        filled: false,
-                        isCollapsed: true,
-                        contentPadding: EdgeInsets.zero,
-                        counterText: '',
-                        hintStyle: theme.textTheme.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: AppColorExtensions.getTextSecondaryColor(
+
+      body: SafeArea(
+        bottom: false,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Gap(20),
+                TextField(
+                  controller: titleController,
+                  focusNode: titleFocusNode,
+                  maxLines: null,
+                  maxLength: 155,
+                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColorExtensions.getTextPrimaryColor(context),
+                  ),
+                  textInputAction: TextInputAction.next,
+                  onSubmitted: _onTitleSubmitted,
+                  onChanged: notifier.onTitleChanged,
+                  decoration: InputDecoration(
+                    hintText: AppLocalizations.of(context)?.writeANewTask ?? '',
+                    border: InputBorder.none,
+                    isCollapsed: true,
+                    contentPadding: EdgeInsets.zero,
+                    counterText: '',
+                    hintStyle: theme.textTheme.headlineLarge?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColorExtensions.getTextSecondaryColor(context),
+                    ),
+                  ),
+                ),
+
+                AnimatedVisibility(
+                  visible: state.title.isNotEmpty,
+                  enter: fadeIn(curve: Curves.easeIn),
+                  exit: fadeOut(curve: Curves.easeOut),
+                  child: Column(
+                    key: const ValueKey('desc_fields_shown'),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Gap(24),
+
+                      TextField(
+                        controller: descriptionController,
+                        focusNode: descriptionFocusNode,
+                        maxLines: null,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontSize: 20,
+                          color: AppColorExtensions.getTextPrimaryColor(
                             context,
                           ),
                         ),
+                        decoration: InputDecoration(
+                          hintText:
+                              AppLocalizations.of(context)?.description ?? '',
+                          border: InputBorder.none,
+                          isCollapsed: true,
+                          contentPadding: EdgeInsets.zero,
+                          hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                            fontSize: 20,
+                            color: AppColorExtensions.getTextSecondaryColor(
+                              context,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    ValueListenableBuilder<TextEditingValue>(
-                      valueListenable: titleController,
-                      builder: (context, value, child) {
-                        final shouldShow = value.text.isNotEmpty;
-                        return shouldShow
-                            ? Column(
-                                key: const ValueKey('desc_fields_shown'),
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Gap(24),
-                                  TextField(
-                                    controller: descriptionController,
-                                    focusNode: descriptionFocusNode,
-                                    maxLines: null,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          fontSize: 20,
-                                          color: AppColorExtensions.getTextPrimaryColor(context),
-                                        ),
-                                    decoration: InputDecoration(
-                                      hintText:
-                                          AppLocalizations.of(
-                                            context,
-                                          )?.description ??
-                                          '',
-                                      border: InputBorder.none,
-                                      filled: false,
-                                      isCollapsed: true,
-                                      contentPadding: EdgeInsets.zero,
-                                      hintStyle: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
-                                            fontSize: 20,
-                                            color: AppColorExtensions.getTextSecondaryColor(context),
-                                          ),
-                                    ),
-                                  ),
-                                  const Gap(24),
-                                  SubTaskPart(taskId: widget.taskId),
-                                ],
-                              )
-                            : const SizedBox.shrink();
-                      },
-                    ),
-                    const Gap(24),
-                    EditTaskTagsPart(taskId: widget.taskId),
-                  ],
+
+                      const Gap(24),
+                      SubTaskPart(taskId: widget.taskId),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

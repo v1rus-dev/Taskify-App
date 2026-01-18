@@ -7,6 +7,7 @@ part 'edit_task_state.freezed.dart';
 abstract class EditTaskState with _$EditTaskState {
   const factory EditTaskState({
     @Default('') String title,
+    @Default(false) bool titleIsNotEmpty,
     @Default('') String description,
     @Default(null) int? taskId,
     int? networkId,

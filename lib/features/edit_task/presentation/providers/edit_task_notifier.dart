@@ -12,8 +12,8 @@ import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.d
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 import 'package:taskify/domain/entities/task.dart';
 
-final editTaskNotifierProvider =
-    NotifierProvider.autoDispose.family<EditTaskNotifier, EditTaskState, int?>(
+final editTaskNotifierProvider = NotifierProvider.autoDispose
+    .family<EditTaskNotifier, EditTaskState, int?>(
       (int? taskId) => EditTaskNotifier(
         taskId: taskId,
         taskInteractor: locator<TaskInteractor>(),
@@ -27,7 +27,10 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
     required this.taskInteractor,
     required this.subTaskInteractor,
   }) : super() {
-    TalkerService.instance.info('EditTaskNotifier initialized');
+    if (taskId != null) {
+      _getTaskById(taskId: taskId!);
+      _loadSubTasks(taskId: taskId!);
+    }
   }
 
   final int? taskId;
@@ -39,20 +42,11 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
   @override
   EditTaskState build() {
     TalkerService.instance.info('EditTaskNotifier build');
-    final initialState = EditTaskState(
+    return EditTaskState(
       taskId: taskId,
       selectedDate: DateTime.now(),
       isAllDay: true,
     );
-    
-    if (taskId != null) {
-      Future.microtask(() {
-        _getTaskById(taskId: taskId!);
-        _loadSubTasks(taskId: taskId!);
-      });
-    }
-    
-    return initialState;
   }
 
   void onDeleteTask({required int taskId, required Completer completer}) async {
@@ -141,6 +135,7 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
         _createdAt = task.createdAt,
         state = state.copyWith(
           title: task.title,
+          titleIsNotEmpty: task.title.trim().isNotEmpty,
           description: task.description ?? '',
           networkId: task.networkId,
           isCompleted: task.isCompleted,
@@ -183,9 +178,7 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
     }
 
     final uiSubTasks = state.subTasks
-        .map((subTask) => subTask.title.trim().isEmpty
-            ? null
-            : subTask)
+        .map((subTask) => subTask.title.trim().isEmpty ? null : subTask)
         .whereType<SubTaskUiModel>()
         .toList();
 
@@ -244,8 +237,7 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
         .where((id) => !currentIds.contains(id))
         .toList();
     if (removedIds.isNotEmpty) {
-      final removeResult =
-          await subTaskInteractor.removeSubTasks(removedIds);
+      final removeResult = await subTaskInteractor.removeSubTasks(removedIds);
       Failure? removeFailure;
       removeResult.fold(
         ifLeft: (left) => removeFailure = left,
@@ -282,6 +274,14 @@ class EditTaskNotifier extends Notifier<EditTaskState> {
         ],
       );
     }
+  }
+
+  void onTitleChanged(String value) {
+    TalkerService.instance.info('Title changed: $value');
+    state = state.copyWith(
+      title: value,
+      titleIsNotEmpty: value.trim().isNotEmpty,
+    );
   }
 
   void onSubTaskToggle({required int index}) {

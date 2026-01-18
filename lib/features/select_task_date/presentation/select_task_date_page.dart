@@ -41,16 +41,12 @@ class SelectTaskDatePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final initialDurationType = _initialDurationType(isAllDay);
-    final initialStartTime = _initialTimeOfDay(startTime);
-    final initialEndTime = _initialTimeOfDay(endTime);
-
     return BlocProvider(
       create: (_) => SelectTaskDateBloc(
         selectedDate: selectedDate,
-        durationType: initialDurationType,
-        initialStartTime: initialStartTime,
-        initialEndTime: initialEndTime,
+        durationType: _initialDurationType(isAllDay),
+        initialStartTime: _initialTimeOfDay(startTime),
+        initialEndTime: _initialTimeOfDay(endTime),
       ),
       child: SelectTaskDateBottomSheet(
         selectedDate: selectedDate,

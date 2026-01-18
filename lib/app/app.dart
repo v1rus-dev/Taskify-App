@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/core/auth/auth_notifier.dart';
+import 'package:taskify/core/providers/time_format_notifier.dart';
 import 'package:taskify/core/services/locator.dart';
+import 'package:taskify/data/interactors/app_configuration_interactor.dart';
 import 'package:taskify/domain/auth/repositories/auth_repository.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 import 'package:taskify/app/router/app_router.dart';
@@ -22,6 +24,8 @@ class _TaskifyAppState extends State<TaskifyApp> {
     super.initState();
     WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
         _onSystemThemeChanged;
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   }
 
   @override
@@ -43,28 +47,49 @@ class _TaskifyAppState extends State<TaskifyApp> {
         BlocProvider<AuthCubit>(
           create: (_) => AuthCubit(locator<AuthRepository>()),
         ),
+        BlocProvider<TimeFormatCubit>(create: (_) => TimeFormatCubit(interactor: locator<AppConfigurationInteractor>()))
       ],
-      child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.dark,
-        ),
-        child: BlocBuilder<ThemeCubit, ThemeState>(
-          builder: (context, themeState) {
-            return MaterialApp.router(
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, themeState) {
+          final themeMode = themeState.isLoading
+              ? ThemeMode.system
+              : themeState.isDark
+              ? ThemeMode.dark
+              : ThemeMode.light;
+
+          final platformBrightness = View.of(
+            context,
+          ).platformDispatcher.platformBrightness;
+          final isDarkEffective = themeMode == ThemeMode.system
+              ? (platformBrightness == Brightness.dark)
+              : (themeMode == ThemeMode.dark);
+
+          return AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: isDarkEffective
+                  ? Brightness.light
+                  : Brightness.dark,
+              statusBarBrightness: isDarkEffective
+                  ? Brightness.dark
+                  : Brightness.light,
+
+              systemNavigationBarColor: Colors.transparent,
+              systemNavigationBarContrastEnforced: false,
+              systemNavigationBarIconBrightness: isDarkEffective
+                  ? Brightness.light
+                  : Brightness.dark,
+            ),
+            child: MaterialApp.router(
               routerConfig: appRouter,
               theme: themeFromScheme(lightScheme),
               darkTheme: themeFromScheme(darkScheme),
-              themeMode: themeState.isLoading
-                  ? ThemeMode.system
-                  : themeState.isDark
-                  ? ThemeMode.dark
-                  : ThemeMode.light,
+              themeMode: themeMode,
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

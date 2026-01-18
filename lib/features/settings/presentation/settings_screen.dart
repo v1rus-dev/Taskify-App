@@ -52,7 +52,35 @@ class SettingsScreen extends StatelessWidget {
     return BlocSideEffectListener<SettingsBloc, SettingsSideEffect>(
       bloc: context.read<SettingsBloc>(),
       listener: (context, effect) {
-        effect.when(showLoadingDialog: () {}, dismissLoadingDialog: () {});
+        effect.when(
+          showLoadingDialog: () {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: SizedBox(
+                      width: 28,
+                      height: 28,
+                      child: CircularProgressIndicator.adaptive(
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+          dismissLoadingDialog: () {},
+        );
       },
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,

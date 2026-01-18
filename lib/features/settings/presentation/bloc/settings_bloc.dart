@@ -27,6 +27,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState>
     on<_Started>(_onStarted);
     on<_OnTimeFormatChanged>(_onTimeFormatChanged);
     on<_UpdateTimeFormat>(_onUpdateTimeFormat);
+    on<_OnShowLoadingDialog>(_onShowLoadingDialog);
   }
 
   void _onStarted(_Started event, Emitter<SettingsState> emit) {
@@ -45,6 +46,13 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState>
     Emitter<SettingsState> emit,
   ) {
     emit(state.copyWith(timeFormat: event.timeFormat));
+  }
+
+  void _onShowLoadingDialog(
+    _OnShowLoadingDialog event,
+    Emitter<SettingsState> emit,
+  ) {
+    _sideEffectController.add(SettingsSideEffect.showLoadingDialog());
   }
 
   void _observeTimeFormat() {

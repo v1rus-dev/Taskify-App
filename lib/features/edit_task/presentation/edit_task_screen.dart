@@ -107,7 +107,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       if (!context.mounted) return;
       Navigator.pop(context);
     } catch (_) {
-      // тут можно показать snackbar/диалог, но ты просил без лишнего
       if (!context.mounted) return;
     }
   }

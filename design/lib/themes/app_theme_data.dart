@@ -31,6 +31,7 @@ ThemeData themeFromScheme(AppColorScheme scheme) {
     primaryColor: scheme.primaryAccent,
     textTheme: typographyExtension.textTheme,
     textSelectionTheme: typographyExtension.textSelectionTheme,
+    progressIndicatorTheme: ProgressIndicatorThemeData(color: scheme.primaryAccent),
     extensions: [
       colorSchemeExtension,
       typographyExtension,

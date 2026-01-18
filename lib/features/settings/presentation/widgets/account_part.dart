@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/core/auth/auth_notifier.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:taskify/features/settings/presentation/bloc/settings_bloc.dart';
 
 class AccountPart extends StatelessWidget {
   const AccountPart({super.key});
@@ -33,7 +34,7 @@ class AccountPart extends StatelessWidget {
           ),
         ),
         titleColor: AppColorExtensions.getErrorColor(context),
-        onPressed: () => {},
+        onPressed: () => context.read<SettingsBloc>().add(SettingsEvent.onShowLoadingDialog()),
       ),
     ];
   }

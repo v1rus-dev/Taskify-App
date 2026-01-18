@@ -44,33 +44,29 @@ class EditTaskBottomPart extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<EditTaskBloc, EditTaskState>(
       builder: (context, state) {
-        return SafeArea(
-          bottom: true,
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                EditTaskTagsPart(),
-                Row(
-                  children: [
-                    EditTaskTimeButton(
+        return Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              EditTaskTagsPart(),
+              Row(
+                children: [
+                  EditTaskTimeButton(
+                    isEnabled: state.titleIsNotEmpty,
+                    onPressed: () => _onTimePressed(context, state),
+                  ),
+                  const Gap(8),
+                  Expanded(
+                    child: AppTextButton(
+                      text: AppLocalizations.of(context)?.save ?? '',
                       isEnabled: state.titleIsNotEmpty,
-                      onPressed: () => _onTimePressed(context, state),
+                      onPressed: onSavePressed,
                     ),
-                    const Gap(8),
-                    Expanded(
-                      child: AppTextButton(
-                        text: AppLocalizations.of(context)?.save ?? '',
-                        isEnabled: state.titleIsNotEmpty,
-                        onPressed: onSavePressed,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         );
       },

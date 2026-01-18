@@ -2,6 +2,7 @@ import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
 import 'package:taskify/core/widgets/screen_app_bar.dart';
 import 'package:taskify/domain/entities/time_format_type.dart';
 import 'package:taskify/features/settings/presentation/select_time_format_bottom_sheet.dart';
@@ -38,7 +39,7 @@ class SettingsScreen extends StatelessWidget {
     if (context.mounted) {
       if (result != null) {
         context.read<SettingsBloc>().add(
-          SettingsEvent.timeFormatChanged(result),
+          SettingsEvent.onTimeFormatChanged(result),
         );
       }
     }
@@ -48,39 +49,47 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: const ScreenAppBar(title: 'Settings'),
-      body: BlocBuilder<SettingsBloc, SettingsState>(
-        builder: (context, state) {
-          return Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      const SignInPart(),
-                      const Gap(24),
-                      CardWithActions(
-                        actions: [
-                          CardAction(
-                            title: 'Time format',
-                            description: state.timeFormat.label,
-                            onPressed: () =>
-                                _openTimeFormatSheet(context, state.timeFormat),
-                          ),
-                        ],
-                      ),
-                      const Gap(24),
-                      AccountPart(),
-                    ],
+    return BlocSideEffectListener<SettingsBloc, SettingsSideEffect>(
+      bloc: context.read<SettingsBloc>(),
+      listener: (context, effect) {
+        effect.when(showLoadingDialog: () {}, dismissLoadingDialog: () {});
+      },
+      child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: const ScreenAppBar(title: 'Settings'),
+        body: BlocBuilder<SettingsBloc, SettingsState>(
+          builder: (context, state) {
+            return Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        const SignInPart(),
+                        const Gap(24),
+                        CardWithActions(
+                          actions: [
+                            CardAction(
+                              title: 'Time format',
+                              description: state.timeFormat.label,
+                              onPressed: () => _openTimeFormatSheet(
+                                context,
+                                state.timeFormat,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Gap(24),
+                        AccountPart(),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }

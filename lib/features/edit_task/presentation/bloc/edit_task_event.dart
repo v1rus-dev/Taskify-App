@@ -8,5 +8,5 @@ class EditTaskEvent with _$EditTaskEvent {
   const factory EditTaskEvent.subTaskRemoved(int index) = _SubTaskRemoved;
   const factory EditTaskEvent.subTaskTextChanged(int index, String text) = _SubTaskTextChanged;
   const factory EditTaskEvent.selectDate(DateTime date, bool isAllDay, DateTime? startTime, DateTime? endTime) = _SelectDate;
-  const factory EditTaskEvent.saveTask(Completer completer) = _SaveTask;
+  const factory EditTaskEvent.saveTask(Completer completer, String title, String description) = _SaveTask;
 }

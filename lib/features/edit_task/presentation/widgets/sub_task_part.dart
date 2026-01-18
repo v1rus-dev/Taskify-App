@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:taskify/features/edit_task/presentation/providers/edit_task_notifier.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/sub_task.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task_bloc.dart';
@@ -55,8 +54,7 @@ class _SubTaskPartState extends State<SubTaskPart> {
 
     return BlocBuilder<EditTaskBloc, EditTaskState>(
       builder: (context, state) {
-        final loadedState = state.loadedOrNull;
-        final subTasks = loadedState?.subTasks ?? [];
+        final subTasks = state.subTasks;
         final displayCount = subTasks.length + 1;
         _syncFocusNodes(displayCount);
         return Padding(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/sub_task.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taskify/features/edit_task/presentation/bloc/edit_task_bloc.dart';
+import 'package:taskify/features/edit_task/presentation/bloc/edit_sub_task/edit_sub_task_bloc.dart';
 
 class SubTaskPart extends StatefulWidget {
   const SubTaskPart({super.key});
@@ -41,7 +41,6 @@ class _SubTaskPartState extends State<SubTaskPart> {
 
   @override
   Widget build(BuildContext context) {
-
     if (_pendingFocusIndex != null) {
       final focusIndex = _pendingFocusIndex!;
       _pendingFocusIndex = null;
@@ -52,7 +51,7 @@ class _SubTaskPartState extends State<SubTaskPart> {
       });
     }
 
-    return BlocBuilder<EditTaskBloc, EditTaskState>(
+    return BlocBuilder<EditSubTaskBloc, EditSubTaskState>(
       builder: (context, state) {
         final subTasks = state.subTasks;
         final displayCount = subTasks.length + 1;
@@ -72,21 +71,21 @@ class _SubTaskPartState extends State<SubTaskPart> {
                 focusNode: _focusNodes[index],
                 onCheckboxPressed: () {
                   if (!isPlaceholder) {
-                    context.read<EditTaskBloc>().add(
-                      EditTaskEvent.subTaskToggle(index),
+                    context.read<EditSubTaskBloc>().add(
+                      EditSubTaskEvent.subTaskToggle(index),
                     );
                   }
                 },
                 onTextChanged: (value) {
                   if (!isPlaceholder && value.isEmpty) {
-                    context.read<EditTaskBloc>().add(
-                      EditTaskEvent.subTaskRemoved(index),
+                    context.read<EditSubTaskBloc>().add(
+                      EditSubTaskEvent.subTaskRemoved(index),
                     );
                     _pendingFocusIndex = index;
                     return;
                   }
-                  context.read<EditTaskBloc>().add(
-                    EditTaskEvent.subTaskTextChanged(index, value),
+                  context.read<EditSubTaskBloc>().add(
+                    EditSubTaskEvent.subTaskTextChanged(index, value),
                   );
                 },
               );

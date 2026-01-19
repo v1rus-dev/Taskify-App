@@ -13,6 +13,5 @@ abstract class EditTaskState with _$EditTaskState {
     DateTime? endTime,
     @Default(true) bool isAllDay,
     @Default(false) bool titleIsNotEmpty,
-    @Default(<SubTaskUiModel>[]) List<SubTaskUiModel> subTasks,
   }) = _EditTaskState;
 }

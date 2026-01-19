@@ -53,7 +53,7 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
     SelectTaskDateBloc bloc,
     TaskDurationType selectedType,
   ) async {
-    await showAppModalBottomSheet<void>(
+    await showFloatingBottomSheet<void>(
       context: context,
       useSafeArea: true,
       child: SelectTaskPeriodBottomSheet(
@@ -213,41 +213,41 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
         final selectTaskBloc = context.read<SelectTaskDateBloc>();
         final isPeriod = selectTaskState.durationType == TaskDurationType.period;
 
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SizedBox(
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Gap(12),
-                    Text("When", style: theme.textTheme.displayMedium),
-                    const SizedBox(height: 24),
-                    CardWithActions(
-                      actions: _buildCardActions(
-                        context,
-                        selectTaskState,
-                        selectTaskBloc,
-                        isPeriod,
-                        use24Hour,
-                      ),
-                    ),
-                  ],
+        return AppBottomSheetScaffold(
+          fullScreen: true,
+          fullScreenFraction: 0.92,
+          bodyScrollable: true,
+          bodyPadding: AppInsets.sheetHorizontalSmallPadding,
+          bottomPadding: AppInsets.sheetBottomPadding,
+          body: SizedBox(
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Gap(12),
+                Text("When", style: theme.textTheme.displayMedium),
+                const SizedBox(height: 24),
+                CardWithActions(
+                  actions: _buildCardActions(
+                    context,
+                    selectTaskState,
+                    selectTaskBloc,
+                    isPeriod,
+                    use24Hour,
+                  ),
                 ),
-              ),
+              ],
             ),
-            const Gap(48),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
-              child: AppTextButton(
+          ),
+          bottom: Column(
+            children: [
+              AppTextButton(
                 text: "Save",
                 onPressed: () => _onSavePressed(context, selectTaskState),
               ),
-            ),
-          ],
+              const Gap(16),
+            ],
+          ),
         );
       },
     );

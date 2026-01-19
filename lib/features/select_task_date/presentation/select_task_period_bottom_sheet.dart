@@ -26,7 +26,7 @@ class SelectTaskPeriodBottomSheet extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: AppInsets.sheetHorizontalSmallPadding,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -55,7 +55,7 @@ class SelectTaskPeriodBottomSheet extends StatelessWidget {
               ),
             ],
           ),
-          const Gap(40)
+          const Gap(AppInsets.sheetBottomSmall),
         ],
       ),
     );

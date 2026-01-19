@@ -1,9 +1,96 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 
-Future<T?> showAppModalBottomSheet<T>({
+enum AppBottomSheetType { standard, floating, fullScreen }
+
+Future<T?> showStandardBottomSheet<T>({
   required BuildContext context,
   required Widget child,
+  bool showDragHandle = true,
+  bool useSafeArea = true,
+  bool useRootNavigator = false,
+  bool isScrollable = false,
+  bool expandScrollable = false,
+  ScrollPhysics? scrollPhysics,
+  double? minContentHeight,
+  double? maxContentHeight,
+}) {
+  return _showAppModalBottomSheet<T>(
+    context: context,
+    child: child,
+    type: AppBottomSheetType.standard,
+    showDragHandle: showDragHandle,
+    useSafeArea: useSafeArea,
+    useRootNavigator: useRootNavigator,
+    isScrollable: isScrollable,
+    expandScrollable: expandScrollable,
+    scrollPhysics: scrollPhysics,
+    minContentHeight: minContentHeight,
+    maxContentHeight: maxContentHeight,
+  );
+}
+
+Future<T?> showFloatingBottomSheet<T>({
+  required BuildContext context,
+  required Widget child,
+  bool showDragHandle = true,
+  bool useSafeArea = true,
+  bool useRootNavigator = false,
+  bool isScrollable = false,
+  bool expandScrollable = false,
+  ScrollPhysics? scrollPhysics,
+  double? minContentHeight,
+  double? maxContentHeight,
+  EdgeInsets? padding,
+}) {
+  return _showAppModalBottomSheet<T>(
+    context: context,
+    child: child,
+    type: AppBottomSheetType.floating,
+    showDragHandle: showDragHandle,
+    useSafeArea: useSafeArea,
+    useRootNavigator: useRootNavigator,
+    isScrollable: isScrollable,
+    expandScrollable: expandScrollable,
+    scrollPhysics: scrollPhysics,
+    minContentHeight: minContentHeight,
+    maxContentHeight: maxContentHeight,
+    floatingPadding: padding,
+  );
+}
+
+Future<T?> showFullScreenBottomSheet<T>({
+  required BuildContext context,
+  required Widget child,
+  bool showDragHandle = true,
+  bool useSafeArea = true,
+  bool useRootNavigator = false,
+  bool isScrollable = false,
+  bool expandScrollable = false,
+  ScrollPhysics? scrollPhysics,
+  double? minContentHeight,
+  double? maxContentHeight,
+}) {
+  return _showAppModalBottomSheet<T>(
+    context: context,
+    child: child,
+    type: AppBottomSheetType.fullScreen,
+    showDragHandle: showDragHandle,
+    useSafeArea: useSafeArea,
+    useRootNavigator: useRootNavigator,
+    isScrollable: isScrollable,
+    expandScrollable: expandScrollable,
+    scrollPhysics: scrollPhysics,
+    minContentHeight: minContentHeight,
+    maxContentHeight: maxContentHeight,
+    isScrollControlled: true,
+  );
+}
+
+Future<T?> _showAppModalBottomSheet<T>({
+  required BuildContext context,
+  required Widget child,
+  required AppBottomSheetType type,
   bool isScrollControlled = false,
   bool showDragHandle = true,
   bool useSafeArea = true,
@@ -13,31 +100,54 @@ Future<T?> showAppModalBottomSheet<T>({
   ScrollPhysics? scrollPhysics,
   double? minContentHeight,
   double? maxContentHeight,
-  ShapeBorder shape = const RoundedRectangleBorder(
-    borderRadius: BorderRadius.vertical(top: Radius.circular(36)),
-  ),
+  EdgeInsets? floatingPadding,
   Color? backgroundColor,
-}) => showModalBottomSheet<T>(
-  context: context,
-  isScrollControlled: isScrollControlled,
-  useSafeArea: false,
-  useRootNavigator: useRootNavigator,
-  backgroundColor:
-      backgroundColor ?? AppColorExtensions.getBackgroundColor(context),
-  shape: shape,
-  builder: (context) {
-    return _AppBottomSheetContent(
-      showDragHandle: showDragHandle,
-      isScrollable: isScrollable,
-      expandScrollable: expandScrollable,
-      scrollPhysics: scrollPhysics,
-      minContentHeight: minContentHeight,
-      maxContentHeight: maxContentHeight,
-      includeBottomSafeArea: useSafeArea,
-      child: child,
-    );
-  },
-);
+  Color? barrierColor,
+}) {
+  return showModalBottomSheet<T>(
+    context: context,
+    isScrollControlled: isScrollControlled,
+    useSafeArea: false,
+    useRootNavigator: useRootNavigator,
+    backgroundColor: _backgroundColorForType(context, type, backgroundColor),
+    shape: _shapeForType(type),
+    barrierColor:
+        barrierColor ?? AppColorExtensions.getBottomSheetOverlayColor(context),
+    builder: (context) {
+      final content = _AppBottomSheetContent(
+        showDragHandle: showDragHandle,
+        isScrollable: isScrollable,
+        expandScrollable: expandScrollable,
+        scrollPhysics: scrollPhysics,
+        minContentHeight: minContentHeight,
+        maxContentHeight: maxContentHeight,
+        includeBottomSafeArea: type == AppBottomSheetType.standard
+            ? useSafeArea
+            : false,
+        child: child,
+      );
+
+      if (type == AppBottomSheetType.floating) {
+        final padding = _floatingPadding(context, floatingPadding, useSafeArea);
+        return Padding(
+          padding: padding,
+          child: Material(
+            color:
+                backgroundColor ??
+                AppColorExtensions.getBackgroundColor(context),
+            shape: const RoundedRectangleBorder(
+              borderRadius: AppRadius.bottomSheetAll,
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: content,
+          ),
+        );
+      }
+
+      return content;
+    },
+  );
+}
 
 class AppBottomSheetScaffold extends StatelessWidget {
   const AppBottomSheetScaffold({
@@ -45,6 +155,7 @@ class AppBottomSheetScaffold extends StatelessWidget {
     required this.body,
     this.bottom,
     this.fullScreen = false,
+    this.fullScreenFraction = 1.0,
     this.bodyScrollable = false,
     this.bodyPadding = EdgeInsets.zero,
     this.bottomPadding = EdgeInsets.zero,
@@ -55,6 +166,7 @@ class AppBottomSheetScaffold extends StatelessWidget {
   final Widget body;
   final Widget? bottom;
   final bool fullScreen;
+  final double fullScreenFraction;
   final bool bodyScrollable;
   final EdgeInsetsGeometry bodyPadding;
   final EdgeInsetsGeometry bottomPadding;
@@ -68,46 +180,71 @@ class AppBottomSheetScaffold extends StatelessWidget {
     if (bodyScrollable) {
       bodyContent = SingleChildScrollView(
         physics: scrollPhysics,
-        child: Padding(
-          padding: bodyPadding,
-          child: bodyContent,
-        ),
+        child: Padding(padding: bodyPadding, child: bodyContent),
       );
     } else if (bodyPadding != EdgeInsets.zero) {
-      bodyContent = Padding(
-        padding: bodyPadding,
-        child: bodyContent,
-      );
+      bodyContent = Padding(padding: bodyPadding, child: bodyContent);
     }
 
     final content = Column(
       mainAxisSize: fullScreen ? MainAxisSize.max : MainAxisSize.min,
       children: [
-        if (fullScreen)
-          Expanded(child: bodyContent)
-        else
-          bodyContent,
-        if (bottom != null)
-          Padding(
-            padding: bottomPadding,
-            child: bottom,
-          ),
+        if (fullScreen) Expanded(child: bodyContent) else bodyContent,
+        if (bottom != null) Padding(padding: bottomPadding, child: bottom),
       ],
     );
 
-    final sizedContent = fullScreen
-        ? SizedBox(
-            height: MediaQuery.sizeOf(context).height,
-            child: content,
-          )
-        : content;
+    if (fullScreen) {
+      final mediaQuery = MediaQuery.of(context);
+      final height = mediaQuery.size.height * fullScreenFraction;
+      final topSafeArea = useSafeArea ? mediaQuery.viewPadding.top : 0.0;
+      final adjustedHeight = (height - topSafeArea).clamp(0.0, height);
 
-    if (!useSafeArea) {
-      return sizedContent;
+      return Padding(
+        padding: EdgeInsets.only(top: topSafeArea),
+        child: SizedBox(height: adjustedHeight, child: content),
+      );
     }
 
-    return SafeArea(child: sizedContent);
+    return useSafeArea ? SafeArea(child: content) : content;
   }
+}
+
+ShapeBorder? _shapeForType(AppBottomSheetType type) {
+  switch (type) {
+    case AppBottomSheetType.floating:
+      return null;
+    case AppBottomSheetType.standard:
+    case AppBottomSheetType.fullScreen:
+      return const RoundedRectangleBorder(
+        borderRadius: AppRadius.bottomSheetTop,
+      );
+  }
+}
+
+Color _backgroundColorForType(
+  BuildContext context,
+  AppBottomSheetType type,
+  Color? color,
+) {
+  if (type == AppBottomSheetType.floating) {
+    return Colors.transparent;
+  }
+
+  return color ?? AppColorExtensions.getBackgroundColor(context);
+}
+
+EdgeInsets _floatingPadding(
+  BuildContext context,
+  EdgeInsets? padding,
+  bool includeSafeArea,
+) {
+  final basePadding = padding ?? const EdgeInsets.all(16);
+  final safeBottom = includeSafeArea
+      ? MediaQuery.viewPaddingOf(context).bottom
+      : 0.0;
+
+  return basePadding.copyWith(bottom: basePadding.bottom + safeBottom);
 }
 
 class _AppBottomSheetContent extends StatelessWidget {
@@ -140,10 +277,7 @@ class _AppBottomSheetContent extends StatelessWidget {
     Widget content = child;
 
     if (isScrollable) {
-      content = SingleChildScrollView(
-        physics: scrollPhysics,
-        child: content,
-      );
+      content = SingleChildScrollView(physics: scrollPhysics, child: content);
     }
 
     if (minContentHeight != null || maxContentHeight != null) {
@@ -157,22 +291,37 @@ class _AppBottomSheetContent extends StatelessWidget {
     }
 
     if (expandScrollable) {
-      content = SizedBox(
-        width: double.infinity,
-        child: content,
-      );
+      content = SizedBox(width: double.infinity, child: content);
     }
 
     return AnimatedPadding(
       duration: const Duration(milliseconds: 150),
       curve: Curves.easeOut,
       padding: EdgeInsets.only(bottom: bottomInset + bottomSafeArea),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (showDragHandle) _BottomSheetDragHandle(),
-          content,
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          const dragHandleHeight = 28.0;
+          final maxHeight = constraints.hasBoundedHeight
+              ? (constraints.maxHeight -
+                        (showDragHandle ? dragHandleHeight : 0.0))
+                    .clamp(0.0, double.infinity)
+              : null;
+
+          final sizedContent = maxHeight == null
+              ? content
+              : ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: maxHeight),
+                  child: content,
+                );
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (showDragHandle) _BottomSheetDragHandle(),
+              sizedContent,
+            ],
+          );
+        },
       ),
     );
   }

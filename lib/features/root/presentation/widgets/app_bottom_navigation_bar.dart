@@ -23,8 +23,16 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
     appRouter.go(path);
   }
 
+  void _pushIfNotCurrent(String path) {
+    if (appRouter.state.uri.path == path) {
+      return;
+    }
+
+    appRouter.push(path);
+  }
+
   void _onAddPressed() {
-    _goIfNotCurrent(RouterPaths.editTask);
+    _pushIfNotCurrent(RouterPaths.editTask);
   }
 
   void _onHomePressed() {

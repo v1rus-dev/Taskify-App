@@ -31,7 +31,7 @@ class ProfileScreen extends StatelessWidget {
     BuildContext context,
     TimeFormatType selectedType,
   ) async {
-    final result = await showAppModalBottomSheet<TimeFormatType>(
+    final result = await showFloatingBottomSheet<TimeFormatType>(
       context: context,
       useSafeArea: true,
       useRootNavigator: true,

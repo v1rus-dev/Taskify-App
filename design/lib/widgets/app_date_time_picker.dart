@@ -2,8 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:design/themes/color/app_color_extensions.dart';
-import 'package:design/widgets/app_text_button.dart';
+import 'package:design/design.dart';
 
 class AppDateTimePicker {
   const AppDateTimePicker._();
@@ -101,7 +100,7 @@ class AppDateTimePicker {
           padding: const EdgeInsets.only(top: 8),
           decoration: BoxDecoration(
             color: AppColorExtensions.getBackgroundColor(context),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
+            borderRadius: AppRadius.bottomSheetTop,
           ),
           child: Column(
             children: [

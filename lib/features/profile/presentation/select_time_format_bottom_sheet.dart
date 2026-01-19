@@ -27,13 +27,13 @@ class SelectTimeFormatBottomSheet extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: AppInsets.sheetHorizontalPadding,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Gap(12),
+          const Gap(AppInsets.sheetTitleTop),
           Text('Time format', style: theme.textTheme.displayMedium),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppInsets.sheetTitleBottom),
           CardWithActions(
             actions: [
               CardAction(
@@ -52,7 +52,7 @@ class SelectTimeFormatBottomSheet extends StatelessWidget {
               ),
             ],
           ),
-          const Gap(40),
+          const Gap(AppInsets.sheetBottom),
         ],
       ),
     );

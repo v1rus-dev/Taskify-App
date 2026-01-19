@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:design/constants/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taskify/features/edit_task/presentation/bloc/edit_task_bloc.dart';
+import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 

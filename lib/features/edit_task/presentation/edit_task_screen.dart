@@ -60,42 +60,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   final descriptionFocusNode = FocusNode();
 
   @override
-  void initState() {
-    super.initState();
-
-    // ref.listenManual<EditTaskState>(editTaskNotifierProvider(widget.taskId), (
-    //   previous,
-    //   next,
-    // ) {
-    //   if (next.title.isNotEmpty && titleController.text != next.title) {
-    //     final selection = titleController.selection;
-    //     titleController.value = titleController.value.copyWith(
-    //       text: next.title,
-    //       selection: _clampSelection(selection, next.title),
-    //       composing: TextRange.empty,
-    //     );
-    //   }
-
-    //   if (next.description.isNotEmpty &&
-    //       descriptionController.text != next.description) {
-    //     final selection = descriptionController.selection;
-    //     descriptionController.value = descriptionController.value.copyWith(
-    //       text: next.description,
-    //       selection: _clampSelection(selection, next.description),
-    //       composing: TextRange.empty,
-    //     );
-    //   }
-    // });
-  }
-
-  static TextSelection _clampSelection(TextSelection selection, String text) {
-    final max = text.length;
-    final base = selection.baseOffset.clamp(0, max);
-    final extent = selection.extentOffset.clamp(0, max);
-    return TextSelection(baseOffset: base, extentOffset: extent);
-  }
-
-  @override
   void dispose() {
     titleController.dispose();
     descriptionController.dispose();
@@ -112,6 +76,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         completer,
         titleController.text,
         descriptionController.text,
+        context.read<EditSubTaskBloc>().state.subTasks,
       ),
     );
 

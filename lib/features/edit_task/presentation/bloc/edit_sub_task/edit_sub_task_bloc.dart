@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:taskify/core/services/talker_service.dart';
-import 'package:taskify/features/edit_task/domain/entities/sub_task.dart';
 import 'package:taskify/features/edit_task/presentation/models/sub_task_ui_model.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
 
@@ -21,7 +20,6 @@ class EditSubTaskBloc extends Bloc<EditSubTaskEvent, EditSubTaskState> {
     on<_SubTaskToggle>(_onSubTaskToggle);
     on<_SubTaskRemoved>(_onSubTaskRemoved);
     on<_SubTaskTextChanged>(_onSubTaskTextChanged);
-    on<_SaveSubTasks>(_onSaveSubTasks);
   }
 
   void _onStarted(_Started event, Emitter<EditSubTaskState> emit) async {
@@ -103,38 +101,4 @@ class EditSubTaskBloc extends Bloc<EditSubTaskEvent, EditSubTaskState> {
     }
   }
 
-  void _onSaveSubTasks(
-    _SaveSubTasks event,
-    Emitter<EditSubTaskState> emit,
-  ) async {
-    final result = taskId == null
-        ? await subTaskInteractor.insertSubTasks(
-            state.subTasks
-                .map(
-                  (subTask) => SubTaskEntity(
-                    id: subTask.id,
-                    taskId: taskId!,
-                    title: subTask.title,
-                    isCompleted: subTask.isCompleted,
-                  ),
-                )
-                .toList(),
-          )
-        : await subTaskInteractor.updateSubTasks(
-            state.subTasks
-                .map(
-                  (subTask) => SubTaskEntity(
-                    id: subTask.id,
-                    taskId: taskId!,
-                    title: subTask.title,
-                    isCompleted: subTask.isCompleted,
-                  ),
-                )
-                .toList(),
-          );
-    result.fold(
-      ifLeft: (failure) => TalkerService.instance.error(failure.message),
-      ifRight: (subTasks) => event.completer.complete(),
-    );
-  }
 }

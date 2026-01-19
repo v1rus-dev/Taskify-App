@@ -3,7 +3,7 @@ import 'package:design/widgets/app_text_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:flutter/material.dart';
-import 'package:taskify/features/edit_task/presentation/bloc/edit_task_bloc.dart';
+import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_tags_part.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_time_button.dart';
 import 'package:taskify/features/select_task_date/presentation/select_task_date_page.dart';

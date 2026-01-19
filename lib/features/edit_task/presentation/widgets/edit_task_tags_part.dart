@@ -1,7 +1,7 @@
 import 'package:animated_visibility/animated_visibility.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taskify/features/edit_task/presentation/bloc/edit_task_bloc.dart';
+import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/add_tag_button.dart';
 import 'package:gap/gap.dart';
 

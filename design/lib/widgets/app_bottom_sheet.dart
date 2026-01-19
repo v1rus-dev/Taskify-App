@@ -244,7 +244,17 @@ EdgeInsets _floatingPadding(
       ? MediaQuery.viewPaddingOf(context).bottom
       : 0.0;
 
-  return basePadding.copyWith(bottom: basePadding.bottom + safeBottom);
+  final resolvedPadding = padding ??
+      const EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 16,
+        bottom: 16,
+      );
+
+  return resolvedPadding.copyWith(
+    bottom: resolvedPadding.bottom + safeBottom,
+  );
 }
 
 class _AppBottomSheetContent extends StatelessWidget {

@@ -213,39 +213,31 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
         final selectTaskBloc = context.read<SelectTaskDateBloc>();
         final isPeriod = selectTaskState.durationType == TaskDurationType.period;
 
-        return AppBottomSheetScaffold(
-          fullScreen: true,
-          fullScreenFraction: 0.92,
-          bodyScrollable: true,
-          bodyPadding: AppInsets.sheetHorizontalSmallPadding,
-          bottomPadding: AppInsets.sheetBottomPadding,
-          body: SizedBox(
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Gap(12),
-                Text("When", style: theme.textTheme.displayMedium),
-                const SizedBox(height: 24),
-                CardWithActions(
-                  actions: _buildCardActions(
-                    context,
-                    selectTaskState,
-                    selectTaskBloc,
-                    isPeriod,
-                    use24Hour,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          bottom: Column(
+        return Padding(
+          padding: AppInsets.sheetHorizontalSmallPadding,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              AppTextButton(
-                text: "Save",
-                onPressed: () => _onSavePressed(context, selectTaskState),
+              const Gap(12),
+              Text("When", style: theme.textTheme.displayMedium),
+              const SizedBox(height: 24),
+              CardWithActions(
+                actions: _buildCardActions(
+                  context,
+                  selectTaskState,
+                  selectTaskBloc,
+                  isPeriod,
+                  use24Hour,
+                ),
               ),
-              const Gap(16),
+              const Gap(48),
+              Padding(
+                padding: AppInsets.sheetBottomPadding,
+                child: AppTextButton(
+                  text: "Save",
+                  onPressed: () => _onSavePressed(context, selectTaskState),
+                ),
+              ),
             ],
           ),
         );

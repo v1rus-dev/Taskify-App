@@ -26,8 +26,8 @@ class EditTaskBottomPart extends StatelessWidget {
   ) onDateSelected;
 
   Future<void> _onTimePressed(BuildContext context, EditTaskState state) async {
-    await _dismissKeyboard(context);
-    showFullScreenBottomSheet(
+    _dismissKeyboard(context);
+    showFloatingBottomSheet<void>(
       context: context,
       useSafeArea: true,
       child: SelectTaskDatePage(

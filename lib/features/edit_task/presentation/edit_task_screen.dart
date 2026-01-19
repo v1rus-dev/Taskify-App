@@ -211,7 +211,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                                 ),
                               ),
                             ),
-
                             const Gap(24),
                             SubTaskPart(),
                           ],

@@ -8,7 +8,7 @@ import 'package:taskify/domain/entities/time_format_type.dart';
 import 'package:taskify/features/profile/presentation/select_time_format_bottom_sheet.dart';
 import 'package:taskify/features/profile/presentation/widgets/account_part.dart';
 import 'package:taskify/features/profile/presentation/widgets/sign_in_part.dart';
-import 'package:taskify/features/profile/presentation/bloc/settings_bloc.dart';
+import 'package:taskify/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/data/interactors/app_configuration_interactor.dart';
 
@@ -17,9 +17,9 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (context) => SettingsBloc(
+    create: (context) => ProfileBloc(
       appConfigurationInteractor: locator<AppConfigurationInteractor>(),
-    )..add(const SettingsEvent.started()),
+    )..add(const ProfileEvent.started()),
     child: const ProfileScreen(),
   );
 }
@@ -39,8 +39,8 @@ class ProfileScreen extends StatelessWidget {
     );
     if (context.mounted) {
       if (result != null) {
-        context.read<SettingsBloc>().add(
-          SettingsEvent.onTimeFormatChanged(result),
+        context.read<ProfileBloc>().add(
+          ProfileEvent.onTimeFormatChanged(result),
         );
       }
     }
@@ -50,8 +50,8 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return BlocSideEffectListener<SettingsBloc, SettingsSideEffect>(
-      bloc: context.read<SettingsBloc>(),
+    return BlocSideEffectListener<ProfileBloc, ProfileSideEffect>(
+      bloc: context.read<ProfileBloc>(),
       listener: (context, effect) {
         effect.when(
           showLoadingDialog: () {
@@ -89,7 +89,7 @@ class ProfileScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: const ScreenAppBar(title: 'Profile'),
-        body: BlocBuilder<SettingsBloc, SettingsState>(
+        body: BlocBuilder<ProfileBloc, ProfileState>(
           builder: (context, state) {
             return Column(
               children: [

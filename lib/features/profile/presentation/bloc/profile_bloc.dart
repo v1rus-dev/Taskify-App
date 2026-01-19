@@ -7,55 +7,55 @@ import 'package:taskify/data/database/app_database.dart';
 import 'package:taskify/domain/entities/time_format_type.dart';
 import 'package:taskify/data/interactors/app_configuration_interactor.dart';
 
-part 'settings_event.dart';
-part 'settings_state.dart';
-part 'settings_side_effect.dart';
-part 'settings_bloc.freezed.dart';
+part 'profile_event.dart';
+part 'profile_state.dart';
+part 'profile_side_effect.dart';
+part 'profile_bloc.freezed.dart';
 
-class SettingsBloc extends Bloc<SettingsEvent, SettingsState>
-    with BlocSideEffectMixin<SettingsBloc, SettingsSideEffect> {
+class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
+    with BlocSideEffectMixin<ProfileBloc, ProfileSideEffect> {
   final AppConfigurationInteractor appConfigurationInteractor;
 
-  final _sideEffectController = StreamController<SettingsSideEffect>();
+  final _sideEffectController = StreamController<ProfileSideEffect>();
   StreamSubscription<AppConfigurationsTableData?>? _configSubscription;
 
   @override
-  Stream<SettingsSideEffect> get sideEffects => _sideEffectController.stream;
+  Stream<ProfileSideEffect> get sideEffects => _sideEffectController.stream;
 
-  SettingsBloc({required this.appConfigurationInteractor})
-    : super(_SettingsState()) {
+  ProfileBloc({required this.appConfigurationInteractor})
+    : super(_ProfileState()) {
     on<_Started>(_onStarted);
     on<_OnTimeFormatChanged>(_onTimeFormatChanged);
     on<_UpdateTimeFormat>(_onUpdateTimeFormat);
     on<_OnRemoveAccount>(_onRemoveAccount);
   }
 
-  void _onStarted(_Started event, Emitter<SettingsState> emit) {
+  void _onStarted(_Started event, Emitter<ProfileState> emit) {
     _observeTimeFormat();
   }
 
   void _onTimeFormatChanged(
     _OnTimeFormatChanged event,
-    Emitter<SettingsState> emit,
+    Emitter<ProfileState> emit,
   ) {
     appConfigurationInteractor.setTimeFormat(event.timeFormat);
   }
 
   void _onUpdateTimeFormat(
     _UpdateTimeFormat event,
-    Emitter<SettingsState> emit,
+    Emitter<ProfileState> emit,
   ) {
     emit(state.copyWith(timeFormat: event.timeFormat));
   }
 
-  void _onRemoveAccount(_OnRemoveAccount event, Emitter<SettingsState> emit) {}
+  void _onRemoveAccount(_OnRemoveAccount event, Emitter<ProfileState> emit) {}
 
   void _observeTimeFormat() {
     _configSubscription = appConfigurationInteractor
         .observeConfiguration()
         .listen((config) {
           add(
-            SettingsEvent.updateTimeFormat(
+            ProfileEvent.updateTimeFormat(
               timeFormatTypeFromBool(config?.use24Hour ?? true),
             ),
           );

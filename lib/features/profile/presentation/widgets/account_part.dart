@@ -4,10 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/core/auth/auth_cubit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:taskify/features/profile/presentation/bloc/settings_bloc.dart';
+import 'package:taskify/features/profile/presentation/bloc/profile_bloc.dart';
 
 class AccountPart extends StatelessWidget {
   const AccountPart({super.key});
+
+  void _onSignOutPressed(BuildContext context) {
+    context.read<AuthCubit>().signOut();
+  }
+
+  void _onRemoveAccountPressed(BuildContext context) {
+    context.read<ProfileBloc>().add(ProfileEvent.onRemoveAccount());
+  }
 
   List<CardAction> _buildActions(BuildContext context) {
     return [
@@ -19,7 +27,7 @@ class AccountPart extends StatelessWidget {
           width: 24,
           height: 24,
         ),
-        onPressed: () => context.read<AuthCubit>().signOut(),
+        onPressed: () => _onSignOutPressed(context),
       ),
       CardAction(
         title: 'Delete account',
@@ -34,7 +42,7 @@ class AccountPart extends StatelessWidget {
           ),
         ),
         titleColor: AppColorExtensions.getErrorColor(context),
-        onPressed: () => context.read<SettingsBloc>().add(SettingsEvent.onRemoveAccount()),
+        onPressed: () => _onRemoveAccountPressed(context),
       ),
     ];
   }

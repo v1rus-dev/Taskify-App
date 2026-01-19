@@ -36,53 +36,55 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const HomeAppBar(),
-      body: BlocBuilder<HomeBloc, HomeState>(
-        builder: (context, state) {
-          return Padding(
-            padding: const EdgeInsets.only(top: 24),
-            child: CustomScrollView(
-              slivers: [
-                const SliverGap(8),
-                SliverToBoxAdapter(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 360),
-                    switchInCurve: Curves.easeOutCubic,
-                    switchOutCurve: Curves.easeInCubic,
-                    transitionBuilder: (child, animation) => FadeTransition(
-                      opacity: animation,
-                      child: SizeTransition(
-                        sizeFactor: animation,
-                        axisAlignment: -1.0,
-                        child: child,
+      body: SafeArea(
+        child: BlocBuilder<HomeBloc, HomeState>(
+          builder: (context, state) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 24),
+              child: CustomScrollView(
+                slivers: [
+                  const SliverGap(8),
+                  SliverToBoxAdapter(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 360),
+                      switchInCurve: Curves.easeOutCubic,
+                      switchOutCurve: Curves.easeInCubic,
+                      transitionBuilder: (child, animation) => FadeTransition(
+                        opacity: animation,
+                        child: SizeTransition(
+                          sizeFactor: animation,
+                          axisAlignment: -1.0,
+                          child: child,
+                        ),
                       ),
+                      child: state.isHeaderExpanded
+                          ? const HomeHidedHeader(key: ValueKey('header'))
+                          : const SizedBox(key: ValueKey('empty')),
                     ),
-                    child: state.isHeaderExpanded
-                        ? const HomeHidedHeader(key: ValueKey('header'))
-                        : const SizedBox(key: ValueKey('empty')),
                   ),
-                ),
-                SliverPadding(
-                  padding: EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                    bottom: 24 + 76 + 16 + MediaQuery.of(context).padding.bottom,
-                  ),
-                  sliver: SliverList.separated(
-                    separatorBuilder: (context, index) => const Gap(12),
-                    itemBuilder: (context, index) => TaskCard(
-                      task: state.tasks[index],
-                      onTaskClicked: () => _onTaskClicked(state.tasks[index]),
-                      onCheckboxPressed: () => context.read<HomeBloc>().add(
-                        HomeEvent.updateTaskCompletion(state.tasks[index]),
+                  SliverPadding(
+                    padding: EdgeInsets.only(
+                      left: 20,
+                      right: 20,
+                      bottom: 24 + 76 + 16 + MediaQuery.of(context).padding.bottom,
+                    ),
+                    sliver: SliverList.separated(
+                      separatorBuilder: (context, index) => const Gap(12),
+                      itemBuilder: (context, index) => TaskCard(
+                        task: state.tasks[index],
+                        onTaskClicked: () => _onTaskClicked(state.tasks[index]),
+                        onCheckboxPressed: () => context.read<HomeBloc>().add(
+                          HomeEvent.updateTaskCompletion(state.tasks[index]),
+                        ),
                       ),
+                      itemCount: state.tasks.length,
                     ),
-                    itemCount: state.tasks.length,
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

@@ -1,9 +1,11 @@
 import 'dart:ui';
 
+import 'package:design/constants/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/app/router/router_paths.dart';
 import 'package:taskify/features/root/presentation/widgets/app_add_action_button.dart';
+import 'package:taskify/features/root/presentation/widgets/app_navigation_button.dart';
 
 class AppBottomNavigationBar extends StatefulWidget {
   const AppBottomNavigationBar({super.key});
@@ -13,8 +15,24 @@ class AppBottomNavigationBar extends StatefulWidget {
 }
 
 class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
+  void _goIfNotCurrent(String path) {
+    if (appRouter.state.uri.path == path) {
+      return;
+    }
+
+    appRouter.go(path);
+  }
+
   void _onAddPressed() {
-    appRouter.push(RouterPaths.editTask);
+    _goIfNotCurrent(RouterPaths.editTask);
+  }
+
+  void _onHomePressed() {
+    _goIfNotCurrent(RouterPaths.home);
+  }
+
+  void _onProfilePressed() {
+    _goIfNotCurrent(RouterPaths.profile);
   }
 
   @override
@@ -41,8 +59,24 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
               borderRadius: BorderRadius.circular(32),
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [AppAddActionButton(onPressed: _onAddPressed)],
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                AppNavigationButton(
+                  title: 'Home',
+                  iconPath: AppIcons.home,
+                  packageName: AppIcons.packageName,
+                  isSelected: appRouter.state.uri.path == RouterPaths.home,
+                  onPressed: _onHomePressed,
+                ),
+                AppAddActionButton(onPressed: _onAddPressed),
+                AppNavigationButton(
+                  title: 'Profile',
+                  iconPath: AppIcons.profile,
+                  packageName: AppIcons.packageName,
+                  isSelected: appRouter.state.uri.path == RouterPaths.profile,
+                  onPressed: _onProfilePressed,
+                ),
+              ],
             ),
           ),
         ),

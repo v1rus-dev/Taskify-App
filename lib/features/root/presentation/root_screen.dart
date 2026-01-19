@@ -18,8 +18,8 @@ class RootScreen extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 24, left: 20, right: 20),
-                child: const AppBottomNavigationBar(),
+                padding: const EdgeInsets.only(bottom: 16, left: 20, right: 20),
+                child: AppBottomNavigationBar(),
               ),
             ),
           ),

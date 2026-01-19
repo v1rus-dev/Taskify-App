@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/features/settings/presentation/widgets/google_sign_in_button.dart';
-import 'package:taskify/features/settings/presentation/widgets/apple_sign_in_button.dart';
+import 'package:taskify/features/profile/presentation/widgets/google_sign_in_button.dart';
+import 'package:taskify/features/profile/presentation/widgets/apple_sign_in_button.dart';
 import 'package:taskify/core/auth/auth_cubit.dart';
 
 class SignInPart extends StatelessWidget {

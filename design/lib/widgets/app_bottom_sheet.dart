@@ -7,6 +7,7 @@ Future<T?> showAppModalBottomSheet<T>({
   bool isScrollControlled = false,
   bool showDragHandle = true,
   bool useSafeArea = true,
+  bool useRootNavigator = false,
   bool isScrollable = false,
   bool expandScrollable = false,
   ScrollPhysics? scrollPhysics,
@@ -20,6 +21,7 @@ Future<T?> showAppModalBottomSheet<T>({
   context: context,
   isScrollControlled: isScrollControlled,
   useSafeArea: false,
+  useRootNavigator: useRootNavigator,
   backgroundColor:
       backgroundColor ?? AppColorExtensions.getBackgroundColor(context),
   shape: shape,

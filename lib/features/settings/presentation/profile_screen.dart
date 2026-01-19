@@ -12,20 +12,20 @@ import 'package:taskify/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/data/interactors/app_configuration_interactor.dart';
 
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) => BlocProvider(
     create: (context) => SettingsBloc(
       appConfigurationInteractor: locator<AppConfigurationInteractor>(),
     )..add(const SettingsEvent.started()),
-    child: const SettingsScreen(),
+    child: const ProfileScreen(),
   );
 }
 
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
 
   Future<void> _openTimeFormatSheet(
     BuildContext context,
@@ -87,7 +87,7 @@ class SettingsScreen extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: const ScreenAppBar(title: 'Settings'),
+        appBar: const ScreenAppBar(title: 'Profile'),
         body: BlocBuilder<SettingsBloc, SettingsState>(
           builder: (context, state) {
             return Column(

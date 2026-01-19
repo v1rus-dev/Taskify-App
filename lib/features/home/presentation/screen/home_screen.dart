@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/app/router/router_paths.dart';
-import 'package:taskify/features/home/presentation/widgets/add_task_button.dart';
 import 'package:taskify/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:taskify/features/home/presentation/widgets/home_hided_header.dart';
 import 'package:taskify/features/home/presentation/widgets/taks_card.dart';
@@ -29,10 +28,6 @@ class HomePage extends StatelessWidget {
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  void _onAddTask() {
-    appRouter.push(RouterPaths.editTask);
-  }
-
   void _onTaskClicked(TaskEntity task) {
     appRouter.push(RouterPaths.editTask, extra: task.id);
   }
@@ -41,7 +36,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const HomeAppBar(),
-      floatingActionButton: AddTaskButton(onPressed: _onAddTask),
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           return CustomScrollView(
@@ -66,7 +60,11 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  bottom: 24 + 76 + 16 + MediaQuery.of(context).padding.bottom,
+                ),
                 sliver: SliverList.separated(
                   separatorBuilder: (context, index) => const Gap(12),
                   itemBuilder: (context, index) => TaskCard(

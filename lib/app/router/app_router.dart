@@ -4,14 +4,34 @@ import 'package:taskify/app/router/app_transitions.dart';
 import 'package:taskify/app/router/router_paths.dart';
 import 'package:taskify/features/edit_task/presentation/edit_task_screen.dart';
 import 'package:taskify/features/home/presentation/screen/home_screen.dart';
-import 'package:taskify/features/settings/presentation/settings_screen.dart';
+import 'package:taskify/features/root/presentation/root_screen.dart';
+import 'package:taskify/features/settings/presentation/profile_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: RouterPaths.home,
   routes: [
-    GoRoute(
-      path: RouterPaths.home,
-      builder: (context, state) => const HomePage(),
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) => RootScreen(
+        navigationShell: navigationShell,
+      ),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RouterPaths.home,
+              builder: (context, state) => const HomePage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RouterPaths.profile,
+              builder: (context, state) => const ProfilePage(),
+            ),
+          ],
+        ),
+      ],
     ),
     GoRoute(
       path: RouterPaths.editTask,
@@ -23,10 +43,6 @@ final GoRouter appRouter = GoRouter(
           EditTaskPage(taskId: taskId),
         );
       },
-    ),
-    GoRoute(
-      path: RouterPaths.settings,
-      builder: (context, state) => const SettingsPage(),
     ),
   ],
 );

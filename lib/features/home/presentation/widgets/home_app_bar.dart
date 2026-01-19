@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
-import 'package:taskify/app/router/app_router.dart';
-import 'package:taskify/app/router/router_paths.dart';
-import 'package:taskify/features/home/presentation/providers/home_screen_notifier.dart';
 import 'package:taskify/features/home/presentation/widgets/home_app_bar_button.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 import 'package:taskify/features/home/presentation/bloc/home_bloc.dart';
@@ -19,10 +16,6 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     // SafeArea будет добавлен автоматически через padding
     // Используем достаточно большое значение для покрытия всех устройств
     return const Size.fromHeight(120);
-  }
-
-  void _openSettings() {
-    appRouter.push(RouterPaths.settings);
   }
 
   void _onChangeCalendarState(BuildContext context) {
@@ -93,22 +86,12 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      HomeAppBarButton(
-                        svgIconPath: state.isHeaderExpanded
-                            ? AppIcons.arrowTop
-                            : AppIcons.arrowBottom,
-                        packageName: AppIcons.packageName,
-                        onPressed: () => _onChangeCalendarState(context),
-                      ),
-                      const Gap(12),
-                      HomeAppBarButton(
-                        svgIconPath: AppIcons.settings,
-                        packageName: AppIcons.packageName,
-                        onPressed: _openSettings,
-                      ),
-                    ],
+                  HomeAppBarButton(
+                    svgIconPath: state.isHeaderExpanded
+                        ? AppIcons.arrowTop
+                        : AppIcons.arrowBottom,
+                    packageName: AppIcons.packageName,
+                    onPressed: () => _onChangeCalendarState(context),
                   ),
                 ],
               );

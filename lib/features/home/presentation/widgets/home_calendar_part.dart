@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/features/home/presentation/bloc/home_bloc.dart';
-import 'package:taskify/features/home/presentation/providers/home_screen_notifier.dart';
 import 'package:taskify/features/home/presentation/widgets/home_calendar_item.dart';
 
 class HomeCalendarPart extends StatefulWidget {

@@ -66,7 +66,8 @@ class HomeScreen extends StatelessWidget {
                     padding: EdgeInsets.only(
                       left: 20,
                       right: 20,
-                      bottom: 24 + 76 + 16 + MediaQuery.of(context).padding.bottom,
+                      bottom:
+                          24 + 76 + 16 + MediaQuery.of(context).padding.bottom,
                     ),
                     sliver: SliverList.separated(
                       separatorBuilder: (context, index) => const Gap(12),

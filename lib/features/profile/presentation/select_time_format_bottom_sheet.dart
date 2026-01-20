@@ -32,7 +32,7 @@ class SelectTimeFormatBottomSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Gap(AppInsets.sheetTitleTop),
-          Text('Time format', style: theme.textTheme.displayMedium),
+          Text('Time format', style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: AppInsets.sheetTitleBottom),
           CardWithActions(
             actions: [

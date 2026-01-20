@@ -1,4 +1,4 @@
-import 'package:design/widgets/app_bottom_sheet.dart';
+import 'package:design/design.dart';
 import 'package:design/widgets/app_text_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -23,19 +23,22 @@ class EditTaskBottomPart extends StatelessWidget {
     bool isAllDay,
     DateTime? startTime,
     DateTime? endTime,
-  ) onDateSelected;
+  )
+  onDateSelected;
 
   Future<void> _onTimePressed(BuildContext context, EditTaskState state) async {
-    _dismissKeyboard(context);
-    showFloatingBottomSheet<void>(
-      context: context,
-      useSafeArea: true,
-      child: SelectTaskDatePage(
-        selectedDate: state.selectedDate,
-        isAllDay: state.isAllDay,
-        startTime: state.startTime,
-        endTime: state.endTime,
-        onSave: onDateSelected,
+    await unfocusAndThen(
+      context,
+      () => showFloatingBottomSheet<void>(
+        context: context,
+        useSafeArea: true,
+        child: SelectTaskDatePage(
+          selectedDate: state.selectedDate,
+          isAllDay: state.isAllDay,
+          startTime: state.startTime,
+          endTime: state.endTime,
+          onSave: onDateSelected,
+        ),
       ),
     );
   }

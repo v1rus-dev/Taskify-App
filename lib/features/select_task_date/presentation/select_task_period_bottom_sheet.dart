@@ -31,7 +31,7 @@ class SelectTaskPeriodBottomSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Gap(12),
-          Text('Period', style: theme.textTheme.displayMedium),
+          Text('Period', style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 24),
           CardWithActions(
             actions: [

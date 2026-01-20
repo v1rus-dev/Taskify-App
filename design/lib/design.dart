@@ -17,3 +17,4 @@ export 'widgets/app_date_time_picker.dart';
 export 'themes/color/app_color_extensions.dart';
 export 'widgets/card_with_actions.dart';
 export 'models/card_action.dart';
+export 'widgets/utils.dart';

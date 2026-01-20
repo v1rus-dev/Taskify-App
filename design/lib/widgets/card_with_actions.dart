@@ -41,11 +41,11 @@ class _CardWithActionsState extends State<CardWithActions> {
         ? Text(
             action.description!,
             textAlign: TextAlign.right,
-            style: theme.textTheme.labelLarge!.copyWith(
+            style: theme.textTheme.bodyMedium!.copyWith(
               color:
                   action.descriptionColor ??
                   AppColorExtensions.getTextPrimaryColor(context),
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.bold,
             ),
           )
         : action.icon != null
@@ -70,7 +70,7 @@ class _CardWithActionsState extends State<CardWithActions> {
                     Flexible(
                       child: Text(
                         action.title,
-                        style: theme.textTheme.bodySmall!.copyWith(
+                        style: theme.textTheme.bodyMedium!.copyWith(
                           color: action.titleColor ?? AppColorExtensions.getTextPrimaryColor(context),
                         ),
                         overflow: TextOverflow.ellipsis,

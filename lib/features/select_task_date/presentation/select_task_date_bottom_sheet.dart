@@ -219,7 +219,7 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Gap(12),
-              Text("When", style: theme.textTheme.displayMedium),
+              Text("When", style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 24),
               CardWithActions(
                 actions: _buildCardActions(

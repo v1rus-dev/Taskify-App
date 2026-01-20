@@ -7,7 +7,7 @@ import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
 import 'package:taskify/domain/entities/task.dart';
-import 'package:taskify/features/edit_task/domain/entities/sub_task.dart';
+import 'package:taskify/domain/entities/sub_task.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/edit_task/presentation/models/sub_task_ui_model.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';

@@ -5,6 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 import 'package:taskify/domain/entities/task.dart';
+import 'package:taskify/domain/entities/task_with_sub_tasks.dart';
 import 'package:taskify/domain/entities/tasks_view_type.dart';
 
 part 'home_event.dart';
@@ -15,7 +16,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final TaskInteractor taskInteractor;
 
   StreamSubscription<List<TaskEntity>>? _tasksSubscription;
-  List<TaskEntity> _allTasks = [];
+  List<TaskWithSubTasksEntity> _allTasks = [];
 
   HomeBloc({required this.taskInteractor})
     : super(
@@ -43,15 +44,24 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   void _observeTasks() {
     _tasksSubscription = taskInteractor.observeTasks().listen((tasks) {
-      _allTasks = tasks;
+      _allTasks = tasks
+          .map(
+            (task) => TaskWithSubTasksEntity(
+              task: task,
+              subTasks: const [],
+            ),
+          )
+          .toList();
       TalkerService.instance.info('Tasks: ${tasks.length}');
-      add(HomeEvent.tasksUpdated(_filterTasksByDate(tasks, state.selectedDate)));
+      add(HomeEvent.tasksUpdated(_filterTasksByDate(_allTasks, state.selectedDate)));
     });
   }
 
   void _onUpdateTaskCompletion(_UpdateTaskCompletion event, Emitter<HomeState> emit) async {
-    final task = event.task;
-    final result = await taskInteractor.updateTask(task.copyWith(isCompleted: !task.isCompleted));
+    final task = event.task.task;
+    final result = await taskInteractor.updateTask(
+      task.copyWith(isCompleted: !task.isCompleted),
+    );
     result.fold(
       ifLeft: (failure) => TalkerService.instance.error(failure.message),
       ifRight: (task) => TalkerService.instance.info('Task updated: ${task.id}'),
@@ -71,8 +81,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     add(HomeEvent.tasksUpdated(_filterTasksByDate(_allTasks, event.date)));
   }
 
-  List<TaskEntity> _filterTasksByDate(
-    List<TaskEntity> tasks,
+  List<TaskWithSubTasksEntity> _filterTasksByDate(
+    List<TaskWithSubTasksEntity> tasks,
     DateTime selectedDate,
   ) {
     final normalizedSelectedDate = DateTime(
@@ -83,7 +93,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     return tasks
         .where(
           (task) =>
-              DateTime(task.date.year, task.date.month, task.date.day) ==
+              DateTime(task.task.date.year, task.task.date.month, task.task.date.day) ==
               normalizedSelectedDate,
         )
         .toList();

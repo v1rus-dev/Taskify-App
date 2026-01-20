@@ -1,6 +1,6 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
-import 'package:taskify/features/edit_task/domain/entities/sub_task.dart';
+import 'package:taskify/domain/entities/sub_task.dart';
 
 abstract class SubTaskRepository {
   Future<Either<Failure, List<SubTaskEntity>>> insertSubTasks(

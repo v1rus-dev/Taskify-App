@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:taskify/data/database/app_database.dart';
-import 'package:taskify/features/edit_task/domain/entities/sub_task.dart';
+import 'package:taskify/domain/entities/sub_task.dart';
 
 extension SubtasksTableDataMapper on SubtasksTableData {
   SubTaskEntity toDomain() {

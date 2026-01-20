@@ -2,7 +2,7 @@ import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/features/edit_task/data/datasources/sub_task_local_datasource.dart';
 import 'package:taskify/features/edit_task/data/mappers/sub_task_mapper.dart';
-import 'package:taskify/features/edit_task/domain/entities/sub_task.dart';
+import 'package:taskify/domain/entities/sub_task.dart';
 import 'package:taskify/features/edit_task/domain/repositories/sub_task_repository.dart';
 
 class SubTaskRepositoryImpl implements SubTaskRepository {

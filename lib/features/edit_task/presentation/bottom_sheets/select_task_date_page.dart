@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/domain/entities/task_duration_type.dart';
-import 'package:taskify/features/select_task_date/presentation/bloc/select_task_date_bloc.dart';
-import 'package:taskify/features/select_task_date/presentation/select_task_date_bottom_sheet.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/bloc/select_task_date_bloc.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_date_bottom_sheet.dart';
 
 class SelectTaskDatePage extends StatelessWidget {
   const SelectTaskDatePage({

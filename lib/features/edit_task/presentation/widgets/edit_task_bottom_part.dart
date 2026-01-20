@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_tags_part.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_time_button.dart';
-import 'package:taskify/features/select_task_date/presentation/select_task_date_page.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_date_page.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
 class EditTaskBottomPart extends StatelessWidget {
@@ -43,25 +43,6 @@ class EditTaskBottomPart extends StatelessWidget {
     );
   }
 
-  Future<void> _dismissKeyboard(BuildContext context) async {
-    final focus = FocusManager.instance.primaryFocus;
-    if (focus != null && focus.hasFocus) {
-      focus.unfocus();
-    }
-
-    const step = Duration(milliseconds: 16);
-    const maxWait = Duration(milliseconds: 300);
-    final end = DateTime.now().add(maxWait);
-
-    while (DateTime.now().isBefore(end)) {
-      await Future.delayed(step);
-      if (!context.mounted) return;
-      if (MediaQuery.viewInsetsOf(context).bottom == 0) {
-        return;
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<EditTaskBloc, EditTaskState>(
@@ -76,6 +57,7 @@ class EditTaskBottomPart extends StatelessWidget {
                 children: [
                   EditTaskTimeButton(
                     isEnabled: state.titleIsNotEmpty,
+                    showIndicator: state.isDateModified,
                     onPressed: () => _onTimePressed(context, state),
                   ),
                   const Gap(8),

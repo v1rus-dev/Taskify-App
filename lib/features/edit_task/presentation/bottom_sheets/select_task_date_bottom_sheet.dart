@@ -7,8 +7,8 @@ import 'package:taskify/core/providers/time_format_notifier.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/utils/time_format_utils.dart';
 import 'package:taskify/domain/entities/task_duration_type.dart';
-import 'package:taskify/features/select_task_date/presentation/bloc/select_task_date_bloc.dart';
-import 'package:taskify/features/select_task_date/presentation/select_task_period_bottom_sheet.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/bloc/select_task_date_bloc.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_period_bottom_sheet.dart';
 
 class SelectTaskDateBottomSheet extends StatelessWidget {
   const SelectTaskDateBottomSheet({
@@ -112,54 +112,41 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
     bool isPeriod,
     bool use24Hour,
   ) {
+    final current = selectTaskState.current;
     return [
       CardAction(
         title: 'Date',
-        description: _formatDate(context, selectTaskState.selectedDate),
-        onPressed: () => _onDatePressed(
-          context,
-          selectTaskBloc,
-          selectTaskState.selectedDate,
-        ),
+        description: _formatDate(context, current.selectedDate),
+        onPressed: () =>
+            _onDatePressed(context, selectTaskBloc, current.selectedDate),
       ),
       CardAction(
         title: 'Period',
-        description: selectTaskState.durationType == TaskDurationType.allDay
+        description: current.durationType == TaskDurationType.allDay
             ? 'All day'
             : 'Period',
-        onPressed: () => _onDurationPressed(
-          context,
-          selectTaskBloc,
-          selectTaskState.durationType,
-        ),
+        onPressed: () =>
+            _onDurationPressed(context, selectTaskBloc, current.durationType),
       ),
       if (isPeriod)
         CardAction(
           title: 'Start time',
-          description: formatTimeOfDay(
-            context,
-            selectTaskState.startTime,
-            use24Hour,
-          ),
+          description: formatTimeOfDay(context, current.startTime, use24Hour),
           onPressed: () => _onStartTimePressed(
             context,
             selectTaskBloc,
-            selectTaskState.startTime,
+            current.startTime,
             use24Hour,
           ),
         ),
       if (isPeriod)
         CardAction(
           title: 'End time',
-          description: formatTimeOfDay(
-            context,
-            selectTaskState.endTime,
-            use24Hour,
-          ),
+          description: formatTimeOfDay(context, current.endTime, use24Hour),
           onPressed: () => _onEndTimePressed(
             context,
             selectTaskBloc,
-            selectTaskState.endTime,
+            current.endTime,
             use24Hour,
           ),
         ),
@@ -170,35 +157,40 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
     BuildContext context,
     SelectTaskDateState selectTaskState,
   ) {
+    final current = selectTaskState.current;
     final startDateTime =
-        selectTaskState.durationType == TaskDurationType.period &&
-                selectTaskState.startTime != null
-            ? DateTime(
-                selectTaskState.selectedDate.year,
-                selectTaskState.selectedDate.month,
-                selectTaskState.selectedDate.day,
-                selectTaskState.startTime!.hour,
-                selectTaskState.startTime!.minute,
-              )
-            : null;
+        current.durationType == TaskDurationType.period &&
+            current.startTime != null
+        ? DateTime(
+            current.selectedDate.year,
+            current.selectedDate.month,
+            current.selectedDate.day,
+            current.startTime!.hour,
+            current.startTime!.minute,
+          )
+        : null;
     final endDateTime =
-        selectTaskState.durationType == TaskDurationType.period &&
-                selectTaskState.endTime != null
-            ? DateTime(
-                selectTaskState.selectedDate.year,
-                selectTaskState.selectedDate.month,
-                selectTaskState.selectedDate.day,
-                selectTaskState.endTime!.hour,
-                selectTaskState.endTime!.minute,
-              )
-            : null;
+        current.durationType == TaskDurationType.period &&
+            current.endTime != null
+        ? DateTime(
+            current.selectedDate.year,
+            current.selectedDate.month,
+            current.selectedDate.day,
+            current.endTime!.hour,
+            current.endTime!.minute,
+          )
+        : null;
     onSave?.call(
-      selectTaskState.selectedDate,
-      selectTaskState.durationType == TaskDurationType.allDay,
+      current.selectedDate,
+      current.durationType == TaskDurationType.allDay,
       startDateTime,
       endDateTime,
     );
     Navigator.of(context).pop();
+  }
+
+  void _onClearPressed(BuildContext context, SelectTaskDateBloc bloc) {
+    bloc.add(const SelectTaskDateEvent.selectionCleared());
   }
 
   @override
@@ -211,7 +203,9 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
     return BlocBuilder<SelectTaskDateBloc, SelectTaskDateState>(
       builder: (context, selectTaskState) {
         final selectTaskBloc = context.read<SelectTaskDateBloc>();
-        final isPeriod = selectTaskState.durationType == TaskDurationType.period;
+        final current = selectTaskState.current;
+        final isModified = !current.isSameAs(selectTaskState.defaults);
+        final isPeriod = current.durationType == TaskDurationType.period;
 
         return Padding(
           padding: AppInsets.sheetHorizontalSmallPadding,
@@ -219,7 +213,12 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Gap(12),
-              Text("When", style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
+              Text(
+                "When",
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 24),
               CardWithActions(
                 actions: _buildCardActions(
@@ -232,6 +231,18 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
                 animatable: true,
               ),
               const Gap(48),
+              if (isModified)
+                GestureDetector(
+                  onTap: () => _onClearPressed(context, selectTaskBloc),
+                  child: Text(
+                    'Clear selection',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: AppColorExtensions.getPrimaryAccentColor(context),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              if (isModified) const Gap(12),
               Padding(
                 padding: AppInsets.sheetBottomPadding,
                 child: AppTextButton(

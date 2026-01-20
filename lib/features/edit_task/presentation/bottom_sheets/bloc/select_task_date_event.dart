@@ -10,4 +10,5 @@ class SelectTaskDateEvent with _$SelectTaskDateEvent {
       _StartTimeSelected;
   const factory SelectTaskDateEvent.endTimeSelected(TimeOfDay time) =
       _EndTimeSelected;
+  const factory SelectTaskDateEvent.selectionCleared() = _SelectionCleared;
 }

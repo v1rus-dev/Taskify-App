@@ -8,6 +8,9 @@ part 'select_task_date_state.dart';
 part 'select_task_date_bloc.freezed.dart';
 
 class SelectTaskDateBloc extends Bloc<SelectTaskDateEvent, SelectTaskDateState> {
+  static const _defaultStartTime = TimeOfDay(hour: 9, minute: 0);
+  static const _defaultEndTime = TimeOfDay(hour: 10, minute: 0);
+
   SelectTaskDateBloc({
     required DateTime? selectedDate,
     required TaskDurationType? durationType,
@@ -25,6 +28,7 @@ class SelectTaskDateBloc extends Bloc<SelectTaskDateEvent, SelectTaskDateState> 
     on<_DurationTypeSelected>(_onDurationTypeSelected);
     on<_StartTimeSelected>(_onStartTimeSelected);
     on<_EndTimeSelected>(_onEndTimeSelected);
+    on<_SelectionCleared>(_onSelectionCleared);
   }
 
   static SelectTaskDateState _buildInitialState({
@@ -33,39 +37,44 @@ class SelectTaskDateBloc extends Bloc<SelectTaskDateEvent, SelectTaskDateState> 
     required TimeOfDay? initialStartTime,
     required TimeOfDay? initialEndTime,
   }) {
-    final resolvedDurationType = durationType ?? TaskDurationType.allDay;
+    final fallbackDefaults = DateSelection.defaultNow();
+    final resolvedDurationType = durationType ?? fallbackDefaults.durationType;
     final isPeriod = resolvedDurationType == TaskDurationType.period;
-    final defaultStartTime = const TimeOfDay(hour: 9, minute: 0);
-    final defaultEndTime = const TimeOfDay(hour: 10, minute: 0);
 
-    return SelectTaskDateState(
-      selectedDate: selectedDate ?? DateTime.now(),
+    final current = DateSelection(
+      selectedDate: selectedDate ?? fallbackDefaults.selectedDate,
       durationType: resolvedDurationType,
-      startTime: isPeriod ? initialStartTime ?? defaultStartTime : null,
-      endTime: isPeriod ? initialEndTime ?? defaultEndTime : null,
+      startTime: isPeriod ? initialStartTime ?? _defaultStartTime : null,
+      endTime: isPeriod ? initialEndTime ?? _defaultEndTime : null,
     );
+
+    return SelectTaskDateState(defaults: current, current: current);
   }
 
   void _onDateSelected(
     _DateSelected event,
     Emitter<SelectTaskDateState> emit,
   ) {
-    emit(state.copyWith(selectedDate: event.date));
+    emit(
+      state.copyWith(
+        current: state.current.copyWith(selectedDate: event.date),
+      ),
+    );
   }
 
   void _onDurationTypeSelected(
     _DurationTypeSelected event,
     Emitter<SelectTaskDateState> emit,
   ) {
-    final defaultStartTime = const TimeOfDay(hour: 9, minute: 0);
-    final defaultEndTime = const TimeOfDay(hour: 10, minute: 0);
-
     emit(
       state.copyWith(
-        durationType: event.type,
-        startTime:
-            event.type == TaskDurationType.allDay ? null : defaultStartTime,
-        endTime: event.type == TaskDurationType.allDay ? null : defaultEndTime,
+        current: state.current.copyWith(
+          durationType: event.type,
+          startTime:
+              event.type == TaskDurationType.allDay ? null : _defaultStartTime,
+          endTime:
+              event.type == TaskDurationType.allDay ? null : _defaultEndTime,
+        ),
       ),
     );
   }
@@ -74,13 +83,32 @@ class SelectTaskDateBloc extends Bloc<SelectTaskDateEvent, SelectTaskDateState> 
     _StartTimeSelected event,
     Emitter<SelectTaskDateState> emit,
   ) {
-    emit(state.copyWith(startTime: event.time));
+    emit(
+      state.copyWith(
+        current: state.current.copyWith(startTime: event.time),
+      ),
+    );
   }
 
   void _onEndTimeSelected(
     _EndTimeSelected event,
     Emitter<SelectTaskDateState> emit,
   ) {
-    emit(state.copyWith(endTime: event.time));
+    emit(
+      state.copyWith(
+        current: state.current.copyWith(endTime: event.time),
+      ),
+    );
+  }
+
+  void _onSelectionCleared(
+    _SelectionCleared event,
+    Emitter<SelectTaskDateState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        current: state.defaults,
+      ),
+    );
   }
 }

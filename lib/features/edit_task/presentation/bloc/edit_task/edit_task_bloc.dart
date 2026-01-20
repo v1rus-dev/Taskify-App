@@ -23,6 +23,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
   final TaskInteractor taskInteractor;
   final SubTaskInteractor subTaskInteractor;
   DateTime? _createdAt;
+  late _DateSelectionSnapshot _initialSelection;
 
   final _sideEffectController = StreamController<EditTaskSideEffect>();
   @override
@@ -33,6 +34,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     required this.taskInteractor,
     required this.subTaskInteractor,
   }) : super(EditTaskState(selectedDate: DateTime.now())) {
+    _initialSelection = _DateSelectionSnapshot.fromState(state);
     on<_Started>(_onStarted);
     on<_TitleChanged>(_onTitleChanged);
     on<_SelectDate>(_onSelectDate);
@@ -57,12 +59,19 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
   void _onSelectDate(_SelectDate event, Emitter<EditTaskState> emit) {
     final resolvedStartTime = event.isAllDay ? null : event.startTime;
     final resolvedEndTime = event.isAllDay ? null : event.endTime;
+    final isDateModified = _isDateModified(
+      selectedDate: event.date,
+      isAllDay: event.isAllDay,
+      startTime: resolvedStartTime,
+      endTime: resolvedEndTime,
+    );
     emit(
       state.copyWith(
         selectedDate: event.date,
         startTime: resolvedStartTime,
         endTime: resolvedEndTime,
         isAllDay: event.isAllDay,
+        isDateModified: isDateModified,
       ),
     );
   }
@@ -136,6 +145,12 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
       ifRight: (task) {
         TalkerService.instance.info('Task: ${task.id}');
         _createdAt = task.createdAt;
+        _initialSelection = _DateSelectionSnapshot(
+          selectedDate: task.date,
+          isAllDay: task.isAllDay,
+          startTime: task.startTime,
+          endTime: task.endTime,
+        );
         emit(
           state.copyWith(
             title: task.title,
@@ -148,6 +163,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
             startTime: task.startTime,
             endTime: task.endTime,
             isAllDay: task.isAllDay,
+            isDateModified: false,
           ),
         );
         _sideEffectController.add(
@@ -241,5 +257,65 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     }
 
     return const Right(null);
+  }
+
+  bool _isDateModified({
+    required DateTime selectedDate,
+    required bool isAllDay,
+    DateTime? startTime,
+    DateTime? endTime,
+  }) {
+    if (!_isSameDay(selectedDate, _initialSelection.selectedDate)) {
+      return true;
+    }
+    if (isAllDay != _initialSelection.isAllDay) {
+      return true;
+    }
+    if (!_isSameTimeOfDay(startTime, _initialSelection.startTime)) {
+      return true;
+    }
+    if (!_isSameTimeOfDay(endTime, _initialSelection.endTime)) {
+      return true;
+    }
+    return false;
+  }
+
+  bool _isSameDay(DateTime left, DateTime right) {
+    return left.year == right.year &&
+        left.month == right.month &&
+        left.day == right.day;
+  }
+
+  bool _isSameTimeOfDay(DateTime? left, DateTime? right) {
+    if (left == null && right == null) {
+      return true;
+    }
+    if (left == null || right == null) {
+      return false;
+    }
+    return left.hour == right.hour && left.minute == right.minute;
+  }
+}
+
+class _DateSelectionSnapshot {
+  const _DateSelectionSnapshot({
+    required this.selectedDate,
+    required this.isAllDay,
+    this.startTime,
+    this.endTime,
+  });
+
+  final DateTime selectedDate;
+  final bool isAllDay;
+  final DateTime? startTime;
+  final DateTime? endTime;
+
+  factory _DateSelectionSnapshot.fromState(EditTaskState state) {
+    return _DateSelectionSnapshot(
+      selectedDate: state.selectedDate,
+      isAllDay: state.isAllDay,
+      startTime: state.startTime,
+      endTime: state.endTime,
+    );
   }
 }

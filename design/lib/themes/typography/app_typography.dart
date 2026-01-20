@@ -5,32 +5,47 @@ class AppTypography {
   static const String fontFamilyInter = 'Inter';
   static const String fontFamilyInterDisplay = 'InterDisplay';
 
-  static TextStyle header(AppColorSchemeExtension scheme) {
+  static TextStyle headlineLarge(AppColorSchemeExtension scheme) {
     return TextStyle(
       fontFamily: fontFamilyInterDisplay,
       fontSize: 36,
-      fontWeight: FontWeight.w800,
       height: 43.2 / 36,
       color: scheme.textPrimary,
     );
   }
 
-  static TextStyle title(AppColorSchemeExtension scheme) {
+  static TextStyle headlineMedium(AppColorSchemeExtension scheme) {
     return TextStyle(
-      fontFamily: fontFamilyInter,
-      fontSize: 16,
-      fontWeight: FontWeight.w500,
-      height: 22.4 / 16,
+      fontFamily: fontFamilyInterDisplay,
+      fontSize: 32,
+      height: 38.4 / 32,
       color: scheme.textPrimary,
     );
   }
 
-  static TextStyle body(AppColorSchemeExtension scheme) {
+  static TextStyle titleLarge(AppColorSchemeExtension scheme) {
     return TextStyle(
       fontFamily: fontFamilyInter,
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
-      height: 24 / 16,
+      fontSize: 24,
+      height: 32 / 24,
+      color: scheme.textPrimary,
+    );
+  }
+
+  static TextStyle titleMedium(AppColorSchemeExtension scheme) {
+    return TextStyle(
+      fontFamily: fontFamilyInter,
+      fontSize: 20,
+      height: 28 / 20,
+      color: scheme.textPrimary,
+    );
+  }
+
+  static TextStyle titleSmall(AppColorSchemeExtension scheme) {
+    return TextStyle(
+      fontFamily: fontFamilyInter,
+      fontSize: 18,
+      height: 25.2 / 18,
       color: scheme.textPrimary,
     );
   }
@@ -38,69 +53,53 @@ class AppTypography {
   static TextStyle bodyLarge(AppColorSchemeExtension scheme) {
     return TextStyle(
       fontFamily: fontFamilyInter,
-      fontSize: 20,
-      fontWeight: FontWeight.w400,
-      height: 30 / 20,
+      fontSize: 16,
+      height: 24 / 16,
       color: scheme.textPrimary,
     );
   }
-
-  static TextStyle screenTitle(AppColorSchemeExtension scheme) {
+  
+  static TextStyle bodyMedium(AppColorSchemeExtension scheme) {
     return TextStyle(
       fontFamily: fontFamilyInter,
-      fontSize: 24,
-      fontWeight: FontWeight.w700,
-      height: 28.8 / 24,
+      fontSize: 14,
+      height: 20 / 14,
       color: scheme.textPrimary,
     );
   }
-
-  static TextStyle button(AppColorSchemeExtension scheme) {
-    return TextStyle(
-      fontFamily: fontFamilyInter,
-      fontSize: 14,
-      fontWeight: FontWeight.w500,
-      height: 19.6 / 14,
-      color: scheme.buttonPrimaryText,
-    );
-  }
-
-  static TextStyle buttonBold(AppColorSchemeExtension scheme) {
-    return TextStyle(
-      fontFamily: fontFamilyInter,
-      fontSize: 14,
-      fontWeight: FontWeight.w700,
-      height: 19.6 / 14,
-      color: scheme.buttonPrimaryText,
-    );
-  }
-
-  static TextStyle caption(AppColorSchemeExtension scheme) {
-    return TextStyle(
-      fontFamily: fontFamilyInter,
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
-      height: 18 / 14,
-      color: scheme.textSecondary,
-    );
-  }
-
-  static TextStyle tag(AppColorSchemeExtension scheme) {
+  
+  static TextStyle bodySmall(AppColorSchemeExtension scheme) {
     return TextStyle(
       fontFamily: fontFamilyInter,
       fontSize: 12,
-      fontWeight: FontWeight.w500,
-      height: 14.4 / 12,
-      color: scheme.textSecondary,
+      height: 16 / 12,
+      color: scheme.textPrimary,
+    );
+  }
+  
+  static TextStyle labelLarge(AppColorSchemeExtension scheme) {
+    return TextStyle(
+      fontFamily: fontFamilyInter,
+      fontSize: 16,
+      height: 24 / 16,
+      color: scheme.textPrimary,
     );
   }
 
-  static TextStyle editingHeader(AppColorSchemeExtension scheme) {
+  static TextStyle labelMedium(AppColorSchemeExtension scheme) {
     return TextStyle(
-      fontFamily: fontFamilyInterDisplay,
-      fontSize: 36,
-      fontWeight: FontWeight.w800,
-      height: 43.2 / 36,
+      fontFamily: fontFamilyInter,
+      fontSize: 14,
+      height: 20 / 14,
+      color: scheme.textPrimary,
+    );
+  }
+  
+  static TextStyle labelSmall(AppColorSchemeExtension scheme) {
+    return TextStyle(
+      fontFamily: fontFamilyInter,
+      fontSize: 12,
+      height: 16 / 12,
       color: scheme.textPrimary,
     );
   }

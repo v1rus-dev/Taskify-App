@@ -72,7 +72,7 @@ class _HomeCalendarPartState extends State<HomeCalendarPart> {
     final today = DateTime.now();
 
     return SizedBox(
-      height: 70,
+      height: 60,
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           return PageView.builder(
@@ -99,20 +99,6 @@ class _HomeCalendarPartState extends State<HomeCalendarPart> {
                               weekDays[i].year == state.selectedDate.year &&
                               weekDays[i].month == state.selectedDate.month &&
                               weekDays[i].day == state.selectedDate.day,
-                          selectedBackgroundColor: Color(
-                            0xFF7990F8,
-                          ).withValues(alpha: 0.8),
-                          selectedTextColor: Colors.white,
-                          selectedBorderColor: Color(
-                            0xFF7990F8,
-                          ).withValues(alpha: 0.8),
-                          unselectedTodayBorderColor: Color(
-                            0xFF7990F8,
-                          ).withValues(alpha: 0.8),
-                          unselectedTextColor: Color(
-                            0xFF121212,
-                          ).withValues(alpha: 0.5),
-                          unselectedBackgroundColor: Colors.white,
                           isDisabled: !_isDateSelectable(weekDays[i]),
                           onTap: _isDateSelectable(weekDays[i])
                               ? () => context.read<HomeBloc>().add(HomeEvent.selectDate(weekDays[i]))

@@ -9,33 +9,35 @@ class AppTypographyExtension extends ThemeExtension<AppTypographyExtension> {
   const AppTypographyExtension(this.colorScheme);
 
   TextTheme get textTheme => TextTheme(
-        displayLarge: AppTypography.header(colorScheme),
-        displayMedium: AppTypography.header(colorScheme),
-        titleLarge: AppTypography.screenTitle(colorScheme),
-        titleMedium: AppTypography.title(colorScheme),
-        titleSmall: AppTypography.title(colorScheme),
-        bodyMedium: AppTypography.body(colorScheme),
-        bodyLarge: AppTypography.bodyLarge(colorScheme),
-        bodySmall: AppTypography.caption(colorScheme),
-        labelLarge: AppTypography.button(colorScheme),
-        labelSmall: AppTypography.tag(colorScheme),
-      );
+    headlineLarge: AppTypography.headlineLarge(colorScheme),
+    headlineMedium: AppTypography.headlineMedium(colorScheme),
+    titleLarge: AppTypography.titleLarge(colorScheme),
+    titleMedium: AppTypography.titleMedium(colorScheme),
+    titleSmall: AppTypography.titleSmall(colorScheme),
+    bodyLarge: AppTypography.bodyLarge(colorScheme),
+    bodyMedium: AppTypography.bodyMedium(colorScheme),
+    bodySmall: AppTypography.bodySmall(colorScheme),
+    labelLarge: AppTypography.labelLarge(colorScheme),
+    labelMedium: AppTypography.labelMedium(colorScheme),
+    labelSmall: AppTypography.labelSmall(colorScheme),
+  );
 
   TextSelectionThemeData get textSelectionTheme => TextSelectionThemeData(
-        cursorColor: colorScheme.primaryAccent,
-        selectionColor: colorScheme.primaryAccent.withValues(alpha: 0.2),
-        selectionHandleColor: colorScheme.primaryAccent,
-      );
+    cursorColor: colorScheme.primaryAccent,
+    selectionColor: colorScheme.primaryAccent.withValues(alpha: 0.2),
+    selectionHandleColor: colorScheme.primaryAccent,
+  );
 
-  TextStyle get headlineLarge => textTheme.displayLarge!;
-  TextStyle get headlineMedium => textTheme.displayMedium!;
+  TextStyle get headlineLarge => textTheme.headlineLarge!;
+  TextStyle get headlineMedium => textTheme.headlineMedium!;
   TextStyle get titleLarge => textTheme.titleLarge!;
   TextStyle get titleMedium => textTheme.titleMedium!;
   TextStyle get titleSmall => textTheme.titleSmall!;
-  TextStyle get bodyMedium => textTheme.bodyMedium!;
   TextStyle get bodyLarge => textTheme.bodyLarge!;
+  TextStyle get bodyMedium => textTheme.bodyMedium!;
   TextStyle get bodySmall => textTheme.bodySmall!;
   TextStyle get labelLarge => textTheme.labelLarge!;
+  TextStyle get labelMedium => textTheme.labelMedium!;
   TextStyle get labelSmall => textTheme.labelSmall!;
 
   @override
@@ -44,7 +46,10 @@ class AppTypographyExtension extends ThemeExtension<AppTypographyExtension> {
   }
 
   @override
-  AppTypographyExtension lerp(ThemeExtension<AppTypographyExtension>? other, double t) {
+  AppTypographyExtension lerp(
+    ThemeExtension<AppTypographyExtension>? other,
+    double t,
+  ) {
     if (other is! AppTypographyExtension) return this;
     final lerpedScheme = colorScheme.lerp(other.colorScheme, t);
     return AppTypographyExtension(lerpedScheme);

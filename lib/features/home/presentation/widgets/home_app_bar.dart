@@ -70,7 +70,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                             ? AppLocalizations.of(context)?.today ?? ''
                             : _getDayShort(context, state.selectedDate),
                         textAlign: TextAlign.left,
-                        style: theme.textTheme.displayLarge,
+                        style: theme.textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const Gap(12),
                       Padding(
@@ -78,9 +78,9 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                         child: Text(
                           _getMonthShort(context, state.selectedDate),
                           textAlign: TextAlign.left,
-                          style: theme.textTheme.headlineSmall?.copyWith(
+                          style: theme.textTheme.headlineMedium?.copyWith(
                             color: Colors.black.withValues(alpha: 0.3),
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),

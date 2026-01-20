@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:design/design.dart';
 
@@ -8,12 +9,6 @@ class HomeCalendarItem extends StatefulWidget {
     required this.date,
     required this.isToday,
     required this.isSelected,
-    required this.selectedBorderColor,
-    required this.selectedTextColor,
-    required this.selectedBackgroundColor,
-    required this.unselectedTodayBorderColor,
-    required this.unselectedTextColor,
-    required this.unselectedBackgroundColor,
     this.isDisabled = false,
     this.onTap,
   });
@@ -22,12 +17,6 @@ class HomeCalendarItem extends StatefulWidget {
   final bool isToday;
   final bool isSelected;
   final bool isDisabled;
-  final Color selectedBorderColor;
-  final Color selectedTextColor;
-  final Color selectedBackgroundColor;
-  final Color unselectedTodayBorderColor;
-  final Color unselectedTextColor;
-  final Color unselectedBackgroundColor;
   final VoidCallback? onTap;
 
   @override
@@ -41,7 +30,7 @@ class _HomeCalendarItemState extends State<HomeCalendarItem>
   late AnimationController _controller;
   Animation<Color?>? _backgroundColorAnimation;
   Animation<Color?>? _textColorAnimation;
-  Animation<Color?>? _borderColorAnimation;
+  bool _didInitDependencies = false;
 
   @override
   void initState() {
@@ -50,8 +39,18 @@ class _HomeCalendarItemState extends State<HomeCalendarItem>
       duration: _animationDuration,
       vsync: this,
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _updateAnimations();
+    if (_didInitDependencies) {
+      _controller.forward(from: 0.0);
+      return;
+    }
     _controller.forward();
+    _didInitDependencies = true;
   }
 
   @override
@@ -73,7 +72,6 @@ class _HomeCalendarItemState extends State<HomeCalendarItem>
   void _updateAnimations() {
     final targetBackgroundColor = _getBackgroundColor();
     final targetTextColor = _getTextColor();
-    final targetBorderColor = _getBorderColor();
 
     _backgroundColorAnimation = ColorTween(
       begin: _backgroundColorAnimation?.value ?? targetBackgroundColor,
@@ -84,47 +82,24 @@ class _HomeCalendarItemState extends State<HomeCalendarItem>
       begin: _textColorAnimation?.value ?? targetTextColor,
       end: targetTextColor,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-
-    _borderColorAnimation = ColorTween(
-      begin: _borderColorAnimation?.value ?? targetBorderColor,
-      end: targetBorderColor,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   Color _getBackgroundColor() {
-    if (widget.isToday) {
-      if (widget.isSelected) {
-        return widget.selectedBackgroundColor;
-      } else {
-        return widget.unselectedBackgroundColor;
-      }
-    } else {
-      if (widget.isSelected) {
-        return widget.selectedBackgroundColor;
-      } else {
-        return widget.unselectedBackgroundColor;
-      }
-    }
+    return widget.isSelected
+        ? AppColorExtensions.getPrimaryAccentColor(context).withValues(alpha: 0.6)
+        : Colors.transparent;
+  }
+
+  Color _getSecondaryTextColor() {
+    return widget.isSelected
+        ? Colors.white
+        : AppColorExtensions.getTextSecondaryColor(context);
   }
 
   Color _getTextColor() {
-    if (widget.isSelected) {
-      return widget.selectedTextColor;
-    } else {
-      return widget.unselectedTextColor;
-    }
-  }
-
-  Color _getBorderColor() {
-    if (widget.isToday) {
-      if (widget.isSelected) {
-        return Colors.transparent;
-      } else {
-        return widget.selectedBorderColor;
-      }
-    } else {
-      return Colors.transparent;
-    }
+    return widget.isSelected
+        ? Colors.white
+        : AppColorExtensions.getTextPrimaryColor(context);
   }
 
   String _getDayName() {
@@ -136,22 +111,16 @@ class _HomeCalendarItemState extends State<HomeCalendarItem>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AppShadow(
+      enabled: widget.isSelected,
       borderRadius: BorderRadius.circular(12),
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
           return Container(
-            width: double.infinity,
-            height: 70,
+            height: 60,
             decoration: BoxDecoration(
               color: _backgroundColorAnimation?.value ?? _getBackgroundColor(),
               borderRadius: BorderRadius.circular(12),
-              border: widget.isToday && !widget.isSelected
-                  ? Border.all(
-                      color: _borderColorAnimation?.value ?? _getBorderColor(),
-                      width: 1,
-                    )
-                  : null,
             ),
             child: Material(
               color: Colors.transparent,
@@ -161,26 +130,26 @@ class _HomeCalendarItemState extends State<HomeCalendarItem>
                 borderRadius: BorderRadius.circular(12),
                 onTap: widget.isDisabled ? null : widget.onTap,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Flexible(
-                      child: Text(
-                        _getDayName(),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: _textColorAnimation?.value ?? _getTextColor(),
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                    const Gap(6),
+                    Text(
+                      _getDayName(),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: _getSecondaryTextColor(),
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
                     Text(
                       widget.date.day.toString(),
-                      style: theme.textTheme.titleSmall?.copyWith(
+                      style: theme.textTheme.bodyLarge?.copyWith(
                         color: _textColorAnimation?.value ?? _getTextColor(),
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
+                    const Gap(6)
                   ],
                 ),
               ),

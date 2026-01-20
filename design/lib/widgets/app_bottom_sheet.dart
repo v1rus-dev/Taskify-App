@@ -47,6 +47,7 @@ Future<T?> showFloatingBottomSheet<T>({
     context: context,
     child: child,
     type: AppBottomSheetType.floating,
+    isScrollControlled: true,
     showDragHandle: showDragHandle,
     useSafeArea: useSafeArea,
     useRootNavigator: useRootNavigator,

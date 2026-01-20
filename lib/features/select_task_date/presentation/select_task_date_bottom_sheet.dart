@@ -229,6 +229,7 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
                   isPeriod,
                   use24Hour,
                 ),
+                animatable: true,
               ),
               const Gap(48),
               Padding(

@@ -1,14 +1,25 @@
 import 'package:animated_visibility/animated_visibility.dart';
+import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_tags/select_tags_page.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/add_tag_button.dart';
 import 'package:gap/gap.dart';
 
 class EditTaskTagsPart extends StatelessWidget {
   const EditTaskTagsPart({super.key});
 
-  void _onAddTagPressed(BuildContext context) {}
+  void _onAddTagPressed(BuildContext context) async {
+    await unfocusAndThen(
+      context,
+      () => showFloatingBottomSheet<void>(
+        context: context,
+        useSafeArea: true,
+        child: const SelectTagsPage(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

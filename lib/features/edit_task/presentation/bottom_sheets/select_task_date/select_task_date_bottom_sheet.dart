@@ -7,8 +7,8 @@ import 'package:taskify/core/providers/time_format_notifier.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/utils/time_format_utils.dart';
 import 'package:taskify/domain/entities/task_duration_type.dart';
-import 'package:taskify/features/edit_task/presentation/bottom_sheets/bloc/select_task_date_bloc.dart';
-import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_period_bottom_sheet.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_date/bloc/select_task_date_bloc.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_period/select_task_period_bottom_sheet.dart';
 
 class SelectTaskDateBottomSheet extends StatelessWidget {
   const SelectTaskDateBottomSheet({

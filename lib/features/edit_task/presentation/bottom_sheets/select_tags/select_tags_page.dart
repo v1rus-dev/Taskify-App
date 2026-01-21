@@ -9,7 +9,7 @@ class SelectTagsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SelectTagsBloc(),
+      create: (_) => SelectTagsBloc()..add(const SelectTagsEvent.started()),
       child: const SelectTagsBottomSheet(),
     );
   }

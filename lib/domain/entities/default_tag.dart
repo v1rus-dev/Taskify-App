@@ -12,3 +12,20 @@ enum DefaultTag {
 
   const DefaultTag({required this.id, required this.color});
 }
+
+extension DefaultTagExtension on DefaultTag {
+  String get title {
+    switch (this) {
+      case DefaultTag.health:
+        return 'Health';
+      case DefaultTag.work:
+        return 'Work';
+      case DefaultTag.mentalHealth:
+        return 'Mental health';
+      case DefaultTag.personality:
+        return 'Personality';
+      case DefaultTag.other:
+        return 'Other';
+    }
+  }
+}

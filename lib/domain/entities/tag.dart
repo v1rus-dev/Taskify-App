@@ -15,6 +15,8 @@ abstract class TagEntity extends Equatable {
 
   bool get isCustom;
 
+  String get key => '${isCustom ? 'c' : 'd'}_$id';
+
   @override
   List<Object?> get props => [id, title, color, isCustom];
 }

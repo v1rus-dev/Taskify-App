@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/app/router/router_paths.dart';
-import 'package:taskify/domain/entities/task_with_sub_tasks.dart';
+import 'package:taskify/domain/entities/task_wrapper.dart';
 import 'package:taskify/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:taskify/features/home/presentation/widgets/home_hided_header.dart';
 import 'package:taskify/features/home/presentation/widgets/task_card.dart';
@@ -29,7 +29,7 @@ class HomePage extends StatelessWidget {
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  void _onTaskClicked(TaskWithSubTasksEntity task) {
+  void _onTaskClicked(TaskWrapperEntity task) {
     appRouter.push(RouterPaths.editTask, extra: task.task.id);
   }
 

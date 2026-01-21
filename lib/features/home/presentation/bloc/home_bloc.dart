@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 import 'package:taskify/domain/entities/task.dart';
-import 'package:taskify/domain/entities/task_with_sub_tasks.dart';
+import 'package:taskify/domain/entities/task_wrapper.dart';
 import 'package:taskify/domain/entities/tasks_view_type.dart';
 
 part 'home_event.dart';
@@ -16,7 +16,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final TaskInteractor taskInteractor;
 
   StreamSubscription<List<TaskEntity>>? _tasksSubscription;
-  List<TaskWithSubTasksEntity> _allTasks = [];
+  List<TaskWrapperEntity> _allTasks = [];
 
   HomeBloc({required this.taskInteractor})
     : super(
@@ -46,9 +46,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     _tasksSubscription = taskInteractor.observeTasks().listen((tasks) {
       _allTasks = tasks
           .map(
-            (task) => TaskWithSubTasksEntity(
+            (task) => TaskWrapperEntity(
               task: task,
               subTasks: const [],
+              tags: const [],
             ),
           )
           .toList();
@@ -81,8 +82,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     add(HomeEvent.tasksUpdated(_filterTasksByDate(_allTasks, event.date)));
   }
 
-  List<TaskWithSubTasksEntity> _filterTasksByDate(
-    List<TaskWithSubTasksEntity> tasks,
+  List<TaskWrapperEntity> _filterTasksByDate(
+    List<TaskWrapperEntity> tasks,
     DateTime selectedDate,
   ) {
     final normalizedSelectedDate = DateTime(

@@ -25,8 +25,7 @@ class TalkerService {
     Bloc.observer = TalkerBlocObserver(
       settings: TalkerBlocLoggerSettings(
         enabled: true,
-        printChanges: true,
-        printStateFullData: true,
+        printTransitions: false
       )
     );
   }

@@ -28,4 +28,13 @@ extension DefaultTagExtension on DefaultTag {
         return 'Other';
     }
   }
+
+  static DefaultTag? fromId(int id) {
+    for (final tag in DefaultTag.values) {
+      if (tag.id == id) {
+        return tag;
+      }
+    }
+    return null;
+  }
 }

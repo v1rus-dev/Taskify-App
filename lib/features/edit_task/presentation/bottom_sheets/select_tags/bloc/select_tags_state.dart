@@ -7,7 +7,7 @@ class SelectTagsState with _$SelectTagsState {
   const factory SelectTagsState.success({
     required List<TagEntity> defaultTags,
     required List<TagEntity> customTags,
-    required Set<int> selectedTagIds,
+    required Set<String> selectedTagKeys,
   }) = _Success;
 
   const factory SelectTagsState.error(String message) = _Error;

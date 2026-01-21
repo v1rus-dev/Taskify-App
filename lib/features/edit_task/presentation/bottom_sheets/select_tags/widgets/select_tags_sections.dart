@@ -9,13 +9,13 @@ class TagsSection extends StatelessWidget {
     super.key,
     required this.title,
     required this.tags,
-    required this.selectedTagIds,
+    required this.selectedTagKeys,
     required this.onTagPressed,
   });
 
   final String title;
   final List<TagEntity> tags;
-  final Set<int> selectedTagIds;
+  final Set<String> selectedTagKeys;
   final ValueChanged<TagEntity> onTagPressed;
 
   void _onTagChipPressed(TagEntity tag) {
@@ -43,7 +43,7 @@ class TagsSection extends StatelessWidget {
               .map(
                 (tag) => TagChip(
                   tag: tag,
-                  isSelected: selectedTagIds.contains(tag.id),
+                  isSelected: selectedTagKeys.contains(tag.key),
                   onPressed: () => _onTagChipPressed(tag),
                 ),
               )
@@ -58,13 +58,13 @@ class CustomTagsSection extends StatelessWidget {
   const CustomTagsSection({
     super.key,
     required this.tags,
-    required this.selectedTagIds,
+    required this.selectedTagKeys,
     required this.onTagPressed,
     required this.onCreatePressed,
   });
 
   final List<TagEntity> tags;
-  final Set<int> selectedTagIds;
+  final Set<String> selectedTagKeys;
   final ValueChanged<TagEntity> onTagPressed;
   final VoidCallback onCreatePressed;
 
@@ -112,7 +112,7 @@ class CustomTagsSection extends StatelessWidget {
                 .map(
                   (tag) => TagChip(
                     tag: tag,
-                    isSelected: selectedTagIds.contains(tag.id),
+                    isSelected: selectedTagKeys.contains(tag.key),
                     onPressed: () => _onTagChipPressed(tag),
                   ),
                 )

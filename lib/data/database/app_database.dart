@@ -4,8 +4,10 @@ import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:taskify/data/database/tables/app_configurations_table.dart';
+import 'package:taskify/data/database/tables/custom_tags_table.dart';
 import 'package:taskify/data/database/tables/tasks_table.dart';
 import 'package:taskify/data/database/tables/subtasks_table.dart';
+import 'package:taskify/data/database/tables/task_tags_table.dart';
 import 'package:taskify/data/database/tables/users_table.dart';
 import 'package:taskify/core/services/talker_service.dart';
 
@@ -14,6 +16,8 @@ part 'app_database.g.dart';
 @DriftDatabase(tables: [
   TasksTable,
   SubtasksTable,
+  CustomTagsTable,
+  TaskTagsTable,
   AppConfigurationsTable,
   UsersTable,
 ])
@@ -21,7 +25,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration {

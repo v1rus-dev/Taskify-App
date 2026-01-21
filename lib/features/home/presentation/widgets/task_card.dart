@@ -2,13 +2,13 @@ import 'package:design/constants/app_icons.dart';
 import 'package:design/constants/animation_durations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:taskify/domain/entities/task_with_sub_tasks.dart';
+import 'package:taskify/domain/entities/task_wrapper.dart';
 import 'package:design/design.dart';
 
 class TaskCard extends StatefulWidget {
   const TaskCard({super.key, required this.task, required this.onTaskClicked, required this.onCheckboxPressed});
 
-  final TaskWithSubTasksEntity task;
+  final TaskWrapperEntity task;
   final VoidCallback onTaskClicked;
   final VoidCallback onCheckboxPressed;
 

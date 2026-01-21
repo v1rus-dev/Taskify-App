@@ -9,15 +9,15 @@ class SelectTagsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedTagIds = context
+    final selectedTagKeys = context
         .read<EditTaskBloc>()
         .state
         .selectedTags
-        .map((tag) => tag.id)
+        .map((tag) => tag.key)
         .toSet();
     return BlocProvider(
       create: (_) => SelectTagsBloc(
-        initialSelectedTagIds: selectedTagIds,
+        initialSelectedTagKeys: selectedTagKeys,
       )..add(const SelectTagsEvent.started()),
       child: const SelectTagsBottomSheet(),
     );

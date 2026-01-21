@@ -34,10 +34,10 @@ class SelectTagsBottomSheet extends StatelessWidget {
   List<TagEntity> _collectSelectedTags(BuildContext context) {
     final state = context.read<SelectTagsBloc>().state;
     return state.maybeWhen(
-      success: (defaultTags, customTags, selectedTagIds) {
+      success: (defaultTags, customTags, selectedTagKeys) {
         final allTags = [...defaultTags, ...customTags];
         return allTags
-            .where((tag) => selectedTagIds.contains(tag.id))
+            .where((tag) => selectedTagKeys.contains(tag.key))
             .toList(growable: false);
       },
       orElse: () => const <TagEntity>[],
@@ -47,7 +47,7 @@ class SelectTagsBottomSheet extends StatelessWidget {
   Widget _buildContent(BuildContext context, SelectTagsState state) {
     final theme = Theme.of(context);
     return state.maybeWhen(
-      success: (defaultTags, customTags, selectedTagIds) {
+      success: (defaultTags, customTags, selectedTagKeys) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,13 +55,13 @@ class SelectTagsBottomSheet extends StatelessWidget {
             TagsSection(
               title: 'Defaults',
               tags: defaultTags,
-              selectedTagIds: selectedTagIds,
+              selectedTagKeys: selectedTagKeys,
               onTagPressed: (tag) => _onTagPressed(context, tag),
             ),
             const Gap(24),
             CustomTagsSection(
               tags: customTags,
-              selectedTagIds: selectedTagIds,
+              selectedTagKeys: selectedTagKeys,
               onTagPressed: (tag) => _onTagPressed(context, tag),
               onCreatePressed: () => _onCreateTagPressed(context),
             ),

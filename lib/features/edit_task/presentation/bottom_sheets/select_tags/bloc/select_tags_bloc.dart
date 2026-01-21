@@ -1,20 +1,25 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/domain/entities/default_tag.dart';
 import 'package:taskify/domain/entities/tag.dart';
+import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';
 
 part 'select_tags_event.dart';
 part 'select_tags_state.dart';
 part 'select_tags_bloc.freezed.dart';
 
 class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
-  SelectTagsBloc({Set<int>? initialSelectedTagIds})
-      : _initialSelectedTagIds = Set<int>.from(initialSelectedTagIds ?? {}),
+  SelectTagsBloc({Set<String>? initialSelectedTagKeys})
+      : _initialSelectedTagKeys =
+            Set<String>.from(initialSelectedTagKeys ?? {}),
+        _tagInteractor = locator<TagInteractor>(),
         super(const SelectTagsState.initial()) {
     on<SelectTagsEvent>(_onEvent);
   }
 
-  final Set<int> _initialSelectedTagIds;
+  final Set<String> _initialSelectedTagKeys;
+  final TagInteractor _tagInteractor;
 
   Future<void> _onEvent(
     SelectTagsEvent event,
@@ -27,12 +32,18 @@ class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
     );
   }
 
-  void _onStarted(Emitter<SelectTagsState> emit) {
+  Future<void> _onStarted(Emitter<SelectTagsState> emit) async {
+    final customTagsResult = await _tagInteractor.getCustomTags();
+    List<TagEntity> customTags = const [];
+    customTagsResult.fold(
+      ifLeft: (_) => customTags = const [],
+      ifRight: (tags) => customTags = tags,
+    );
     emit(
       SelectTagsState.success(
         defaultTags: _buildDefaultTags(),
-        customTags: const [],
-        selectedTagIds: _initialSelectedTagIds,
+        customTags: customTags,
+        selectedTagKeys: _initialSelectedTagKeys,
       ),
     );
   }
@@ -40,13 +51,13 @@ class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
   void _onTagToggled(TagEntity tag, Emitter<SelectTagsState> emit) {
     state.maybeMap(
       success: (state) {
-        final updated = Set<int>.from(state.selectedTagIds);
-        if (updated.contains(tag.id)) {
-          updated.remove(tag.id);
+        final updated = Set<String>.from(state.selectedTagKeys);
+        if (updated.contains(tag.key)) {
+          updated.remove(tag.key);
         } else {
-          updated.add(tag.id);
+          updated.add(tag.key);
         }
-        emit(state.copyWith(selectedTagIds: updated));
+        emit(state.copyWith(selectedTagKeys: updated));
       },
       orElse: () {},
     );

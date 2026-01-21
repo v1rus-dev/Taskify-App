@@ -6,7 +6,7 @@ abstract class HomeState with _$HomeState {
     @Default(false) bool isHeaderExpanded,
     required DateTime selectedDate,
     required DateTime currentDate,
-    required List<TaskWithSubTasksEntity> tasks,
+    required List<TaskWrapperEntity> tasks,
     @Default(TasksViewType.tasks) TasksViewType tasksViewType,
     @Default(false) bool isLoading,
     @Default('') String message,

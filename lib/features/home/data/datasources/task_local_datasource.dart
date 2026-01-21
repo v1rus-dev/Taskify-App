@@ -99,6 +99,9 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource {
   Future<Either<Failure, void>> deleteTask(int id) async {
     try {
       await (database.delete(
+        database.taskTagsTable,
+      )..where((t) => t.taskId.equals(id))).go();
+      await (database.delete(
         database.tasksTable,
       )..where((t) => t.id.equals(id))).go();
       return const Right(null);

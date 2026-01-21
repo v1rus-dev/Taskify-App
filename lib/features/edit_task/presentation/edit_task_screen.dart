@@ -13,6 +13,7 @@ import 'package:taskify/features/edit_task/presentation/widgets/sub_task_part.da
 import 'package:taskify/l10n/app_localizations.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
+import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
@@ -31,6 +32,7 @@ class EditTaskPage extends StatelessWidget {
             taskId: taskId,
             taskInteractor: locator<TaskInteractor>(),
             subTaskInteractor: locator<SubTaskInteractor>(),
+            tagInteractor: locator<TagInteractor>(),
           )..add(const EditTaskEvent.started()),
         ),
         BlocProvider(

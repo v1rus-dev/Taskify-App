@@ -10,6 +10,7 @@ import 'package:taskify/domain/entities/task.dart';
 import 'package:taskify/domain/entities/sub_task.dart';
 import 'package:taskify/domain/entities/tag.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
+import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';
 import 'package:taskify/features/edit_task/presentation/models/sub_task_ui_model.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 
@@ -23,6 +24,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
   final int? taskId;
   final TaskInteractor taskInteractor;
   final SubTaskInteractor subTaskInteractor;
+  final TagInteractor tagInteractor;
   DateTime? _createdAt;
   late _DateSelectionSnapshot _initialSelection;
 
@@ -34,6 +36,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     required this.taskId,
     required this.taskInteractor,
     required this.subTaskInteractor,
+    required this.tagInteractor,
   }) : super(EditTaskState(selectedDate: DateTime.now())) {
     _initialSelection = _DateSelectionSnapshot.fromState(state);
     on<_Started>(_onStarted);
@@ -142,6 +145,21 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
       return;
     }
 
+    final tagResult = await tagInteractor.setTaskTags(
+      resolvedTaskId,
+      state.selectedTags,
+    );
+    Failure? tagFailure;
+    tagResult.fold(
+      ifLeft: (error) => tagFailure = error,
+      ifRight: (_) {},
+    );
+    if (tagFailure != null) {
+      TalkerService.instance.error(tagFailure!.message);
+      event.completer.completeError(tagFailure!);
+      return;
+    }
+
     event.completer.complete();
   }
 
@@ -150,6 +168,15 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     required Emitter<EditTaskState> emit,
   }) async {
     final result = await taskInteractor.getTaskById(taskId);
+    final tagsResult = await tagInteractor.getTaskTags(taskId);
+    List<TagEntity> tags = const [];
+    tagsResult.fold(
+      ifLeft: (error) => TalkerService.instance.error(error.message),
+      ifRight: (items) {
+        TalkerService.instance.info('Tags: ${items.length}');
+        tags = items;
+      },
+    );
 
     result.fold(
       ifLeft: (failure) => TalkerService.instance.error(failure.message),
@@ -175,6 +202,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
             endTime: task.endTime,
             isAllDay: task.isAllDay,
             isDateModified: false,
+            selectedTags: tags,
           ),
         );
         _sideEffectController.add(

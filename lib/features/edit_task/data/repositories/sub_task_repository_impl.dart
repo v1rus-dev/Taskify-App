@@ -14,13 +14,9 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
   Future<Either<Failure, List<SubTaskEntity>>> insertSubTasks(
     List<SubTaskEntity> subTasks,
   ) async {
-    if (subTasks.isEmpty) {
-      return const Right([]);
-    }
-    final result = await _localDataSource.insertSubTasks(
-      subTasks.map((subTask) => subTask.toInsertCompanion()).toList(),
-    );
-
+    final companions =
+        subTasks.map((subTask) => subTask.toInsertCompanion()).toList();
+    final result = await _localDataSource.insertSubTasks(companions);
     return result.fold(
       ifLeft: (failure) => Left(failure),
       ifRight: (subtasks) =>
@@ -32,17 +28,9 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
   Future<Either<Failure, List<SubTaskEntity>>> updateSubTasks(
     List<SubTaskEntity> subTasks,
   ) async {
-    if (subTasks.isEmpty) {
-      return const Right([]);
-    }
-    final hasMissingIds = subTasks.any((subTask) => subTask.id == null);
-    if (hasMissingIds) {
-      return const Left(ValidationFailure('Subtask id is required'));
-    }
-    final result = await _localDataSource.updateSubTasks(
-      subTasks.map((subTask) => subTask.toUpdateCompanion()).toList(),
-    );
-
+    final companions =
+        subTasks.map((subTask) => subTask.toUpdateCompanion()).toList();
+    final result = await _localDataSource.updateSubTasks(companions);
     return result.fold(
       ifLeft: (failure) => Left(failure),
       ifRight: (subtasks) =>

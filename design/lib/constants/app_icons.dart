@@ -19,4 +19,5 @@ class AppIcons {
   static const String subtaskCheckBoxChecked = 'assets/icons/ic_subtask_check_box_checked.svg';
   static const String home = 'assets/icons/ic_home.svg';
   static const String profile = 'assets/icons/ic_profile.svg';
+  static const String checkFilled = 'assets/icons/ic_check_filled.svg';
 }

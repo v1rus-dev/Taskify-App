@@ -6,6 +6,7 @@ import 'package:taskify/domain/entities/tag.dart';
 import 'bloc/select_tags_bloc.dart';
 import 'widgets/select_tags_sections.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/create_user_tag/create_user_tag_page.dart';
 
 class SelectTagsBottomSheet extends StatelessWidget {
   const SelectTagsBottomSheet({super.key});
@@ -15,7 +16,13 @@ class SelectTagsBottomSheet extends StatelessWidget {
   }
 
   void _onCreateTagPressed(BuildContext context) {
-    context.read<SelectTagsBloc>().add(const SelectTagsEvent.createTagPressed());
+    showFloatingBottomSheet(
+      context: context,
+      child: BlocProvider.value(
+        value: context.read<EditTaskBloc>(),
+        child: const CreateUserTagPage(),
+      ),
+    );
   }
 
   void _onSavePressed(BuildContext context) {

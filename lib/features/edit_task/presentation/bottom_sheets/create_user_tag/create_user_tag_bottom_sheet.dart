@@ -33,62 +33,72 @@ class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
     final theme = Theme.of(context);
     return BlocBuilder<CreateUserTagBloc, CreateUserTagState>(
       builder: (context, state) {
-        return SizedBox(
-          width: double.infinity,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: AppInsets.sheetHorizontalSmallPadding,
-                child: Column(
-                  children: [
-                    const Gap(12),
-                    Text(
-                      'Create tag',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Gap(24),
-                    AppEditText(hint: 'Tag name', controller: _nameController),
-                    const Gap(24),
-                  ],
-                ),
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: AppInsets.sheetHorizontalSmallPadding,
-                  child: Text(
-                    'Color',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
+        return MediaQuery.removeViewInsets(
+          context: context,
+          removeBottom: true,
+          child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: AppInsets.sheetHorizontalSmallPadding,
+                    child: Column(
+                      children: [
+                        const Gap(12),
+                        Text(
+                          'Create tag',
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Gap(16),
+                        AppEditText(
+                          hint: 'Tag name',
+                          controller: _nameController,
+                        ),
+                        const Gap(16),
+                      ],
                     ),
                   ),
-                ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: AppInsets.sheetHorizontalSmallPadding,
+                      child: Text(
+                        'Color',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Gap(16),
+                  ColorList(
+                    selectedColor: _selectedColor,
+                    onColorSelected: _onColorSelected,
+                  ),
+                  const Gap(24),
+                  Text(
+                    'Create a custom tag for your tasks',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColorExtensions.getTextSecondaryColor(context),
+                    ),
+                  ),
+                  const Gap(8),
+                  Padding(
+                    padding: AppInsets.sheetBottomPadding,
+                    child: AppTextButton(
+                      text: 'Create tag',
+                      onPressed: _onCreateTagPressed,
+                    ),
+                  ),
+                ],
               ),
-              const Gap(16),
-              ColorList(
-                selectedColor: _selectedColor,
-                onColorSelected: _onColorSelected,
-              ),
-              const Gap(48),
-              Text(
-                'Create a custom tag for your tasks',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: AppColorExtensions.getTextSecondaryColor(context),
-                ),
-              ),
-              const Gap(12),
-              Padding(
-                padding: AppInsets.sheetBottomPadding,
-                child: AppTextButton(
-                  text: 'Create tag',
-                  onPressed: _onCreateTagPressed,
-                ),
-              ),
-            ],
+            ),
           ),
         );
       },

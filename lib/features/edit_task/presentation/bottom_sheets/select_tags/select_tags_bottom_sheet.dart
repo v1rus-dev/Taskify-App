@@ -18,6 +18,7 @@ class SelectTagsBottomSheet extends StatelessWidget {
   void _onCreateTagPressed(BuildContext context) {
     showFloatingBottomSheet(
       context: context,
+      handleKeyboardInsets: true,
       child: BlocProvider.value(
         value: context.read<EditTaskBloc>(),
         child: const CreateUserTagPage(),

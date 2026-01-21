@@ -24,6 +24,7 @@ class EditTaskBottomPart extends StatelessWidget {
       () => showFloatingBottomSheet<void>(
         context: context,
         useSafeArea: true,
+        handleKeyboardInsets: false,
         child: BlocProvider.value(
           value: editTaskBloc,
           child: const SelectTaskDatePage(),

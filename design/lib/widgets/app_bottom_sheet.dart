@@ -14,6 +14,7 @@ Future<T?> showStandardBottomSheet<T>({
   ScrollPhysics? scrollPhysics,
   double? minContentHeight,
   double? maxContentHeight,
+  bool handleKeyboardInsets = true,
 }) {
   return _showAppModalBottomSheet<T>(
     context: context,
@@ -27,6 +28,7 @@ Future<T?> showStandardBottomSheet<T>({
     scrollPhysics: scrollPhysics,
     minContentHeight: minContentHeight,
     maxContentHeight: maxContentHeight,
+    handleKeyboardInsets: handleKeyboardInsets,
   );
 }
 
@@ -42,6 +44,7 @@ Future<T?> showFloatingBottomSheet<T>({
   double? minContentHeight,
   double? maxContentHeight,
   EdgeInsets? padding,
+  bool handleKeyboardInsets = true,
 }) {
   return _showAppModalBottomSheet<T>(
     context: context,
@@ -57,6 +60,7 @@ Future<T?> showFloatingBottomSheet<T>({
     minContentHeight: minContentHeight,
     maxContentHeight: maxContentHeight,
     floatingPadding: padding,
+    handleKeyboardInsets: handleKeyboardInsets,
   );
 }
 
@@ -71,6 +75,7 @@ Future<T?> showFullScreenBottomSheet<T>({
   ScrollPhysics? scrollPhysics,
   double? minContentHeight,
   double? maxContentHeight,
+  bool handleKeyboardInsets = true,
 }) {
   return _showAppModalBottomSheet<T>(
     context: context,
@@ -85,6 +90,7 @@ Future<T?> showFullScreenBottomSheet<T>({
     minContentHeight: minContentHeight,
     maxContentHeight: maxContentHeight,
     isScrollControlled: true,
+    handleKeyboardInsets: handleKeyboardInsets,
   );
 }
 
@@ -104,6 +110,7 @@ Future<T?> _showAppModalBottomSheet<T>({
   EdgeInsets? floatingPadding,
   Color? backgroundColor,
   Color? barrierColor,
+  bool handleKeyboardInsets = true,
 }) {
   return showModalBottomSheet<T>(
     context: context,
@@ -122,14 +129,35 @@ Future<T?> _showAppModalBottomSheet<T>({
         scrollPhysics: scrollPhysics,
         minContentHeight: minContentHeight,
         maxContentHeight: maxContentHeight,
-        includeBottomSafeArea: type == AppBottomSheetType.standard
-            ? useSafeArea
-            : false,
         child: child,
       );
+      final actualKeyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+      final keyboardInset = handleKeyboardInsets ? actualKeyboardInset : 0.0;
+      final resolvedPadding = _floatingPadding(floatingPadding);
+      final rawInset = keyboardInset -
+          (type == AppBottomSheetType.floating ? resolvedPadding.bottom : 0.0);
+      final bottomInset = rawInset > 0 ? rawInset : 0.0;
+      final bottomSafeArea =
+          type == AppBottomSheetType.standard &&
+                  useSafeArea &&
+                  actualKeyboardInset == 0
+              ? MediaQuery.viewPaddingOf(context).bottom
+              : 0.0;
 
       if (type == AppBottomSheetType.floating) {
-        final padding = _floatingPadding(context, floatingPadding, useSafeArea);
+        final safeTop =
+            useSafeArea ? MediaQuery.viewPaddingOf(context).top : 0.0;
+        final safeBottom = useSafeArea
+            ? MediaQuery.viewPaddingOf(context).bottom
+            : 0.0;
+        final desiredBottom = resolvedPadding.bottom + safeBottom + bottomInset;
+        final bottom = desiredBottom < resolvedPadding.bottom
+            ? resolvedPadding.bottom
+            : desiredBottom;
+        final padding = resolvedPadding.copyWith(
+          top: resolvedPadding.top + safeTop + resolvedPadding.top,
+          bottom: bottom,
+        );
         return Padding(
           padding: padding,
           child: Material(
@@ -145,7 +173,12 @@ Future<T?> _showAppModalBottomSheet<T>({
         );
       }
 
-      return content;
+      return AnimatedPadding(
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.only(bottom: bottomInset + bottomSafeArea),
+        child: content,
+      );
     },
   );
 }
@@ -235,27 +268,9 @@ Color _backgroundColorForType(
   return color ?? AppColorExtensions.getBackgroundColor(context);
 }
 
-EdgeInsets _floatingPadding(
-  BuildContext context,
-  EdgeInsets? padding,
-  bool includeSafeArea,
-) {
-  final basePadding = padding ?? const EdgeInsets.all(16);
-  final safeBottom = includeSafeArea
-      ? MediaQuery.viewPaddingOf(context).bottom
-      : 0.0;
-
-  final resolvedPadding = padding ??
-      const EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 16,
-        bottom: 12,
-      );
-
-  return resolvedPadding.copyWith(
-    bottom: resolvedPadding.bottom + safeBottom,
-  );
+EdgeInsets _floatingPadding(EdgeInsets? padding) {
+  return padding ??
+      const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8);
 }
 
 class _AppBottomSheetContent extends StatelessWidget {
@@ -267,7 +282,6 @@ class _AppBottomSheetContent extends StatelessWidget {
     required this.scrollPhysics,
     required this.minContentHeight,
     required this.maxContentHeight,
-    required this.includeBottomSafeArea,
   });
 
   final Widget child;
@@ -277,14 +291,9 @@ class _AppBottomSheetContent extends StatelessWidget {
   final ScrollPhysics? scrollPhysics;
   final double? minContentHeight;
   final double? maxContentHeight;
-  final bool includeBottomSafeArea;
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
-    final bottomSafeArea = includeBottomSafeArea
-        ? MediaQuery.viewPaddingOf(context).bottom
-        : 0.0;
     Widget content = child;
 
     if (isScrollable) {
@@ -305,35 +314,30 @@ class _AppBottomSheetContent extends StatelessWidget {
       content = SizedBox(width: double.infinity, child: content);
     }
 
-    return AnimatedPadding(
-      duration: const Duration(milliseconds: 150),
-      curve: Curves.easeOut,
-      padding: EdgeInsets.only(bottom: bottomInset + bottomSafeArea),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          const dragHandleHeight = 28.0;
-          final maxHeight = constraints.hasBoundedHeight
-              ? (constraints.maxHeight -
-                        (showDragHandle ? dragHandleHeight : 0.0))
-                    .clamp(0.0, double.infinity)
-              : null;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const dragHandleHeight = 28.0;
+        final maxHeight = constraints.hasBoundedHeight
+            ? (constraints.maxHeight -
+                      (showDragHandle ? dragHandleHeight : 0.0))
+                  .clamp(0.0, double.infinity)
+            : null;
 
-          final sizedContent = maxHeight == null
-              ? content
-              : ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: maxHeight),
-                  child: content,
-                );
+        final sizedContent = maxHeight == null
+            ? content
+            : ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: maxHeight),
+                child: content,
+              );
 
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (showDragHandle) _BottomSheetDragHandle(),
-              sizedContent,
-            ],
-          );
-        },
-      ),
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (showDragHandle) _BottomSheetDragHandle(),
+            sizedContent,
+          ],
+        );
+      },
     );
   }
 }

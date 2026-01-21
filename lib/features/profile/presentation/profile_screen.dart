@@ -35,6 +35,7 @@ class ProfileScreen extends StatelessWidget {
       context: context,
       useSafeArea: true,
       useRootNavigator: true,
+      handleKeyboardInsets: false,
       child: SelectTimeFormatBottomSheet(selectedType: selectedType),
     );
     if (context.mounted) {

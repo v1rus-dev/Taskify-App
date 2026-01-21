@@ -38,6 +38,7 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
     await showFloatingBottomSheet<void>(
       context: context,
       useSafeArea: true,
+      handleKeyboardInsets: false,
       child: SelectTaskPeriodBottomSheet(
         selectedType: selectedType,
         onSelected: (type) =>

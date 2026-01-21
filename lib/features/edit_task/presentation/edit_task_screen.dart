@@ -122,11 +122,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           keyboardAnimationDuration: const Duration(milliseconds: 120),
           child: EditTaskBottomPart(
             onSavePressed: () => _saveTask(context: context),
-            onDateSelected: (d, isAllDay, start, end) {
-              context.read<EditTaskBloc>().add(
-                EditTaskEvent.selectDate(d, isAllDay, start, end),
-              );
-            },
           ),
         ),
 
@@ -137,88 +132,90 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
             child: SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Gap(20),
-                  TextField(
-                    controller: titleController,
-                    focusNode: titleFocusNode,
-                    maxLines: null,
-                    maxLength: 155,
-                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                    style: theme.textTheme.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColorExtensions.getTextPrimaryColor(context),
-                    ),
-                    textInputAction: TextInputAction.next,
-                    onSubmitted: _onTitleSubmitted,
-                    onChanged: (value) => context.read<EditTaskBloc>().add(
-                      EditTaskEvent.titleChanged(value),
-                    ),
-                    decoration: InputDecoration(
-                      hintText:
-                          AppLocalizations.of(context)?.writeANewTask ?? '',
-                      border: InputBorder.none,
-                      isCollapsed: true,
-                      contentPadding: EdgeInsets.zero,
-                      counterText: '',
-                      hintStyle: theme.textTheme.headlineLarge?.copyWith(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Gap(20),
+                    TextField(
+                      controller: titleController,
+                      focusNode: titleFocusNode,
+                      maxLines: null,
+                      maxLength: 155,
+                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                      style: theme.textTheme.headlineLarge?.copyWith(
                         fontWeight: FontWeight.w500,
-                        color: AppColorExtensions.getTextSecondaryColor(
-                          context,
+                        color: AppColorExtensions.getTextPrimaryColor(context),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onSubmitted: _onTitleSubmitted,
+                      onChanged: (value) => context.read<EditTaskBloc>().add(
+                        EditTaskEvent.titleChanged(value),
+                      ),
+                      decoration: InputDecoration(
+                        hintText:
+                            AppLocalizations.of(context)?.writeANewTask ?? '',
+                        border: InputBorder.none,
+                        isCollapsed: true,
+                        contentPadding: EdgeInsets.zero,
+                        counterText: '',
+                        hintStyle: theme.textTheme.headlineLarge?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: AppColorExtensions.getTextSecondaryColor(
+                            context,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-
-                  BlocBuilder<EditTaskBloc, EditTaskState>(
-                    builder: (context, state) {
-                      return AnimatedVisibility(
-                        visible: state.titleIsNotEmpty,
-                        enter: fadeIn(curve: Curves.easeIn),
-                        exit: fadeOut(curve: Curves.easeOut),
-                        child: Column(
-                          key: const ValueKey('desc_fields_shown'),
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Gap(24),
-
-                            TextField(
-                              controller: descriptionController,
-                              focusNode: descriptionFocusNode,
-                              maxLines: null,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontSize: 20,
-                                color: AppColorExtensions.getTextPrimaryColor(
-                                  context,
-                                ),
-                              ),
-                              decoration: InputDecoration(
-                                hintText:
-                                    AppLocalizations.of(context)?.description ??
-                                    '',
-                                border: InputBorder.none,
-                                isCollapsed: true,
-                                contentPadding: EdgeInsets.zero,
-                                hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                
+                    BlocBuilder<EditTaskBloc, EditTaskState>(
+                      builder: (context, state) {
+                        return AnimatedVisibility(
+                          visible: state.titleIsNotEmpty,
+                          enter: fadeIn(curve: Curves.easeIn),
+                          exit: fadeOut(curve: Curves.easeOut),
+                          child: Column(
+                            key: const ValueKey('desc_fields_shown'),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Gap(24),
+                
+                              TextField(
+                                controller: descriptionController,
+                                focusNode: descriptionFocusNode,
+                                maxLines: null,
+                                style: theme.textTheme.bodyMedium?.copyWith(
                                   fontSize: 20,
-                                  color:
-                                      AppColorExtensions.getTextSecondaryColor(
-                                        context,
-                                      ),
+                                  color: AppColorExtensions.getTextPrimaryColor(
+                                    context,
+                                  ),
+                                ),
+                                decoration: InputDecoration(
+                                  hintText:
+                                      AppLocalizations.of(context)?.description ??
+                                      '',
+                                  border: InputBorder.none,
+                                  isCollapsed: true,
+                                  contentPadding: EdgeInsets.zero,
+                                  hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                                    fontSize: 20,
+                                    color:
+                                        AppColorExtensions.getTextSecondaryColor(
+                                          context,
+                                        ),
+                                  ),
                                 ),
                               ),
-                            ),
-                            const Gap(24),
-                            SubTaskPart(),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ],
+                              const Gap(24),
+                              SubTaskPart(),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

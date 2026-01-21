@@ -2,6 +2,8 @@ import 'package:animated_visibility/animated_visibility.dart';
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taskify/core/widgets/tag_cheap.dart';
+import 'package:taskify/domain/entities/tag.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_tags/select_tags_page.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/add_tag_button.dart';
@@ -10,15 +12,24 @@ import 'package:gap/gap.dart';
 class EditTaskTagsPart extends StatelessWidget {
   const EditTaskTagsPart({super.key});
 
-  void _onAddTagPressed(BuildContext context) async {
-    await unfocusAndThen(
+  void _onAddTagPressed(BuildContext context) {
+    final editTaskBloc = context.read<EditTaskBloc>();
+    unfocusAndThen(
       context,
       () => showFloatingBottomSheet<void>(
         context: context,
         useSafeArea: true,
-        child: const SelectTagsPage(),
+        child: BlocProvider.value(
+          value: editTaskBloc,
+          child: const SelectTagsPage(),
+        ),
       ),
     );
+  }
+
+  void _onTagPressed(BuildContext context, TagEntity tag) {
+    final editTaskBloc = context.read<EditTaskBloc>();
+    editTaskBloc.add(EditTaskEvent.removeTag(tag));
   }
 
   @override
@@ -41,14 +52,22 @@ class EditTaskTagsPart extends StatelessWidget {
                 height: 24,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   itemBuilder: (context, index) {
-                    return AddTagButton(
-                      onPressed: () => _onAddTagPressed(context),
+                    if (index == state.selectedTags.length) {
+                      return AddTagButton(
+                        onPressed: () => _onAddTagPressed(context),
+                      );
+                    }
+                    return TagCheap(
+                      tag: state.selectedTags[index],
+                      onPressed: () =>
+                          _onTagPressed(context, state.selectedTags[index]),
                     );
                   },
                   separatorBuilder: (context, index) =>
                       const SizedBox(width: 8),
-                  itemCount: 1,
+                  itemCount: state.selectedTags.length + 1,
                 ),
               ),
               const Gap(16),

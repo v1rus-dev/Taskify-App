@@ -1,30 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/domain/entities/task_duration_type.dart';
+import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_date/bloc/select_task_date_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_date/select_task_date_bottom_sheet.dart';
 
 class SelectTaskDatePage extends StatelessWidget {
-  const SelectTaskDatePage({
-    super.key,
-    this.selectedDate,
-    this.isAllDay,
-    this.startTime,
-    this.endTime,
-    this.onSave,
-  });
-
-  final DateTime? selectedDate;
-  final bool? isAllDay;
-  final DateTime? startTime;
-  final DateTime? endTime;
-  final void Function(
-    DateTime selectedDate,
-    bool isAllDay,
-    DateTime? startTime,
-    DateTime? endTime,
-  )?
-  onSave;
+  const SelectTaskDatePage({super.key});
 
   TaskDurationType _initialDurationType(bool? isAllDay) {
     return (isAllDay ?? true)
@@ -41,20 +23,15 @@ class SelectTaskDatePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final editState = context.read<EditTaskBloc>().state;
     return BlocProvider(
       create: (_) => SelectTaskDateBloc(
-        selectedDate: selectedDate,
-        durationType: _initialDurationType(isAllDay),
-        initialStartTime: _initialTimeOfDay(startTime),
-        initialEndTime: _initialTimeOfDay(endTime),
+        selectedDate: editState.selectedDate,
+        durationType: _initialDurationType(editState.isAllDay),
+        initialStartTime: _initialTimeOfDay(editState.startTime),
+        initialEndTime: _initialTimeOfDay(editState.endTime),
       ),
-      child: SelectTaskDateBottomSheet(
-        selectedDate: selectedDate,
-        isAllDay: isAllDay,
-        startTime: startTime,
-        endTime: endTime,
-        onSave: onSave,
-      ),
+      child: const SelectTaskDateBottomSheet(),
     );
   }
 }

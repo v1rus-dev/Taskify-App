@@ -247,10 +247,10 @@ EdgeInsets _floatingPadding(
 
   final resolvedPadding = padding ??
       const EdgeInsets.only(
-        left: 20,
-        right: 20,
+        left: 16,
+        right: 16,
         top: 16,
-        bottom: 16,
+        bottom: 12,
       );
 
   return resolvedPadding.copyWith(

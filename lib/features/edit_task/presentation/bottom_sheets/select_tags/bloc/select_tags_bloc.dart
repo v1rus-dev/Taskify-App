@@ -8,9 +8,13 @@ part 'select_tags_state.dart';
 part 'select_tags_bloc.freezed.dart';
 
 class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
-  SelectTagsBloc() : super(const SelectTagsState.initial()) {
+  SelectTagsBloc({Set<int>? initialSelectedTagIds})
+      : _initialSelectedTagIds = Set<int>.from(initialSelectedTagIds ?? {}),
+        super(const SelectTagsState.initial()) {
     on<SelectTagsEvent>(_onEvent);
   }
+
+  final Set<int> _initialSelectedTagIds;
 
   Future<void> _onEvent(
     SelectTagsEvent event,
@@ -28,7 +32,7 @@ class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
       SelectTagsState.success(
         defaultTags: _buildDefaultTags(),
         customTags: const [],
-        selectedTagIds: <int>{},
+        selectedTagIds: _initialSelectedTagIds,
       ),
     );
   }

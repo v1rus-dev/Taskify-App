@@ -18,7 +18,7 @@ class AddTagButton extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
           child: Text(
-            'ADD TAG',
+            'Add tag',
             style: theme.textTheme.labelSmall?.copyWith(
               color: AppColorExtensions.getButtonDisabledTextColor(context),
             ),

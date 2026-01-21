@@ -13,31 +13,20 @@ class EditTaskBottomPart extends StatelessWidget {
   const EditTaskBottomPart({
     super.key,
     required this.onSavePressed,
-    required this.onDateSelected,
   });
 
   final VoidCallback onSavePressed;
 
-  final void Function(
-    DateTime selectedDate,
-    bool isAllDay,
-    DateTime? startTime,
-    DateTime? endTime,
-  )
-  onDateSelected;
-
-  Future<void> _onTimePressed(BuildContext context, EditTaskState state) async {
-    await unfocusAndThen(
+  void _onTimePressed(BuildContext context) {
+    final editTaskBloc = context.read<EditTaskBloc>();
+    unfocusAndThen(
       context,
       () => showFloatingBottomSheet<void>(
         context: context,
         useSafeArea: true,
-        child: SelectTaskDatePage(
-          selectedDate: state.selectedDate,
-          isAllDay: state.isAllDay,
-          startTime: state.startTime,
-          endTime: state.endTime,
-          onSave: onDateSelected,
+        child: BlocProvider.value(
+          value: editTaskBloc,
+          child: const SelectTaskDatePage(),
         ),
       ),
     );
@@ -47,18 +36,18 @@ class EditTaskBottomPart extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<EditTaskBloc, EditTaskState>(
       builder: (context, state) {
-        return Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              EditTaskTagsPart(),
-              Row(
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            EditTaskTagsPart(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
                 children: [
                   EditTaskTimeButton(
                     isEnabled: state.titleIsNotEmpty,
                     showIndicator: state.isDateModified,
-                    onPressed: () => _onTimePressed(context, state),
+                    onPressed: () => _onTimePressed(context),
                   ),
                   const Gap(8),
                   Expanded(
@@ -70,8 +59,9 @@ class EditTaskBottomPart extends StatelessWidget {
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+            const Gap(20),
+          ],
         );
       },
     );

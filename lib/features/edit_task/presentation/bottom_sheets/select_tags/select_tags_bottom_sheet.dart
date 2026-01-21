@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:taskify/domain/entities/tag.dart';
 import 'bloc/select_tags_bloc.dart';
 import 'widgets/select_tags_sections.dart';
+import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
 
 class SelectTagsBottomSheet extends StatelessWidget {
   const SelectTagsBottomSheet({super.key});
@@ -18,7 +19,22 @@ class SelectTagsBottomSheet extends StatelessWidget {
   }
 
   void _onSavePressed(BuildContext context) {
+    final selectedTags = _collectSelectedTags(context);
+    context.read<EditTaskBloc>().add(EditTaskEvent.tagsUpdated(selectedTags));
     Navigator.of(context).pop();
+  }
+
+  List<TagEntity> _collectSelectedTags(BuildContext context) {
+    final state = context.read<SelectTagsBloc>().state;
+    return state.maybeWhen(
+      success: (defaultTags, customTags, selectedTagIds) {
+        final allTags = [...defaultTags, ...customTags];
+        return allTags
+            .where((tag) => selectedTagIds.contains(tag.id))
+            .toList(growable: false);
+      },
+      orElse: () => const <TagEntity>[],
+    );
   }
 
   Widget _buildContent(BuildContext context, SelectTagsState state) {

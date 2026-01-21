@@ -40,8 +40,6 @@ Platform folders live in `android/` and `ios/`.
 - `flutter test`: execute unit/widget tests under `test/`.
 - `flutter analyze`: run static analysis using `analysis_options.yaml`.
 - `flutter build apk`: produce a release APK (adjust for iOS as needed).
-- `dart run build_runner build --delete-conflicting-outputs`: generate code for Freezed/Drift.
-- `dart run build_runner watch --delete-conflicting-outputs`: watch mode for codegen.
 
 ## Dependency Injection
 - Use GetIt as a service locator for dependency injection

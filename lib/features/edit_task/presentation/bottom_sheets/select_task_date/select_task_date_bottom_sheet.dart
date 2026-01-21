@@ -7,30 +7,12 @@ import 'package:taskify/core/providers/time_format_notifier.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/utils/time_format_utils.dart';
 import 'package:taskify/domain/entities/task_duration_type.dart';
+import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_date/bloc/select_task_date_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_period/select_task_period_bottom_sheet.dart';
 
 class SelectTaskDateBottomSheet extends StatelessWidget {
-  const SelectTaskDateBottomSheet({
-    super.key,
-    this.selectedDate,
-    this.isAllDay,
-    this.startTime,
-    this.endTime,
-    this.onSave,
-  });
-
-  final DateTime? selectedDate;
-  final bool? isAllDay;
-  final DateTime? startTime;
-  final DateTime? endTime;
-  final void Function(
-    DateTime selectedDate,
-    bool isAllDay,
-    DateTime? startTime,
-    DateTime? endTime,
-  )?
-  onSave;
+  const SelectTaskDateBottomSheet({super.key});
 
   Future<void> _onDatePressed(
     BuildContext context,
@@ -180,11 +162,13 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
             current.endTime!.minute,
           )
         : null;
-    onSave?.call(
-      current.selectedDate,
-      current.durationType == TaskDurationType.allDay,
-      startDateTime,
-      endDateTime,
+    context.read<EditTaskBloc>().add(
+      EditTaskEvent.selectDate(
+        current.selectedDate,
+        current.durationType == TaskDurationType.allDay,
+        startDateTime,
+        endDateTime,
+      ),
     );
     Navigator.of(context).pop();
   }

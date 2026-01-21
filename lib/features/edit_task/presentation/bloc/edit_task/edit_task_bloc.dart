@@ -8,6 +8,7 @@ import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
 import 'package:taskify/domain/entities/task.dart';
 import 'package:taskify/domain/entities/sub_task.dart';
+import 'package:taskify/domain/entities/tag.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/edit_task/presentation/models/sub_task_ui_model.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
@@ -38,7 +39,9 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     on<_Started>(_onStarted);
     on<_TitleChanged>(_onTitleChanged);
     on<_SelectDate>(_onSelectDate);
+    on<_TagsUpdated>(_onTagsUpdated);
     on<_SaveTask>(_onSaveTask);
+    on<_RemoveTag>(_onRemoveTag);
   }
 
   Future<void> _onStarted(_Started event, Emitter<EditTaskState> emit) async {
@@ -74,6 +77,14 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
         isDateModified: isDateModified,
       ),
     );
+  }
+
+  void _onTagsUpdated(_TagsUpdated event, Emitter<EditTaskState> emit) {
+    emit(state.copyWith(selectedTags: event.tags));
+  }
+
+  void _onRemoveTag(_RemoveTag event, Emitter<EditTaskState> emit) {
+    emit(state.copyWith(selectedTags: state.selectedTags.where((tag) => tag.id != event.tag.id).toList()));
   }
 
   Future<void> _onSaveTask(_SaveTask event, Emitter<EditTaskState> emit) async {

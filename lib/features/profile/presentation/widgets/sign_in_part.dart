@@ -39,12 +39,14 @@ class SignInPart extends StatelessWidget {
           children: [
             Expanded(
               child: GoogleSignInButton(
+                showText: Platform.isAndroid,
                 onPressed: () => _signInWithGoogle(context),
               ),
             ),
             const Gap(16),
             Expanded(
               child: AppleSignInButton(
+                showText: Platform.isAndroid,
                 onPressed: () => _signInWithApple(context),
               ),
             ),

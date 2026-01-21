@@ -4,8 +4,9 @@ import 'package:design/constants/app_icons.dart';
 import 'package:gap/gap.dart';
 
 class GoogleSignInButton extends StatelessWidget {
-  const GoogleSignInButton({super.key, required this.onPressed});
+  const GoogleSignInButton({super.key, this.showText = true, required this.onPressed});
 
+  final bool showText;
   final VoidCallback onPressed;
 
   @override
@@ -30,11 +31,13 @@ class GoogleSignInButton extends StatelessWidget {
                 width: 24,
                 height: 24,
               ),
+              if (showText) ...[
               const Gap(8),
               Text(
-                'Sign in with Google',
-                style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
-              ),
+                  'Sign in with Google',
+                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+                ),
+              ],
             ],
           ),
         ),

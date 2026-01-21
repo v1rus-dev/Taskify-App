@@ -4,8 +4,9 @@ import 'package:design/constants/app_icons.dart';
 import 'package:gap/gap.dart';
 
 class AppleSignInButton extends StatelessWidget {
-  const AppleSignInButton({super.key, required this.onPressed});
+  const AppleSignInButton({super.key, this.showText = true, required this.onPressed});
 
+  final bool showText;
   final VoidCallback onPressed;
 
   @override
@@ -30,11 +31,13 @@ class AppleSignInButton extends StatelessWidget {
                 width: 24,
                 height: 24,
               ),
+              if (showText) ...[
               const Gap(8),
               Text(
                 'Sign in with Apple',
                 style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
               ),
+              ],
             ],
           ),
         ),

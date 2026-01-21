@@ -12,6 +12,10 @@ class TagInteractor {
     return _repository.getCustomTags();
   }
 
+  Stream<List<TagEntity>> observeCustomTags() {
+    return _repository.observeCustomTags();
+  }
+
   Future<Either<Failure, TagEntity>> createCustomTag(
     CustomTagEntity tag,
   ) async {

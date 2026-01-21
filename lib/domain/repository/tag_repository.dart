@@ -4,6 +4,7 @@ import 'package:taskify/domain/entities/tag.dart';
 
 abstract class TagRepository {
   Future<Either<Failure, List<TagEntity>>> getCustomTags();
+  Stream<List<TagEntity>> observeCustomTags();
   Future<Either<Failure, TagEntity>> createCustomTag(CustomTagEntity tag);
   Future<Either<Failure, TagEntity>> updateCustomTag(CustomTagEntity tag);
   Future<Either<Failure, void>> deleteCustomTag(int id);

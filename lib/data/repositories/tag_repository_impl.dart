@@ -23,6 +23,13 @@ class TagRepositoryImpl implements TagRepository {
   }
 
   @override
+  Stream<List<TagEntity>> observeCustomTags() {
+    return _localDataSource.observeCustomTags().map(
+          (tags) => tags.map((tag) => tag.toDomain()).toList(),
+        );
+  }
+
+  @override
   Future<Either<Failure, TagEntity>> createCustomTag(CustomTagEntity tag) async {
     final result =
         await _localDataSource.createCustomTag(tag.toInsertCompanion());

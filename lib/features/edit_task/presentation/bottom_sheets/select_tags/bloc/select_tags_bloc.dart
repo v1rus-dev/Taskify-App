@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:taskify/core/services/locator.dart';
@@ -20,6 +22,7 @@ class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
 
   final Set<String> _initialSelectedTagKeys;
   final TagInteractor _tagInteractor;
+  StreamSubscription<List<TagEntity>>? _customTagsSubscription;
 
   Future<void> _onEvent(
     SelectTagsEvent event,
@@ -46,6 +49,20 @@ class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
         selectedTagKeys: _initialSelectedTagKeys,
       ),
     );
+    await _customTagsSubscription?.cancel();
+    _customTagsSubscription = _tagInteractor.observeCustomTags().listen((tags) {
+      state.maybeMap(
+        success: (state) =>
+            emit(state.copyWith(customTags: tags)),
+        orElse: () => emit(
+          SelectTagsState.success(
+            defaultTags: _buildDefaultTags(),
+            customTags: tags,
+            selectedTagKeys: _initialSelectedTagKeys,
+          ),
+        ),
+      );
+    });
   }
 
   void _onTagToggled(TagEntity tag, Emitter<SelectTagsState> emit) {
@@ -67,5 +84,11 @@ class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
     return DefaultTag.values
         .map((tag) => DefaultTagEntity(defaultTag: tag))
         .toList(growable: false);
+  }
+
+  @override
+  Future<void> close() async {
+    await _customTagsSubscription?.cancel();
+    return super.close();
   }
 }

@@ -16,23 +16,61 @@ class CreateUserTagBottomSheet extends StatefulWidget {
 
 class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
   final TextEditingController _nameController = TextEditingController();
-  Color _selectedColor = DefaultTagColor.values[0].color;
+  late final VoidCallback _nameListener;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameListener = () => _onNameChanged(_nameController.text);
+    _nameController.addListener(_nameListener);
+  }
+
+  @override
+  void dispose() {
+    _nameController.removeListener(_nameListener);
+    _nameController.dispose();
+    super.dispose();
+  }
 
   void _onCreateTagPressed() {
-    // context.read<CreateUserTagBloc>().add(CreateUserTagEvent.created(name: name, color: _selectedColor));
+    context.read<CreateUserTagBloc>().add(
+      const CreateUserTagEvent.createPressed(),
+    );
   }
 
   void _onColorSelected(Color color) {
-    setState(() {
-      _selectedColor = color;
-    });
+    context.read<CreateUserTagBloc>().add(
+      CreateUserTagEvent.colorChanged(color),
+    );
+  }
+
+  void _onNameChanged(String value) {
+    context.read<CreateUserTagBloc>().add(
+      CreateUserTagEvent.nameChanged(value),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return BlocBuilder<CreateUserTagBloc, CreateUserTagState>(
+    return BlocConsumer<CreateUserTagBloc, CreateUserTagState>(
+      listener: (context, state) {
+        state.mapOrNull(
+          success: (_) => Navigator.of(context).pop(),
+        );
+      },
       builder: (context, state) {
+        final selectedColor = state.maybeMap(
+          editing: (state) => state.color,
+          saving: (state) => state.color,
+          error: (state) => state.color,
+          orElse: () => DefaultTagColor.values.first.color,
+        );
+        final isEnabled = state.maybeMap(
+          editing: (state) => state.isValid,
+          error: (state) => state.isValid,
+          orElse: () => false,
+        );
         return MediaQuery.removeViewInsets(
           context: context,
           removeBottom: true,
@@ -58,6 +96,7 @@ class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
                         AppEditText(
                           hint: 'Tag name',
                           controller: _nameController,
+                          trailing: null,
                         ),
                         const Gap(16),
                       ],
@@ -78,7 +117,7 @@ class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
                   ),
                   const Gap(16),
                   ColorList(
-                    selectedColor: _selectedColor,
+                    selectedColor: selectedColor,
                     onColorSelected: _onColorSelected,
                   ),
                   const Gap(24),
@@ -93,6 +132,7 @@ class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
                     padding: AppInsets.sheetBottomPadding,
                     child: AppTextButton(
                       text: 'Create tag',
+                      isEnabled: isEnabled,
                       onPressed: _onCreateTagPressed,
                     ),
                   ),

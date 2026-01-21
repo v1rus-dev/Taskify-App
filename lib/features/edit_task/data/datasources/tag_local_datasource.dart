@@ -1,5 +1,4 @@
 import 'package:dart_either/dart_either.dart';
-import 'package:drift/drift.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/data/database/app_database.dart' as db;
 
@@ -19,6 +18,7 @@ abstract class TagLocalDataSource {
     int taskId,
     List<db.TaskTagsTableCompanion> tags,
   );
+  Stream<List<db.CustomTagsTableData>> observeCustomTags();
 }
 
 class TagLocalDataSourceImpl implements TagLocalDataSource {
@@ -42,9 +42,9 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
   ) async {
     try {
       final id = await _database.into(_database.customTagsTable).insert(tag);
-      final created = await (_database.select(_database.customTagsTable)
-            ..where((t) => t.id.equals(id)))
-          .getSingle();
+      final created = await (_database.select(
+        _database.customTagsTable,
+      )..where((t) => t.id.equals(id))).getSingle();
       return Right(created);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -57,9 +57,9 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
   ) async {
     try {
       await _database.update(_database.customTagsTable).replace(tag);
-      final updated = await (_database.select(_database.customTagsTable)
-            ..where((t) => t.id.equals(tag.id)))
-          .getSingle();
+      final updated = await (_database.select(
+        _database.customTagsTable,
+      )..where((t) => t.id.equals(tag.id))).getSingle();
       return Right(updated);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -69,9 +69,9 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
   @override
   Future<Either<Failure, void>> deleteCustomTag(int id) async {
     try {
-      await (_database.delete(_database.customTagsTable)
-            ..where((t) => t.id.equals(id)))
-          .go();
+      await (_database.delete(
+        _database.customTagsTable,
+      )..where((t) => t.id.equals(id))).go();
       return const Right(null);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -83,9 +83,9 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
     int taskId,
   ) async {
     try {
-      final rows = await (_database.select(_database.taskTagsTable)
-            ..where((t) => t.taskId.equals(taskId)))
-          .get();
+      final rows = await (_database.select(
+        _database.taskTagsTable,
+      )..where((t) => t.taskId.equals(taskId))).get();
       return Right(rows);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -99,9 +99,9 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
   ) async {
     try {
       await _database.transaction(() async {
-        await (_database.delete(_database.taskTagsTable)
-              ..where((t) => t.taskId.equals(taskId)))
-            .go();
+        await (_database.delete(
+          _database.taskTagsTable,
+        )..where((t) => t.taskId.equals(taskId))).go();
         if (tags.isNotEmpty) {
           await _database.batch((batch) {
             batch.insertAll(_database.taskTagsTable, tags);
@@ -112,5 +112,12 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
     }
+  }
+
+  @override
+  Stream<List<db.CustomTagsTableData>> observeCustomTags() {
+    return _database.select(_database.customTagsTable).watch().map((driftTags) {
+      return driftTags.toList();
+    });
   }
 }

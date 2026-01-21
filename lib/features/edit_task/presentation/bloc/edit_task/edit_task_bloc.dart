@@ -87,7 +87,13 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
   }
 
   void _onRemoveTag(_RemoveTag event, Emitter<EditTaskState> emit) {
-    emit(state.copyWith(selectedTags: state.selectedTags.where((tag) => tag.id != event.tag.id).toList()));
+    emit(
+      state.copyWith(
+        selectedTags: state.selectedTags
+            .where((tag) => tag.key != event.tag.key)
+            .toList(),
+      ),
+    );
   }
 
   Future<void> _onSaveTask(_SaveTask event, Emitter<EditTaskState> emit) async {

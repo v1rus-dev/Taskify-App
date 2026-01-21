@@ -11,6 +11,7 @@ export 'constants/app_insets.dart';
 export 'enums/app_theme_mode.dart';
 export 'widgets/app_shadow.dart';
 export 'widgets/app_text_button.dart';
+export 'widgets/app_edit_text.dart';
 export 'widgets/app_bottom_sheet.dart';
 export 'dialogs/app_dialogs.dart';
 export 'widgets/app_date_time_picker.dart';

@@ -15,6 +15,7 @@ class CreateUserTagBottomSheet extends StatefulWidget {
 }
 
 class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
+  final TextEditingController _nameController = TextEditingController();
   Color _selectedColor = DefaultTagColor.values[0].color;
 
   void _onCreateTagPressed() {
@@ -49,7 +50,7 @@ class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
                       ),
                     ),
                     const Gap(24),
-                    // Add Text field
+                    AppEditText(hint: 'Tag name', controller: _nameController),
                     const Gap(24),
                   ],
                 ),

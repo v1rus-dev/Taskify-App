@@ -6,6 +6,7 @@ class UsersTable extends Table {
   TextColumn get providerUserId => text()();
   TextColumn get email => text()();
   TextColumn get name => text().nullable()();
+  TextColumn get friendTag => text()();
   TextColumn get avatarUrl => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();

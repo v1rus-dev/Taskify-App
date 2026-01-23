@@ -123,7 +123,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
       ifRight: (task) => savedTask = task,
     );
     if (failure != null) {
-      TalkerService.instance.error(failure!.message);
+      TalkerService.instance.error('syncTag ${failure!.message}');
       event.completer.completeError(failure!);
       return;
     }
@@ -131,7 +131,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     final resolvedTaskId = savedTask?.id ?? taskId;
     if (resolvedTaskId == null) {
       const error = ValidationFailure('Task id is required');
-      TalkerService.instance.error(error.message);
+      TalkerService.instance.error('syncTag ${error.message}');
       event.completer.completeError(error);
       return;
     }
@@ -146,7 +146,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
       ifRight: (_) {},
     );
     if (syncFailure != null) {
-      TalkerService.instance.error(syncFailure!.message);
+      TalkerService.instance.error('syncTag ${syncFailure!.message}');
       event.completer.completeError(syncFailure!);
       return;
     }
@@ -161,7 +161,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
       ifRight: (_) {},
     );
     if (tagFailure != null) {
-      TalkerService.instance.error(tagFailure!.message);
+      TalkerService.instance.error('syncTag ${tagFailure!.message}');
       event.completer.completeError(tagFailure!);
       return;
     }
@@ -177,17 +177,18 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     final tagsResult = await tagInteractor.getTaskTags(taskId);
     List<TagEntity> tags = const [];
     tagsResult.fold(
-      ifLeft: (error) => TalkerService.instance.error(error.message),
+      ifLeft: (error) => TalkerService.instance.error('syncTag ${error.message}'),
       ifRight: (items) {
-        TalkerService.instance.info('Tags: ${items.length}');
+        TalkerService.instance.info('syncTag Tags: ${items.length}');
         tags = items;
       },
     );
 
     result.fold(
-      ifLeft: (failure) => TalkerService.instance.error(failure.message),
+      ifLeft: (failure) =>
+          TalkerService.instance.error('syncTag ${failure.message}'),
       ifRight: (task) {
-        TalkerService.instance.info('Task: ${task.id}');
+        TalkerService.instance.info('syncTag Task: ${task.id}');
         _createdAt = task.createdAt;
         _initialSelection = _DateSelectionSnapshot(
           selectedDate: task.date,

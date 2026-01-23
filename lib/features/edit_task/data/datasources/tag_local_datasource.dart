@@ -1,6 +1,7 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/data/database/app_database.dart' as db;
+import 'package:taskify/core/services/talker_service.dart';
 
 abstract class TagLocalDataSource {
   Future<Either<Failure, List<db.CustomTagsTableData>>> getCustomTags();
@@ -29,9 +30,14 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
   @override
   Future<Either<Failure, List<db.CustomTagsTableData>>> getCustomTags() async {
     try {
+      TalkerService.instance.info('syncTag getCustomTags start');
       final tags = await _database.select(_database.customTagsTable).get();
+      TalkerService.instance.info(
+        'syncTag getCustomTags result: ${tags.length}',
+      );
       return Right(tags);
     } catch (e) {
+      TalkerService.instance.error('syncTag getCustomTags error', e);
       return Left(DatabaseFailure(e.toString()));
     }
   }
@@ -41,12 +47,17 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
     db.CustomTagsTableCompanion tag,
   ) async {
     try {
+      TalkerService.instance.info('syncTag createCustomTag start');
       final id = await _database.into(_database.customTagsTable).insert(tag);
       final created = await (_database.select(
         _database.customTagsTable,
       )..where((t) => t.id.equals(id))).getSingle();
+      TalkerService.instance.info(
+        'syncTag createCustomTag result: ${created.id}',
+      );
       return Right(created);
     } catch (e) {
+      TalkerService.instance.error('syncTag createCustomTag error', e);
       return Left(DatabaseFailure(e.toString()));
     }
   }
@@ -56,12 +67,17 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
     db.CustomTagsTableData tag,
   ) async {
     try {
+      TalkerService.instance.info('syncTag updateCustomTag start: ${tag.id}');
       await _database.update(_database.customTagsTable).replace(tag);
       final updated = await (_database.select(
         _database.customTagsTable,
       )..where((t) => t.id.equals(tag.id))).getSingle();
+      TalkerService.instance.info(
+        'syncTag updateCustomTag result: ${updated.id}',
+      );
       return Right(updated);
     } catch (e) {
+      TalkerService.instance.error('syncTag updateCustomTag error', e);
       return Left(DatabaseFailure(e.toString()));
     }
   }
@@ -69,11 +85,14 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
   @override
   Future<Either<Failure, void>> deleteCustomTag(int id) async {
     try {
+      TalkerService.instance.info('syncTag deleteCustomTag start: $id');
       await (_database.delete(
         _database.customTagsTable,
       )..where((t) => t.id.equals(id))).go();
+      TalkerService.instance.info('syncTag deleteCustomTag done: $id');
       return const Right(null);
     } catch (e) {
+      TalkerService.instance.error('syncTag deleteCustomTag error', e);
       return Left(DatabaseFailure(e.toString()));
     }
   }
@@ -83,11 +102,16 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
     int taskId,
   ) async {
     try {
+      TalkerService.instance.info('syncTag getTaskTagsByTaskId start: $taskId');
       final rows = await (_database.select(
         _database.taskTagsTable,
       )..where((t) => t.taskId.equals(taskId))).get();
+      TalkerService.instance.info(
+        'syncTag getTaskTagsByTaskId result: ${rows.length}',
+      );
       return Right(rows);
     } catch (e) {
+      TalkerService.instance.error('syncTag getTaskTagsByTaskId error', e);
       return Left(DatabaseFailure(e.toString()));
     }
   }
@@ -98,6 +122,9 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
     List<db.TaskTagsTableCompanion> tags,
   ) async {
     try {
+      TalkerService.instance.info(
+        'syncTag replaceTaskTags start: $taskId, ${tags.length}',
+      );
       await _database.transaction(() async {
         await (_database.delete(
           _database.taskTagsTable,
@@ -108,14 +135,17 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
           });
         }
       });
+      TalkerService.instance.info('syncTag replaceTaskTags done: $taskId');
       return const Right(null);
     } catch (e) {
+      TalkerService.instance.error('syncTag replaceTaskTags error', e);
       return Left(DatabaseFailure(e.toString()));
     }
   }
 
   @override
   Stream<List<db.CustomTagsTableData>> observeCustomTags() {
+    TalkerService.instance.info('syncTag observeCustomTags start');
     return _database.select(_database.customTagsTable).watch().map((driftTags) {
       return driftTags.toList();
     });

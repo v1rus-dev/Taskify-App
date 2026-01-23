@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/core/auth/auth_cubit.dart';
 import 'package:taskify/core/providers/time_format_notifier.dart';
 import 'package:taskify/core/services/locator.dart';
+import 'package:taskify/core/sync/sync_coordinator.dart';
 import 'package:taskify/data/interactors/app_configuration_interactor.dart';
 import 'package:taskify/domain/auth/repositories/auth_repository.dart';
 import 'package:taskify/l10n/app_localizations.dart';
@@ -45,7 +46,10 @@ class _TaskifyAppState extends State<TaskifyApp> {
       providers: [
         BlocProvider<ThemeCubit>(create: (_) => ThemeCubit()),
         BlocProvider<AuthCubit>(
-          create: (_) => AuthCubit(locator<AuthRepository>()),
+          create: (_) => AuthCubit(
+            locator<AuthRepository>(),
+            syncCoordinator: locator<SyncCoordinator>(),
+          ),
         ),
         BlocProvider<TimeFormatCubit>(create: (_) => TimeFormatCubit(interactor: locator<AppConfigurationInteractor>()))
       ],

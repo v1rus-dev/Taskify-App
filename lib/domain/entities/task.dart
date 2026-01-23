@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 class TaskEntity extends Equatable {
   final int? id;
   final int? networkId;
+  final String? clientId;
   final String title;
   final String? description;
   final bool isCompleted;
@@ -12,10 +13,12 @@ class TaskEntity extends Equatable {
   final bool isAllDay;
   final DateTime createdAt;
   final DateTime? updatedAt;
+  final DateTime? deletedAt;
 
   const TaskEntity({
     this.id,
     this.networkId,
+    this.clientId,
     required this.title,
     this.description,
     this.isCompleted = false,
@@ -25,11 +28,13 @@ class TaskEntity extends Equatable {
     this.isAllDay = true,
     required this.createdAt,
     this.updatedAt,
+    this.deletedAt,
   });
 
   TaskEntity copyWith({
     int? id,
     int? networkId,
+    String? clientId,
     String? title,
     String? description,
     bool? isCompleted,
@@ -39,10 +44,12 @@ class TaskEntity extends Equatable {
     bool? isAllDay,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? deletedAt,
   }) {
     return TaskEntity(
       id: id ?? this.id,
       networkId: networkId ?? this.networkId,
+      clientId: clientId ?? this.clientId,
       title: title ?? this.title,
       description: description ?? this.description,
       isCompleted: isCompleted ?? this.isCompleted,
@@ -52,6 +59,7 @@ class TaskEntity extends Equatable {
       isAllDay: isAllDay ?? this.isAllDay,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
     );
   }
 
@@ -59,6 +67,7 @@ class TaskEntity extends Equatable {
   List<Object?> get props => [
         id,
         networkId,
+        clientId,
         title,
         description,
         isCompleted,
@@ -68,5 +77,6 @@ class TaskEntity extends Equatable {
         isAllDay,
         createdAt,
         updatedAt,
+        deletedAt,
       ];
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:taskify/core/services/talker_service.dart';
+import 'package:taskify/core/sync/sync_coordinator.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 import 'package:taskify/domain/entities/task.dart';
 import 'package:taskify/domain/entities/task_wrapper.dart';
@@ -14,11 +15,12 @@ part 'home_bloc.freezed.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final TaskInteractor taskInteractor;
+  final SyncCoordinator syncCoordinator;
 
   StreamSubscription<List<TaskEntity>>? _tasksSubscription;
   List<TaskWrapperEntity> _allTasks = [];
 
-  HomeBloc({required this.taskInteractor})
+  HomeBloc({required this.taskInteractor, required this.syncCoordinator})
     : super(
         HomeState(
           selectedDate: DateTime.now(),
@@ -36,6 +38,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   void _onStarted(_Started event, Emitter<HomeState> emit) {
     _observeTasks();
+    syncCoordinator.onForeground();
   }
 
   void _onTasksUpdated(_TasksUpdated event, Emitter<HomeState> emit) {
@@ -53,7 +56,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             ),
           )
           .toList();
-      TalkerService.instance.info('Tasks: ${tasks.length}');
+      TalkerService.instance.info('syncTag Tasks: ${tasks.length}');
       add(HomeEvent.tasksUpdated(_filterTasksByDate(_allTasks, state.selectedDate)));
     });
   }
@@ -64,8 +67,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       task.copyWith(isCompleted: !task.isCompleted),
     );
     result.fold(
-      ifLeft: (failure) => TalkerService.instance.error(failure.message),
-      ifRight: (task) => TalkerService.instance.info('Task updated: ${task.id}'),
+      ifLeft: (failure) =>
+          TalkerService.instance.error('syncTag ${failure.message}'),
+      ifRight: (task) =>
+          TalkerService.instance.info('syncTag Task updated: ${task.id}'),
     );
   }
 

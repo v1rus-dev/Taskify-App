@@ -42,6 +42,32 @@ class DioClient {
       ),
     );
 
+    if (authTokenHandler != null) {
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) async {
+            final path = options.path;
+            if (path.startsWith('/auth') || path.startsWith('/auth/refresh')) {
+              handler.next(options);
+              return;
+            }
+            final token = await authTokenHandler.getAccessToken();
+            if (token != null && token.isNotEmpty) {
+              options.headers['Authorization'] = 'Bearer $token';
+              TalkerService.instance.info(
+                'syncTag auth header attached',
+              );
+            } else {
+              TalkerService.instance.info(
+                'syncTag auth header missing',
+              );
+            }
+            handler.next(options);
+          },
+        ),
+      );
+    }
+
     return dio;
   }
 
@@ -64,10 +90,36 @@ class DioClient {
     T Function(dynamic data)? parser,
   }) async {
     try {
-      TalkerService.instance.info('POST $path');
+      TalkerService.instance.info('syncTag POST $path');
       final response = await _dio.post(
         path,
         data: data,
+        queryParameters: queryParameters,
+        options: options,
+      );
+      final parsed = parser != null
+          ? parser(response.data)
+          : response.data as T;
+      return Right(parsed);
+    } on DioException catch (e) {
+      return Left(_mapDioFailure(e));
+    } on TypeError catch (e) {
+      return Left(ServerFailure('Response parse error: $e'));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  Future<ApiResult<T>> get<T>({
+    required String path,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    T Function(dynamic data)? parser,
+  }) async {
+    try {
+      TalkerService.instance.info('syncTag GET $path');
+      final response = await _dio.get(
+        path,
         queryParameters: queryParameters,
         options: options,
       );

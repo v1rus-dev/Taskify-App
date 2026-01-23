@@ -38,6 +38,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
                 provider: user.provider,
                 providerUserId: user.providerUserId,
                 email: user.email,
+                friendTag: user.friendTag,
                 name: Value(user.name),
                 avatarUrl: Value(user.avatarUrl),
                 createdAt: user.createdAt,

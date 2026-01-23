@@ -71,7 +71,7 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
     TimeOfDay? initialTime,
     bool use24Hour,
   ) async {
-    TalkerService.instance.info('use24Hour: $use24Hour');
+    TalkerService.instance.info('syncTag use24Hour: $use24Hour');
     final picked = await AppDateTimePicker.pickTime(
       context: context,
       initialTime: initialTime ?? TimeOfDay.now(),
@@ -89,7 +89,7 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
     TimeOfDay? initialTime,
     bool use24Hour,
   ) async {
-    TalkerService.instance.info('use24Hour: $use24Hour');
+    TalkerService.instance.info('syncTag use24Hour: $use24Hour');
     final picked = await AppDateTimePicker.pickTime(
       context: context,
       initialTime: initialTime ?? TimeOfDay.now(),

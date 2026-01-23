@@ -10,6 +10,7 @@ import 'package:taskify/features/home/presentation/widgets/task_card.dart';
 import 'package:taskify/domain/entities/task.dart';
 import 'package:taskify/features/home/presentation/bloc/home_bloc.dart';
 import 'package:taskify/core/services/locator.dart';
+import 'package:taskify/core/sync/sync_coordinator.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,7 +20,10 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeBloc(taskInteractor: locator<TaskInteractor>())
+      create: (context) => HomeBloc(
+        taskInteractor: locator<TaskInteractor>(),
+        syncCoordinator: locator<SyncCoordinator>(),
+      )
         ..add(const HomeEvent.started()),
       child: const HomeScreen(),
     );

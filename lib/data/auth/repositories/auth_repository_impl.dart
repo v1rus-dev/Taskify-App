@@ -48,7 +48,10 @@ class AuthRepositoryImpl implements AuthRepository {
       );
       _isGoogleSignInInitialized = true;
     } catch (e) {
-      TalkerService.instance.error('Google Sign In initialization failed', e);
+      TalkerService.instance.error(
+        'syncTag Google Sign In initialization failed',
+        e,
+      );
       rethrow;
     }
   }
@@ -80,7 +83,7 @@ class AuthRepositoryImpl implements AuthRepository {
         ),
       );
     } catch (e) {
-      TalkerService.instance.error('Get session failed', e);
+      TalkerService.instance.error('syncTag Get session failed', e);
       return Left(ServerFailure(e.toString()));
     }
   }
@@ -150,7 +153,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return Right(session);
     } catch (e) {
-      TalkerService.instance.error('Sign-in failed', e);
+      TalkerService.instance.error('syncTag Sign-in failed', e);
       return Left(ServerFailure(e.toString()));
     }
   }
@@ -172,7 +175,7 @@ class AuthRepositoryImpl implements AuthRepository {
     }
 
     final idToken = await user.getIdToken();
-    TalkerService.instance.info('Google sign-in successful');
+    TalkerService.instance.info('syncTag Google sign-in successful');
 
     return AuthSession(
       provider: AuthProviders.google,
@@ -231,7 +234,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await authLocalDataSource.clearUser();
       return Right(null);
     } catch (e) {
-      TalkerService.instance.error('Sign-out failed', e);
+      TalkerService.instance.error('syncTag Sign-out failed', e);
       return Left(ServerFailure(e.toString()));
     }
   }

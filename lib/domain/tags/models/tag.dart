@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/painting.dart';
-import 'package:taskify/domain/entities/default_tag.dart';
+import 'package:taskify/domain/tags/models/default_tag.dart';
 
 abstract class TagEntity extends Equatable {
   final int id;

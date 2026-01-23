@@ -9,22 +9,22 @@ import 'package:taskify/core/utils/auth_config.dart';
 import 'package:taskify/data/api/auth_api.dart';
 import 'package:taskify/data/auth/models/auth_response_model.dart';
 import 'package:taskify/data/auth/sources/auth_local_data_source.dart';
-import 'package:taskify/data/auth/sources/auth_token_storage.dart';
 import 'package:taskify/domain/auth/models/auth_providers.dart';
 import 'package:taskify/domain/auth/models/auth_session.dart';
-import 'package:taskify/domain/auth/repositories/auth_repository.dart';
+import 'package:taskify/domain/auth/repository/auth_repository.dart';
+import 'package:taskify/core/auth/access_token_provider.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   final AuthApi authApi;
   final AuthLocalDataSource authLocalDataSource;
-  final AuthTokenStorage authTokenStorage;
+  final AuthTokenHandler authTokenHandler;
 
   AuthRepositoryImpl({
     required this.authApi,
     required this.authLocalDataSource,
-    required this.authTokenStorage,
+    required this.authTokenHandler,
   });
 
   bool _isGoogleSignInInitialized = false;
@@ -127,7 +127,7 @@ class AuthRepositoryImpl implements AuthRepository {
       }
 
       final tokenResult =
-          await authTokenStorage.saveTokens(
+          await authTokenHandler.saveTokens(
             accessToken: response!.accessToken,
             refreshToken: response!.refreshToken,
           );
@@ -230,7 +230,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       await _googleSignIn.signOut();
       await _auth.signOut();
-      await authTokenStorage.clearTokens();
+      await authTokenHandler.clearTokens();
       await authLocalDataSource.clearUser();
       return Right(null);
     } catch (e) {

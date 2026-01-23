@@ -1,7 +1,7 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/domain/entities/task_duration_type.dart';
+import 'package:taskify/domain/tasks/models/task_duration_type.dart';
 
 class SelectTaskPeriodBottomSheet extends StatelessWidget {
   const SelectTaskPeriodBottomSheet({

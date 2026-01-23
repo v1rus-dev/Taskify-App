@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/app/router/router_paths.dart';
-import 'package:taskify/domain/entities/task_wrapper.dart';
+import 'package:taskify/domain/tasks/models/task_wrapper.dart';
+import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:taskify/features/home/presentation/widgets/home_hided_header.dart';
 import 'package:taskify/features/home/presentation/widgets/task_card.dart';
-import 'package:taskify/domain/entities/task.dart';
 import 'package:taskify/features/home/presentation/bloc/home_bloc.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
@@ -22,6 +22,7 @@ class HomePage extends StatelessWidget {
     return BlocProvider(
       create: (context) => HomeBloc(
         taskInteractor: locator<TaskInteractor>(),
+        subTaskInteractor: locator<SubTaskInteractor>(),
         syncCoordinator: locator<SyncCoordinator>(),
       )
         ..add(const HomeEvent.started()),

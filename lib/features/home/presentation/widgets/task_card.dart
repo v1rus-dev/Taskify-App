@@ -2,11 +2,21 @@ import 'package:design/constants/app_icons.dart';
 import 'package:design/constants/animation_durations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:taskify/domain/entities/task_wrapper.dart';
+import 'package:gap/gap.dart';
+import 'package:taskify/domain/tags/models/sub_task.dart';
+import 'package:taskify/domain/tasks/models/task_wrapper.dart';
 import 'package:design/design.dart';
+import 'package:taskify/features/home/presentation/widgets/card_sub_task_line.dart';
+import 'package:taskify/features/home/presentation/bloc/home_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TaskCard extends StatefulWidget {
-  const TaskCard({super.key, required this.task, required this.onTaskClicked, required this.onCheckboxPressed});
+  const TaskCard({
+    super.key,
+    required this.task,
+    required this.onTaskClicked,
+    required this.onCheckboxPressed,
+  });
 
   final TaskWrapperEntity task;
   final VoidCallback onTaskClicked;
@@ -17,13 +27,17 @@ class TaskCard extends StatefulWidget {
 }
 
 class _TaskCardState extends State<TaskCard> {
+  void _onCheckboxPressed(SubTaskEntity subTask) {
+    context.read<HomeBloc>().add(HomeEvent.toogleSubTask(subTask));
+  }
+
   Widget _buildCheckbox() {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: AnimationDurations.defaultDuration),
-      transitionBuilder: (child, animation) => FadeTransition(
-        opacity: animation,
-        child: child,
+      duration: const Duration(
+        milliseconds: AnimationDurations.defaultDuration,
       ),
+      transitionBuilder: (child, animation) =>
+          FadeTransition(opacity: animation, child: child),
       child: Material(
         color: Colors.transparent,
         shape: const CircleBorder(),
@@ -42,7 +56,9 @@ class _TaskCardState extends State<TaskCard> {
                     width: 24,
                     height: 24,
                     colorFilter: ColorFilter.mode(
-                        Color(0xFF27C255).withValues(alpha: 0.6), BlendMode.srcIn),
+                      Color(0xFF27C255).withValues(alpha: 0.6),
+                      BlendMode.srcIn,
+                    ),
                   )
                 : SvgPicture.asset(
                     AppIcons.circle,
@@ -54,6 +70,31 @@ class _TaskCardState extends State<TaskCard> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSubtasks() {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        const Gap(12),
+        Divider(color: theme.dividerColor, height: 1,),
+        ...widget.task.subTasks.indexed.map(
+          (e) => Column(
+            children: [
+              CardSubTaskLine(
+                subTask: e.$2,
+                onCheckboxPressed: _onCheckboxPressed,
+              ),
+              if (e.$1 < widget.task.subTasks.length - 1)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Divider(color: theme.dividerColor, height: 1,),
+                ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -69,24 +110,35 @@ class _TaskCardState extends State<TaskCard> {
           borderRadius: BorderRadius.circular(16),
           onTap: widget.onTaskClicked,
           child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
+            padding: EdgeInsets.only(
+              top: 16,
+              bottom: widget.task.subTasks.isNotEmpty ? 4 : 16,
+            ),
+            child: Column(
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
                     children: [
-                      Text(
-                        widget.task.task.title,
-                        style: theme.textTheme.titleMedium,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.task.task.title,
+                              style: theme.textTheme.titleMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: _buildCheckbox(),
                       ),
                     ],
                   ),
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: _buildCheckbox(),
-                ),
+                if (widget.task.subTasks.isNotEmpty) _buildSubtasks(),
               ],
             ),
           ),

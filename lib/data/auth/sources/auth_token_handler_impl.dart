@@ -3,7 +3,7 @@ import 'package:taskify/core/auth/access_token_provider.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/data/preferences/app_preferences.dart';
 
-class AuthTokenStorage implements AuthTokenHandler {
+class AuthTokenHandlerImpl implements AuthTokenHandler {
   static const String _accessTokenKey = 'auth_access_token';
   static const String _refreshTokenKey = 'auth_refresh_token';
 

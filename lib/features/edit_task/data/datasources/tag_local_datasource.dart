@@ -20,6 +20,7 @@ abstract class TagLocalDataSource {
     List<db.TaskTagsTableCompanion> tags,
   );
   Stream<List<db.CustomTagsTableData>> observeCustomTags();
+  Stream<List<db.TaskTagsTableData>> observeTaskTags();
 }
 
 class TagLocalDataSourceImpl implements TagLocalDataSource {
@@ -147,6 +148,14 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
   Stream<List<db.CustomTagsTableData>> observeCustomTags() {
     TalkerService.instance.info('syncTag observeCustomTags start');
     return _database.select(_database.customTagsTable).watch().map((driftTags) {
+      return driftTags.toList();
+    });
+  }
+
+  @override
+  Stream<List<db.TaskTagsTableData>> observeTaskTags() {
+    TalkerService.instance.info('syncTag observeTaskTags start');
+    return _database.select(_database.taskTagsTable).watch().map((driftTags) {
       return driftTags.toList();
     });
   }

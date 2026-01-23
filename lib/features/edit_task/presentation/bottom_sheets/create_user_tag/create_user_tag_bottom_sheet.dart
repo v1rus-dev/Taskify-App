@@ -4,7 +4,7 @@ import 'package:design/design.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/create_user_tag/bloc/create_user_tag_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/create_user_tag/widgets/color_list.dart';
-import 'package:taskify/domain/entities/default_tag_color.dart';
+import 'package:taskify/domain/tags/models/default_tag_color.dart';
 
 class CreateUserTagBottomSheet extends StatefulWidget {
   const CreateUserTagBottomSheet({super.key});

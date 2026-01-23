@@ -3,9 +3,9 @@ import 'package:drift/drift.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/data/mappers/tag_mapper.dart';
 import 'package:taskify/data/database/app_database.dart' as db;
-import 'package:taskify/domain/entities/default_tag.dart';
-import 'package:taskify/domain/entities/tag.dart';
-import 'package:taskify/domain/repository/tag_repository.dart';
+import 'package:taskify/domain/tags/models/default_tag.dart';
+import 'package:taskify/domain/tags/models/tag.dart';
+import 'package:taskify/domain/tags/repository/tag_repository.dart';
 import 'package:taskify/features/edit_task/data/datasources/tag_local_datasource.dart';
 
 class TagRepositoryImpl implements TagRepository {

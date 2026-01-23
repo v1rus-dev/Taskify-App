@@ -19,3 +19,4 @@ export 'themes/color/app_color_extensions.dart';
 export 'widgets/card_with_actions.dart';
 export 'models/card_action.dart';
 export 'widgets/utils.dart';
+export 'widgets/sub_task_checkbox.dart';

@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/auth/auth_state.dart';
 import 'package:taskify/domain/auth/models/auth_providers.dart';
-import 'package:taskify/domain/auth/repositories/auth_repository.dart';
+import 'package:taskify/domain/auth/repository/auth_repository.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
 
 

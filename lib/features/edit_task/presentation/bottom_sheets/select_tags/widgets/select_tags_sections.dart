@@ -1,7 +1,7 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/domain/entities/tag.dart';
+import 'package:taskify/domain/tags/models/tag.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_tags/widgets/tag_cheap.dart';
 
 class TagsSection extends StatelessWidget {

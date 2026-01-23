@@ -7,7 +7,7 @@ import 'package:taskify/core/providers/time_format_notifier.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
 import 'package:taskify/data/interactors/app_configuration_interactor.dart';
-import 'package:taskify/domain/auth/repositories/auth_repository.dart';
+import 'package:taskify/domain/auth/repository/auth_repository.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/core/providers/theme_notifier.dart';

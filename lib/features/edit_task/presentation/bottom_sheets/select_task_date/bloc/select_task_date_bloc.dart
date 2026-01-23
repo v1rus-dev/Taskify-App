@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:taskify/domain/entities/task_duration_type.dart';
+import 'package:taskify/domain/tasks/models/task_duration_type.dart';
 
 part 'select_task_date_event.dart';
 part 'select_task_date_state.dart';

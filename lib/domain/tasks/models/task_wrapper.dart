@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:taskify/domain/entities/sub_task.dart';
-import 'package:taskify/domain/entities/tag.dart';
-import 'package:taskify/domain/entities/task.dart';
+import 'package:taskify/domain/tags/models/sub_task.dart';
+import 'package:taskify/domain/tags/models/tag.dart';
+import 'package:taskify/domain/tasks/models/task.dart';
 
 class TaskWrapperEntity extends Equatable {
   const TaskWrapperEntity({

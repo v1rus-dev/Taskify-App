@@ -2,8 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:taskify/core/services/locator.dart';
-import 'package:taskify/domain/entities/default_tag_color.dart';
-import 'package:taskify/domain/entities/tag.dart';
+import 'package:taskify/domain/tags/models/default_tag_color.dart';
+import 'package:taskify/domain/tags/models/tag.dart';
 import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';
 
 part 'create_user_tag_event.dart';

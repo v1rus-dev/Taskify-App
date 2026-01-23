@@ -1,7 +1,7 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/domain/entities/time_format_type.dart';
+import 'package:taskify/domain/models/time_format_type.dart';
 
 class SelectTimeFormatBottomSheet extends StatelessWidget {
   const SelectTimeFormatBottomSheet({super.key, required this.selectedType});

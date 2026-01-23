@@ -19,6 +19,7 @@ abstract class SubTaskLocalDataSource {
   Future<Either<Failure, List<db.SubtasksTableData>>> getSubTasksByTaskId(
     int taskId,
   );
+  Stream<List<db.SubtasksTableData>> observeSubTasks();
 }
 
 class SubTaskLocalDataSourceImpl implements SubTaskLocalDataSource {
@@ -180,5 +181,14 @@ class SubTaskLocalDataSourceImpl implements SubTaskLocalDataSource {
       TalkerService.instance.error('syncTag getSubTasksByTaskId error', e);
       return Left(DatabaseFailure(e.toString()));
     }
+  }
+
+  @override
+  Stream<List<db.SubtasksTableData>> observeSubTasks() {
+    TalkerService.instance.info('syncTag observeSubTasks start');
+    return (_database.select(_database.subtasksTable)
+          ..where((task) => task.deletedAt.isNull()))
+        .watch()
+        .map((driftSubTasks) => driftSubTasks.toList());
   }
 }

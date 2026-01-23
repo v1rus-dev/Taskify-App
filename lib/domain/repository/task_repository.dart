@@ -1,6 +1,7 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
-import 'package:taskify/domain/entities/task.dart';
+import 'package:taskify/domain/tasks/models/task.dart';
+import 'package:taskify/domain/tasks/models/task_wrapper.dart';
 
 abstract class TaskRepository {
   Future<Either<Failure, List<TaskEntity>>> getTasks();
@@ -9,5 +10,5 @@ abstract class TaskRepository {
   Future<Either<Failure, TaskEntity>> createTask(TaskEntity task);
   Future<Either<Failure, TaskEntity>> updateTask(TaskEntity task);
   Future<Either<Failure, void>> deleteTask(int id);
-  Stream<List<TaskEntity>> observeTasks();
+  Stream<List<TaskWrapperEntity>> observeTasks();
 }

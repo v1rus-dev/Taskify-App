@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_app_installations/firebase_app_installations.dart';
 import 'package:taskify/core/services/talker_service.dart';
-import 'package:taskify/domain/auth/repositories/auth_repository.dart';
+import 'package:taskify/domain/auth/repository/auth_repository.dart';
 import 'package:taskify/domain/sync/models/sync_state.dart';
 import 'package:taskify/domain/sync/repositories/sync_repository.dart';
 import 'package:taskify/domain/sync/usecases/sync_interactor.dart';

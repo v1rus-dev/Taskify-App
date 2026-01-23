@@ -1,7 +1,8 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
-import 'package:taskify/domain/entities/task.dart';
+import 'package:taskify/domain/tasks/models/task.dart';
 import 'package:taskify/domain/repository/task_repository.dart';
+import 'package:taskify/domain/tasks/models/task_wrapper.dart';
 
 class TaskInteractor {
   TaskInteractor(this._repository);
@@ -34,7 +35,7 @@ class TaskInteractor {
     return await _repository.deleteTask(id);
   }
 
-  Stream<List<TaskEntity>> observeTasks() {
+  Stream<List<TaskWrapperEntity>> observeTasks() {
     return _repository.observeTasks();
   }
 }

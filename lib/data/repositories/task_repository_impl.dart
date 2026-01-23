@@ -1,10 +1,21 @@
+import 'dart:async';
+
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
+import 'package:taskify/data/database/app_database.dart' as db;
 import 'package:taskify/data/mappers/task_mapper.dart';
+import 'package:taskify/data/mappers/tag_mapper.dart';
+import 'package:taskify/domain/tasks/models/task_wrapper.dart';
+import 'package:taskify/domain/tags/models/default_tag.dart';
+import 'package:taskify/domain/tags/models/tag.dart';
+import 'package:taskify/domain/tags/models/sub_task.dart';
 import 'package:taskify/features/home/data/datasources/task_local_datasource.dart';
-import 'package:taskify/domain/entities/task.dart';
+import 'package:taskify/features/edit_task/data/datasources/sub_task_local_datasource.dart';
+import 'package:taskify/features/edit_task/data/datasources/tag_local_datasource.dart';
+import 'package:taskify/features/edit_task/data/mappers/sub_task_mapper.dart';
+import 'package:taskify/domain/tasks/models/task.dart';
 import 'package:taskify/domain/repository/task_repository.dart';
 import 'package:taskify/domain/sync/models/sync_op_data.dart';
 import 'package:taskify/domain/sync/models/sync_queue_entry.dart';
@@ -13,12 +24,20 @@ import 'package:uuid/uuid.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
   final TaskLocalDataSource localDataSource;
+  final SubTaskLocalDataSource subTaskLocalDataSource;
+  final TagLocalDataSource tagLocalDataSource;
   final SyncRepository syncRepository;
   final SyncCoordinator syncCoordinator;
   final Uuid _uuid = const Uuid();
+  static final Map<int, DefaultTagEntity> _defaultTagsById = {
+    for (final tag in DefaultTag.values)
+      tag.id: DefaultTagEntity(defaultTag: tag),
+  };
 
   TaskRepositoryImpl(
     this.localDataSource,
+    this.subTaskLocalDataSource,
+    this.tagLocalDataSource,
     this.syncRepository,
     this.syncCoordinator,
   );
@@ -109,8 +128,128 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Stream<List<TaskEntity>> observeTasks() {
-    return localDataSource.observeTasks().map((tasks) => tasks.map((task) => task.toDomain()).toList());
+  Stream<List<TaskWrapperEntity>> observeTasks() {
+    final controller = StreamController<List<TaskWrapperEntity>>();
+    StreamSubscription<List<db.TasksTableData>>? tasksSubscription;
+    StreamSubscription<List<db.SubtasksTableData>>? subTasksSubscription;
+    StreamSubscription<List<db.TaskTagsTableData>>? taskTagsSubscription;
+    StreamSubscription<List<db.CustomTagsTableData>>? customTagsSubscription;
+
+    List<db.TasksTableData>? tasksSnapshot;
+    List<db.SubtasksTableData>? subTasksSnapshot;
+    List<db.TaskTagsTableData>? taskTagsSnapshot;
+    List<db.CustomTagsTableData>? customTagsSnapshot;
+
+    void emitIfReady() {
+      if (tasksSnapshot == null ||
+          subTasksSnapshot == null ||
+          taskTagsSnapshot == null ||
+          customTagsSnapshot == null) {
+        return;
+      }
+      controller.add(
+        _buildTaskWrappers(
+          tasks: tasksSnapshot!,
+          subTasks: subTasksSnapshot!,
+          taskTags: taskTagsSnapshot!,
+          customTags: customTagsSnapshot!,
+        ),
+      );
+    }
+
+    controller.onListen = () {
+      tasksSubscription = localDataSource.observeTasks().listen(
+        (tasks) {
+          tasksSnapshot = tasks;
+          emitIfReady();
+        },
+        onError: controller.addError,
+      );
+      subTasksSubscription = subTaskLocalDataSource.observeSubTasks().listen(
+        (subTasks) {
+          subTasksSnapshot = subTasks;
+          emitIfReady();
+        },
+        onError: controller.addError,
+      );
+      taskTagsSubscription = tagLocalDataSource.observeTaskTags().listen(
+        (taskTags) {
+          taskTagsSnapshot = taskTags;
+          emitIfReady();
+        },
+        onError: controller.addError,
+      );
+      customTagsSubscription = tagLocalDataSource.observeCustomTags().listen(
+        (customTags) {
+          customTagsSnapshot = customTags;
+          emitIfReady();
+        },
+        onError: controller.addError,
+      );
+    };
+
+    controller.onCancel = () async {
+      await tasksSubscription?.cancel();
+      await subTasksSubscription?.cancel();
+      await taskTagsSubscription?.cancel();
+      await customTagsSubscription?.cancel();
+      await controller.close();
+    };
+
+    return controller.stream;
+  }
+
+  List<TaskWrapperEntity> _buildTaskWrappers({
+    required List<db.TasksTableData> tasks,
+    required List<db.SubtasksTableData> subTasks,
+    required List<db.TaskTagsTableData> taskTags,
+    required List<db.CustomTagsTableData> customTags,
+  }) {
+    final subTasksByTaskId = <int, List<SubTaskEntity>>{};
+    for (final subTask in subTasks) {
+      final bucket = subTasksByTaskId.putIfAbsent(
+        subTask.taskId,
+        () => <SubTaskEntity>[],
+      );
+      bucket.add(subTask.toDomain());
+    }
+
+    final taskTagsByTaskId = <int, List<db.TaskTagsTableData>>{};
+    for (final row in taskTags) {
+      final bucket = taskTagsByTaskId.putIfAbsent(
+        row.taskId,
+        () => <db.TaskTagsTableData>[],
+      );
+      bucket.add(row);
+    }
+
+    final customTagsById = <int, CustomTagEntity>{
+      for (final tag in customTags) tag.id: tag.toDomain(),
+    };
+
+    return tasks.map((task) {
+      final tagsRows = taskTagsByTaskId[task.id] ??
+          const <db.TaskTagsTableData>[];
+      if (tagsRows.length > 1) {
+        tagsRows.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+      }
+
+      final tags = <TagEntity>[];
+      for (final row in tagsRows) {
+        final tag = row.isCustom
+            ? customTagsById[row.tagId]
+            : _defaultTagsById[row.tagId];
+        if (tag != null) {
+          tags.add(tag);
+        }
+      }
+
+      return TaskWrapperEntity(
+        task: task.toDomain(),
+        subTasks: subTasksByTaskId[task.id] ?? const <SubTaskEntity>[],
+        tags: tags,
+      );
+    }).toList();
   }
 
   Future<void> _enqueueTaskOp({

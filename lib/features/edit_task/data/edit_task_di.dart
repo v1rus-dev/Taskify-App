@@ -6,7 +6,7 @@ import 'package:taskify/features/edit_task/data/repositories/sub_task_repository
 import 'package:taskify/data/repositories/tag_repository_impl.dart';
 import 'package:taskify/features/edit_task/domain/repositories/sub_task_repository.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
-import 'package:taskify/domain/repository/tag_repository.dart';
+import 'package:taskify/domain/tags/repository/tag_repository.dart';
 import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';
 import 'package:taskify/features/home/data/datasources/task_local_datasource.dart';
 import 'package:taskify/domain/sync/repositories/sync_repository.dart';

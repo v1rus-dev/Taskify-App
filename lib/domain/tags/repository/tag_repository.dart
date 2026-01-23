@@ -1,6 +1,6 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
-import 'package:taskify/domain/entities/tag.dart';
+import 'package:taskify/domain/tags/models/tag.dart';
 
 abstract class TagRepository {
   Future<Either<Failure, List<TagEntity>>> getCustomTags();

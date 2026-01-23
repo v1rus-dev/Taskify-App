@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/domain/entities/tasks_view_type.dart';
+import 'package:taskify/domain/tasks/models/tasks_view_type.dart';
 import 'package:taskify/features/home/presentation/bloc/home_bloc.dart';
 import 'package:taskify/features/home/presentation/widgets/task_type_button.dart';
 import 'package:taskify/features/home/presentation/widgets/home_calendar_part.dart';

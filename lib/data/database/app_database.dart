@@ -9,6 +9,8 @@ import 'package:taskify/data/database/tables/tasks_table.dart';
 import 'package:taskify/data/database/tables/subtasks_table.dart';
 import 'package:taskify/data/database/tables/task_tags_table.dart';
 import 'package:taskify/data/database/tables/users_table.dart';
+import 'package:taskify/data/database/tables/sync_queue_table.dart';
+import 'package:taskify/data/database/tables/sync_state_table.dart';
 import 'package:taskify/core/services/talker_service.dart';
 
 part 'app_database.g.dart';
@@ -20,6 +22,8 @@ part 'app_database.g.dart';
   TaskTagsTable,
   AppConfigurationsTable,
   UsersTable,
+  SyncQueueTable,
+  SyncStateTable,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -32,10 +36,10 @@ class AppDatabase extends _$AppDatabase {
     return MigrationStrategy(
       onCreate: (Migrator m) async {
         await m.createAll();
-        TalkerService.instance.info('Database created');
+        TalkerService.instance.info('syncTag Database created');
       },
       onUpgrade: (Migrator m, int from, int to) async {
-        TalkerService.instance.info('Database upgrade from $from to $to');
+        TalkerService.instance.info('syncTag Database upgrade from $from to $to');
         
         if (from < 2) {
           await m.createTable(appConfigurationsTable);
@@ -53,7 +57,7 @@ LazyDatabase _openConnection() {
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'taskify.db'));
     
-    TalkerService.instance.info('Database path: ${file.path}');
+    TalkerService.instance.info('syncTag Database path: ${file.path}');
     
     return NativeDatabase(file);
   });

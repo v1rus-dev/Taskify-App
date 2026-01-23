@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taskify/domain/entities/task_duration_type.dart';
+import 'package:taskify/domain/tasks/models/task_duration_type.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_date/bloc/select_task_date_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_date/select_task_date_bottom_sheet.dart';

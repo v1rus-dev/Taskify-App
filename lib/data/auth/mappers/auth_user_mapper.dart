@@ -9,6 +9,7 @@ extension UsersTableDataMapper on UsersTableData {
       provider: provider,
       providerUserId: providerUserId,
       email: email,
+      friendTag: friendTag,
       name: name,
       avatarUrl: avatarUrl,
       createdAt: createdAt,

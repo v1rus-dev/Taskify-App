@@ -26,7 +26,8 @@ class EditSubTaskBloc extends Bloc<EditSubTaskEvent, EditSubTaskState> {
     if (taskId != null) {
       final result = await subTaskInteractor.getSubTasksByTaskId(taskId!);
       result.fold(
-        ifLeft: (failure) => TalkerService.instance.error(failure.message),
+        ifLeft: (failure) =>
+            TalkerService.instance.error('syncTag ${failure.message}'),
         ifRight: (subTasks) {
           emit(
             state.copyWith(

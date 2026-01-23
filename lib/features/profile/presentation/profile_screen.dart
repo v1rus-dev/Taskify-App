@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
 import 'package:taskify/core/widgets/screen_app_bar.dart';
-import 'package:taskify/domain/entities/time_format_type.dart';
+import 'package:taskify/domain/models/time_format_type.dart';
 import 'package:taskify/features/profile/presentation/select_time_format_bottom_sheet.dart';
 import 'package:taskify/features/profile/presentation/widgets/account_part.dart';
 import 'package:taskify/features/profile/presentation/widgets/sign_in_part.dart';

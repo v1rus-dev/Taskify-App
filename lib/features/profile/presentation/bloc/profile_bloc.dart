@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
 import 'package:taskify/data/database/app_database.dart';
-import 'package:taskify/domain/entities/time_format_type.dart';
+import 'package:taskify/domain/models/time_format_type.dart';
 import 'package:taskify/data/interactors/app_configuration_interactor.dart';
 
 part 'profile_event.dart';

@@ -52,52 +52,15 @@ class _SubTaskState extends State<SubTask> {
     super.dispose();
   }
 
-  Widget _buildCheckbox() {
-    return Material(
-      color: Colors.transparent,
-      shape: const CircleBorder(),
-      child: InkWell(
-        customBorder: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(6),
-        ),
-        onTap: widget.onCheckboxPressed,
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          transitionBuilder: (child, animation) {
-            return ScaleTransition(scale: animation, child: child);
-          },
-          child: widget.isCompleted
-              ? SizedBox(
-                  key: const ValueKey('checked'),
-                  width: 24,
-                  height: 24,
-                  child: SvgPicture.asset(
-                    AppIcons.subtaskCheckBoxChecked,
-                    package: AppIcons.packageName,
-                    fit: BoxFit.contain,
-                  ),
-                )
-              : SizedBox(
-                  key: const ValueKey('unchecked'),
-                  width: 24,
-                  height: 24,
-                  child: SvgPicture.asset(
-                    AppIcons.subtaskCheckBoxEmpty,
-                    package: AppIcons.packageName,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Row(
       children: [
-        _buildCheckbox(),
+        SubTaskCheckbox(
+          isChecked: widget.isCompleted,
+          onPressed: widget.onCheckboxPressed,
+        ),
         const Gap(16),
         Expanded(
           child: TextField(

@@ -1,12 +1,13 @@
 import 'package:drift/drift.dart';
 import 'package:taskify/data/database/app_database.dart' as db;
-import 'package:taskify/domain/entities/task.dart';
+import 'package:taskify/domain/tasks/models/task.dart';
 
 extension TaskDbMapper on db.TasksTableData {
   TaskEntity toDomain() {
     return TaskEntity(
       id: id,
       networkId: networkId,
+      clientId: clientId,
       title: title,
       description: description,
       isCompleted: isCompleted,
@@ -16,6 +17,7 @@ extension TaskDbMapper on db.TasksTableData {
       isAllDay: isAllDay,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      deletedAt: deletedAt,
     );
   }
 }
@@ -27,6 +29,7 @@ class TaskDomainMapper {
     return db.TasksTableData(
       id: task.id ?? 0,
       networkId: task.networkId,
+      clientId: task.clientId,
       title: task.title,
       description: task.description,
       isCompleted: task.isCompleted,
@@ -36,6 +39,7 @@ class TaskDomainMapper {
       isAllDay: task.isAllDay,
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
+      deletedAt: task.deletedAt,
     );
   }
 
@@ -43,6 +47,7 @@ class TaskDomainMapper {
     return db.TasksTableCompanion(
       id: const Value.absent(),
       networkId: Value(task.networkId),
+      clientId: Value(task.clientId),
       title: Value(task.title),
       description: Value(task.description),
       isCompleted: Value(task.isCompleted),
@@ -52,6 +57,7 @@ class TaskDomainMapper {
       isAllDay: Value(task.isAllDay),
       createdAt: Value(task.createdAt),
       updatedAt: Value(task.updatedAt),
+      deletedAt: Value(task.deletedAt),
     );
   }
 }

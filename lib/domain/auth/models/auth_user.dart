@@ -4,6 +4,7 @@ class AuthUser {
     required this.provider,
     required this.providerUserId,
     required this.email,
+    required this.friendTag,
     required this.createdAt,
     required this.updatedAt,
     this.name,
@@ -14,6 +15,7 @@ class AuthUser {
   final String provider;
   final String providerUserId;
   final String email;
+  final String friendTag;
   final String? name;
   final String? avatarUrl;
   final DateTime createdAt;

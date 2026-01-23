@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:taskify/domain/entities/tag.dart';
+import 'package:taskify/domain/tags/models/tag.dart';
 
 class TagChip extends StatelessWidget {
   const TagChip({

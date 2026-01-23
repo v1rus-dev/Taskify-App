@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:taskify/core/providers/time_format_notifier.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/utils/time_format_utils.dart';
-import 'package:taskify/domain/entities/task_duration_type.dart';
+import 'package:taskify/domain/tasks/models/task_duration_type.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_date/bloc/select_task_date_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_period/select_task_period_bottom_sheet.dart';
@@ -53,7 +53,7 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
     TimeOfDay? initialTime,
     bool use24Hour,
   ) async {
-    TalkerService.instance.info('use24Hour: $use24Hour');
+    TalkerService.instance.info('syncTag use24Hour: $use24Hour');
     final picked = await AppDateTimePicker.pickTime(
       context: context,
       initialTime: initialTime ?? TimeOfDay.now(),
@@ -71,7 +71,7 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
     TimeOfDay? initialTime,
     bool use24Hour,
   ) async {
-    TalkerService.instance.info('use24Hour: $use24Hour');
+    TalkerService.instance.info('syncTag use24Hour: $use24Hour');
     final picked = await AppDateTimePicker.pickTime(
       context: context,
       initialTime: initialTime ?? TimeOfDay.now(),

@@ -2,7 +2,7 @@ import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/domain/entities/tag.dart';
+import 'package:taskify/domain/tags/models/tag.dart';
 import 'bloc/select_tags_bloc.dart';
 import 'widgets/select_tags_sections.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';

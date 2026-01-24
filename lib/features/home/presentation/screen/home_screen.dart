@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reorderable_list_2.dart';
+import 'package:implicitly_animated_reorderable_list_2/transitions.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/app/router/router_paths.dart';
 import 'package:taskify/domain/tasks/models/task_wrapper.dart';
@@ -24,8 +27,7 @@ class HomePage extends StatelessWidget {
         taskInteractor: locator<TaskInteractor>(),
         subTaskInteractor: locator<SubTaskInteractor>(),
         syncCoordinator: locator<SyncCoordinator>(),
-      )
-        ..add(const HomeEvent.started()),
+      )..add(const HomeEvent.started()),
       child: const HomeScreen(),
     );
   }
@@ -34,8 +36,55 @@ class HomePage extends StatelessWidget {
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  final Duration _animationDuration = const Duration(milliseconds: 360);
+  static const double _insertSlideOffset = 0.08;
+  static const double _removeSlideOffset = 0.05;
+
   void _onTaskClicked(TaskWrapperEntity task) {
     appRouter.push(RouterPaths.editTask, extra: task.task.id);
+  }
+
+  void _onTaskCheckboxPressed(
+    BuildContext context,
+    TaskWrapperEntity task,
+  ) {
+    context.read<HomeBloc>().add(HomeEvent.updateTaskCompletion(task));
+  }
+
+  Widget _buildAnimatedTaskItem({
+    required BuildContext context,
+    required Animation<double> animation,
+    required TaskWrapperEntity item,
+    required bool isRemoving,
+  }) {
+    final curve = isRemoving ? Curves.easeInCubic : Curves.easeOutCubic;
+    final slide = Tween<Offset>(
+      begin: isRemoving
+          ? Offset.zero
+          : const Offset(0, _insertSlideOffset),
+      end: isRemoving ? const Offset(0, -_removeSlideOffset) : Offset.zero,
+    ).animate(CurvedAnimation(parent: animation, curve: curve));
+
+    return SlideTransition(
+      position: slide,
+      child: SizeFadeTransition(
+        sizeFraction: 0.78,
+        curve: curve,
+        animation: animation,
+        child: Column(
+          children: [
+            TaskCard(
+              key: ValueKey(item.task.id),
+              task: item,
+              onTaskClicked: () => _onTaskClicked(item),
+              onCheckboxPressed: () =>
+                  _onTaskCheckboxPressed(context, item),
+            ),
+            const Gap(8),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -50,23 +99,20 @@ class HomeScreen extends StatelessWidget {
               child: CustomScrollView(
                 slivers: [
                   const SliverGap(8),
-                  SliverToBoxAdapter(
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 360),
-                      switchInCurve: Curves.easeOutCubic,
-                      switchOutCurve: Curves.easeInCubic,
-                      transitionBuilder: (child, animation) => FadeTransition(
-                        opacity: animation,
-                        child: SizeTransition(
-                          sizeFactor: animation,
-                          axisAlignment: -1.0,
-                          child: child,
-                        ),
-                      ),
-                      child: state.isHeaderExpanded
-                          ? const HomeHidedHeader(key: ValueKey('header'))
-                          : const SizedBox(key: ValueKey('empty')),
-                    ),
+                  SliverAnimatedSwitcher(
+                    duration: _animationDuration,
+                    reverseDuration: _animationDuration,
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    child: state.isHeaderExpanded
+                        ? const SliverToBoxAdapter(
+                            key: ValueKey('header'),
+                            child: HomeHidedHeader(),
+                          )
+                        : const SliverToBoxAdapter(
+                            key: ValueKey('empty'),
+                            child: SizedBox.shrink(),
+                          ),
                   ),
                   SliverPadding(
                     padding: EdgeInsets.only(
@@ -75,18 +121,48 @@ class HomeScreen extends StatelessWidget {
                       bottom:
                           24 + 76 + 16 + MediaQuery.of(context).padding.bottom,
                     ),
-                    sliver: SliverList.separated(
-                      separatorBuilder: (context, index) => const Gap(12),
-                      itemBuilder: (context, index) => TaskCard(
-                        task: state.tasks[index],
-                        onTaskClicked: () => _onTaskClicked(state.tasks[index]),
-                        onCheckboxPressed: () => context.read<HomeBloc>().add(
-                          HomeEvent.updateTaskCompletion(state.tasks[index]),
-                        ),
-                      ),
-                      itemCount: state.tasks.length,
+                    sliver: SliverImplicitlyAnimatedList<TaskWrapperEntity>(
+                      items: state.tasks,
+                      insertDuration: _animationDuration,
+                      removeDuration: _animationDuration,
+                      itemBuilder: (context, animation, item, index) {
+                        return _buildAnimatedTaskItem(
+                          context: context,
+                          animation: animation,
+                          item: item,
+                          isRemoving: false,
+                        );
+                      },
+                      removeItemBuilder: (context, animation, item) {
+                        return _buildAnimatedTaskItem(
+                          context: context,
+                          animation: animation,
+                          item: item,
+                          isRemoving: true,
+                        );
+                      },
+                      areItemsTheSame: (a, b) => a.task.id == b.task.id,
                     ),
                   ),
+                  // SliverPadding(
+                  //   padding: EdgeInsets.only(
+                  //     left: 20,
+                  //     right: 20,
+                  //     bottom:
+                  //         24 + 76 + 16 + MediaQuery.of(context).padding.bottom,
+                  //   ),
+                  //   sliver: SliverList.separated(
+                  //     separatorBuilder: (context, index) => const Gap(12),
+                  //     itemBuilder: (context, index) => TaskCard(
+                  //       task: state.tasks[index],
+                  //       onTaskClicked: () => _onTaskClicked(state.tasks[index]),
+                  //       onCheckboxPressed: () => context.read<HomeBloc>().add(
+                  //         HomeEvent.updateTaskCompletion(state.tasks[index]),
+                  //       ),
+                  //     ),
+                  //     itemCount: state.tasks.length,
+                  //   ),
+                  // ),
                 ],
               ),
             );

@@ -44,6 +44,7 @@ class _RootScreenState extends State<RootScreen> {
             Align(
               alignment: Alignment.bottomCenter,
               child: SafeArea(
+                maintainBottomViewPadding: true,
                 child: Padding(
                   padding: const EdgeInsets.only(
                     bottom: 16,

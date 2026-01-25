@@ -6,8 +6,8 @@ Future<T?> showAppBottomSheet<T>({
   AppBottomSheetType type = AppBottomSheetType.standard,
   required Widget child,
   bool showDragHandle = true,
-  bool useRootNavigator = false,
-  bool isScrollControlled = false,
+  bool useRootNavigator = true,
+  bool isScrollControlled = true,
   bool useSafeArea = true,
 }) {
   return showModalBottomSheet<T>(

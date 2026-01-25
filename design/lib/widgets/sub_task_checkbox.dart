@@ -14,7 +14,6 @@ class SubTaskCheckbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Material(
       color: Colors.transparent,
       shape: const CircleBorder(),
@@ -24,7 +23,9 @@ class SubTaskCheckbox extends StatelessWidget {
         ),
         onTap: onPressed,
         child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 160),
+          switchInCurve: Curves.easeIn,
+          switchOutCurve: Curves.easeOut,
           transitionBuilder: (child, animation) {
             return ScaleTransition(scale: animation, child: child);
           },

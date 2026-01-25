@@ -19,7 +19,6 @@ class SelectTagsBottomSheet extends StatelessWidget {
     showAppBottomSheet(
       context: context,
       type: AppBottomSheetType.standard,
-      isScrollControlled: true,
       child: BlocProvider.value(
         value: context.read<EditTaskBloc>(),
         child: const CreateUserTagPage(),

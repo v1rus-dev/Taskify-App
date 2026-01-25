@@ -19,7 +19,6 @@ class EditTaskTagsPart extends StatelessWidget {
       () => showAppBottomSheet(
         context: context,
         type: AppBottomSheetType.fullScreen,
-        isScrollControlled: true,
         child: BlocProvider.value(
           value: editTaskBloc,
           child: const SelectTagsPage(),

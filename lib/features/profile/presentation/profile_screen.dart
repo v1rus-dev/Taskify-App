@@ -34,7 +34,6 @@ class ProfileScreen extends StatelessWidget {
     final result = await showAppBottomSheet<TimeFormatType>(
       context: context,
       type: AppBottomSheetType.floating,
-      useRootNavigator: true,
       child: SelectTimeFormatBottomSheet(selectedType: selectedType),
     );
     if (context.mounted) {

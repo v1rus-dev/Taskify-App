@@ -24,7 +24,6 @@ class EditTaskBottomPart extends StatelessWidget {
       () => showAppBottomSheet<void>(
         context: context,
         useSafeArea: true,
-        isScrollControlled: true,
         type: AppBottomSheetType.floating,
         child: BlocProvider.value(
           value: editTaskBloc,

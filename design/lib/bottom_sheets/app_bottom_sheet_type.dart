@@ -1,0 +1,1 @@
+enum AppBottomSheetType { standard, floating, fullScreen }

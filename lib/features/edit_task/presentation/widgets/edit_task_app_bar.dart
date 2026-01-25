@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:design/constants/app_icons.dart';
+import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
@@ -14,7 +15,7 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize {
-    return const Size.fromHeight(96);
+    return Size.fromHeight(AppInsets.toolbarHeight);
   }
 
   void _onClose(BuildContext context) {
@@ -58,17 +59,9 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final safeAreaTop = mediaQuery.padding.top;
-    final preferredHeight = safeAreaTop + 16.0 + 36.0 + 16.0;
 
-    return PreferredSize(
-      preferredSize: Size.fromHeight(preferredHeight),
-      child: Container(
-        padding: EdgeInsets.only(
-          top: safeAreaTop + 16.0,
-          left: 12,
-          right: 12,
-          bottom: 16.0,
-        ),
+    return Container(
+      padding: EdgeInsets.only(top: safeAreaTop, left: 20.0, right: 20.0),
         decoration: const BoxDecoration(color: Colors.white),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,7 +77,6 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: () => _onDelete(context, context.read<EditTaskBloc>()),
               ),
           ],
-        ),
       ),
     );
   }

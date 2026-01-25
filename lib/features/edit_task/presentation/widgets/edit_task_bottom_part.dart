@@ -21,10 +21,11 @@ class EditTaskBottomPart extends StatelessWidget {
     final editTaskBloc = context.read<EditTaskBloc>();
     unfocusAndThen(
       context,
-      () => showFloatingBottomSheet<void>(
+      () => showAppBottomSheet<void>(
         context: context,
         useSafeArea: true,
-        handleKeyboardInsets: false,
+        isScrollControlled: true,
+        type: AppBottomSheetType.floating,
         child: BlocProvider.value(
           value: editTaskBloc,
           child: const SelectTaskDatePage(),

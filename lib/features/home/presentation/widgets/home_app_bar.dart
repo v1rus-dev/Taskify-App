@@ -1,4 +1,5 @@
 import 'package:design/constants/app_icons.dart';
+import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -12,10 +13,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize {
-    // Минимальная высота: отступ 24 + Row высотой 44 = 68
-    // SafeArea будет добавлен автоматически через padding
-    // Используем достаточно большое значение для покрытия всех устройств
-    return const Size.fromHeight(120);
+    return Size.fromHeight(AppInsets.toolbarHeight);
   }
 
   void _onChangeCalendarState(BuildContext context) {
@@ -44,60 +42,52 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return Container(
       padding: EdgeInsets.only(top: safeAreaTop, left: 20.0, right: 20.0),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 24.0),
-        child: SizedBox(
-          height: 44.0,
-          child: BlocBuilder<HomeBloc, HomeState>(
-            builder: (context, state) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
+      child: BlocBuilder<HomeBloc, HomeState>(
+        builder: (context, state) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        state.selectedDate.day == state.currentDate.day &&
-                                state.selectedDate.month ==
-                                    state.currentDate.month &&
-                                state.selectedDate.year ==
-                                    state.currentDate.year
-                            ? AppLocalizations.of(context)?.today ?? ''
-                            : _getDayShort(context, state.selectedDate),
-                        textAlign: TextAlign.left,
-                        style: theme.textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const Gap(12),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          _getMonthShort(context, state.selectedDate),
-                          textAlign: TextAlign.left,
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
+                  Text(
+                    state.selectedDate.day == state.currentDate.day &&
+                            state.selectedDate.month ==
+                                state.currentDate.month &&
+                            state.selectedDate.year == state.currentDate.year
+                        ? AppLocalizations.of(context)?.today ?? ''
+                        : _getDayShort(context, state.selectedDate),
+                    textAlign: TextAlign.left,
+                    style: theme.textTheme.headlineLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  HomeAppBarButton(
-                    svgIconPath: state.isHeaderExpanded
-                        ? AppIcons.arrowTop
-                        : AppIcons.arrowBottom,
-                    packageName: AppIcons.packageName,
-                    onPressed: () => _onChangeCalendarState(context),
+                  const Gap(12),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      _getMonthShort(context, state.selectedDate),
+                      textAlign: TextAlign.left,
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ],
-              );
-            },
-          ),
-        ),
+              ),
+              HomeAppBarButton(
+                svgIconPath: state.isHeaderExpanded
+                    ? AppIcons.arrowTop
+                    : AppIcons.arrowBottom,
+                packageName: AppIcons.packageName,
+                onPressed: () => _onChangeCalendarState(context),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

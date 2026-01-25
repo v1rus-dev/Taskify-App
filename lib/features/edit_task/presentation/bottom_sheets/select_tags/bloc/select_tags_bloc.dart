@@ -13,29 +13,20 @@ part 'select_tags_bloc.freezed.dart';
 
 class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
   SelectTagsBloc({Set<String>? initialSelectedTagKeys})
-      : _initialSelectedTagKeys =
-            Set<String>.from(initialSelectedTagKeys ?? {}),
-        _tagInteractor = locator<TagInteractor>(),
-        super(const SelectTagsState.initial()) {
-    on<SelectTagsEvent>(_onEvent);
+    : _initialSelectedTagKeys = Set<String>.from(initialSelectedTagKeys ?? {}),
+      _tagInteractor = locator<TagInteractor>(),
+      super(const SelectTagsState.initial()) {
+    on<_Started>(_onStarted);
+    on<_TagToggled>(_onTagToggled);
+    on<_CreateTagPressed>(_onCreateTagPressed);
+    on<_UpdateUserTags>(_onUpdateUserTags);
   }
 
   final Set<String> _initialSelectedTagKeys;
   final TagInteractor _tagInteractor;
   StreamSubscription<List<TagEntity>>? _customTagsSubscription;
 
-  Future<void> _onEvent(
-    SelectTagsEvent event,
-    Emitter<SelectTagsState> emit,
-  ) async {
-    await event.map(
-      started: (_) async => _onStarted(emit),
-      tagToggled: (event) async => _onTagToggled(event.tag, emit),
-      createTagPressed: (_) async {},
-    );
-  }
-
-  Future<void> _onStarted(Emitter<SelectTagsState> emit) async {
+  Future<void> _onStarted(_Started event, Emitter<SelectTagsState> emit) async {
     final customTagsResult = await _tagInteractor.getCustomTags();
     List<TagEntity> customTags = const [];
     customTagsResult.fold(
@@ -49,30 +40,18 @@ class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
         selectedTagKeys: _initialSelectedTagKeys,
       ),
     );
-    await _customTagsSubscription?.cancel();
-    _customTagsSubscription = _tagInteractor.observeCustomTags().listen((tags) {
-      state.maybeMap(
-        success: (state) =>
-            emit(state.copyWith(customTags: tags)),
-        orElse: () => emit(
-          SelectTagsState.success(
-            defaultTags: _buildDefaultTags(),
-            customTags: tags,
-            selectedTagKeys: _initialSelectedTagKeys,
-          ),
-        ),
-      );
-    });
+
+    _initSubscription();
   }
 
-  void _onTagToggled(TagEntity tag, Emitter<SelectTagsState> emit) {
+  void _onTagToggled(_TagToggled event, Emitter<SelectTagsState> emit) {
     state.maybeMap(
       success: (state) {
         final updated = Set<String>.from(state.selectedTagKeys);
-        if (updated.contains(tag.key)) {
-          updated.remove(tag.key);
+        if (updated.contains(event.tag.key)) {
+          updated.remove(event.tag.key);
         } else {
-          updated.add(tag.key);
+          updated.add(event.tag.key);
         }
         emit(state.copyWith(selectedTagKeys: updated));
       },
@@ -80,10 +59,31 @@ class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
     );
   }
 
+  void _onUpdateUserTags(_UpdateUserTags event, Emitter<SelectTagsState> emit) {
+    state.maybeMap(
+      success: (state) {
+        emit(state.copyWith(customTags: event.tags));
+      },
+      orElse: () {},
+    );
+  }
+
+  void _onCreateTagPressed(
+    _CreateTagPressed event,
+    Emitter<SelectTagsState> emit,
+  ) {}
+
   List<TagEntity> _buildDefaultTags() {
     return DefaultTag.values
         .map((tag) => DefaultTagEntity(defaultTag: tag))
         .toList(growable: false);
+  }
+
+  void _initSubscription() async {
+    await _customTagsSubscription?.cancel();
+    _customTagsSubscription = _tagInteractor.observeCustomTags().listen((tags) {
+      add(SelectTagsEvent.updateUserTags(tags));
+    });
   }
 
   @override

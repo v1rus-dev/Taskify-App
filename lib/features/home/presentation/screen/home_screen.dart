@@ -91,83 +91,62 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const HomeAppBar(),
-      body: SafeArea(
-        child: BlocBuilder<HomeBloc, HomeState>(
-          builder: (context, state) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 24),
-              child: CustomScrollView(
-                slivers: [
-                  const SliverGap(8),
-                  SliverAnimatedSwitcher(
-                    duration: _animationDuration,
-                    reverseDuration: _animationDuration,
-                    switchInCurve: Curves.easeOutCubic,
-                    switchOutCurve: Curves.easeInCubic,
-                    child: state.isHeaderExpanded
-                        ? const SliverToBoxAdapter(
-                            key: ValueKey('header'),
-                            child: HomeHidedHeader(),
-                          )
-                        : const SliverToBoxAdapter(
-                            key: ValueKey('empty'),
-                            child: SizedBox.shrink(),
-                          ),
+      body: BlocBuilder<HomeBloc, HomeState>(
+        builder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 24),
+            child: CustomScrollView(
+              slivers: [
+                const SliverGap(8),
+                SliverAnimatedSwitcher(
+                  duration: _animationDuration,
+                  reverseDuration: _animationDuration,
+                  switchInCurve: Curves.easeOutCubic,
+                  switchOutCurve: Curves.easeInCubic,
+                  child: state.isHeaderExpanded
+                      ? const SliverToBoxAdapter(
+                          key: ValueKey('header'),
+                          child: HomeHidedHeader(),
+                        )
+                      : const SliverToBoxAdapter(
+                          key: ValueKey('empty'),
+                          child: SizedBox.shrink(),
+                        ),
+                ),
+                SliverPadding(
+                  padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    bottom:
+                        24 + 76 + 16 + MediaQuery.of(context).padding.bottom,
                   ),
-                  SliverPadding(
-                    padding: EdgeInsets.only(
-                      left: 20,
-                      right: 20,
-                      bottom:
-                          24 + 76 + 16 + MediaQuery.of(context).padding.bottom,
-                    ),
-                    sliver: SliverImplicitlyAnimatedList<TaskWrapperEntity>(
-                      items: state.tasks,
-                      insertDuration: _animationDuration,
-                      removeDuration: _animationDuration,
-                      itemBuilder: (context, animation, item, index) {
-                        return _buildAnimatedTaskItem(
-                          context: context,
-                          animation: animation,
-                          item: item,
-                          isRemoving: false,
-                        );
-                      },
-                      removeItemBuilder: (context, animation, item) {
-                        return _buildAnimatedTaskItem(
-                          context: context,
-                          animation: animation,
-                          item: item,
-                          isRemoving: true,
-                        );
-                      },
-                      areItemsTheSame: (a, b) => a.task.id == b.task.id,
-                    ),
+                  sliver: SliverImplicitlyAnimatedList<TaskWrapperEntity>(
+                    items: state.tasks,
+                    insertDuration: _animationDuration,
+                    removeDuration: _animationDuration,
+                    itemBuilder: (context, animation, item, index) {
+                      return _buildAnimatedTaskItem(
+                        context: context,
+                        animation: animation,
+                        item: item,
+                        isRemoving: false,
+                      );
+                    },
+                    removeItemBuilder: (context, animation, item) {
+                      return _buildAnimatedTaskItem(
+                        context: context,
+                        animation: animation,
+                        item: item,
+                        isRemoving: true,
+                      );
+                    },
+                    areItemsTheSame: (a, b) => a.task.id == b.task.id,
                   ),
-                  // SliverPadding(
-                  //   padding: EdgeInsets.only(
-                  //     left: 20,
-                  //     right: 20,
-                  //     bottom:
-                  //         24 + 76 + 16 + MediaQuery.of(context).padding.bottom,
-                  //   ),
-                  //   sliver: SliverList.separated(
-                  //     separatorBuilder: (context, index) => const Gap(12),
-                  //     itemBuilder: (context, index) => TaskCard(
-                  //       task: state.tasks[index],
-                  //       onTaskClicked: () => _onTaskClicked(state.tasks[index]),
-                  //       onCheckboxPressed: () => context.read<HomeBloc>().add(
-                  //         HomeEvent.updateTaskCompletion(state.tasks[index]),
-                  //       ),
-                  //     ),
-                  //     itemCount: state.tasks.length,
-                  //   ),
-                  // ),
-                ],
-              ),
-            );
-          },
-        ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

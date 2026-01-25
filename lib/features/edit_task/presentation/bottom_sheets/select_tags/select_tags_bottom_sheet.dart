@@ -16,9 +16,10 @@ class SelectTagsBottomSheet extends StatelessWidget {
   }
 
   void _onCreateTagPressed(BuildContext context) {
-    showFloatingBottomSheet(
+    showAppBottomSheet(
       context: context,
-      handleKeyboardInsets: true,
+      type: AppBottomSheetType.standard,
+      isScrollControlled: true,
       child: BlocProvider.value(
         value: context.read<EditTaskBloc>(),
         child: const CreateUserTagPage(),
@@ -47,26 +48,38 @@ class SelectTagsBottomSheet extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, SelectTagsState state) {
     final theme = Theme.of(context);
+
     return state.maybeWhen(
       success: (defaultTags, customTags, selectedTagKeys) {
         return Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TagsSection(
-              title: 'Defaults',
-              tags: defaultTags,
-              selectedTagKeys: selectedTagKeys,
-              onTagPressed: (tag) => _onTagPressed(context, tag),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(
+                  bottom: 12,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TagsSection(
+                      title: 'Defaults',
+                      tags: defaultTags,
+                      selectedTagKeys: selectedTagKeys,
+                      onTagPressed: (tag) => _onTagPressed(context, tag),
+                    ),
+                    const Gap(24),
+                    CustomTagsSection(
+                      tags: customTags,
+                      selectedTagKeys: selectedTagKeys,
+                      onTagPressed: (tag) => _onTagPressed(context, tag),
+                      onCreatePressed: () => _onCreateTagPressed(context),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const Gap(24),
-            CustomTagsSection(
-              tags: customTags,
-              selectedTagKeys: selectedTagKeys,
-              onTagPressed: (tag) => _onTagPressed(context, tag),
-              onCreatePressed: () => _onCreateTagPressed(context),
-            ),
-            const Gap(24),
+
+            const Gap(12),
             Center(
               child: Text(
                 'Tags help you organize and filter your tasks',
@@ -77,13 +90,11 @@ class SelectTagsBottomSheet extends StatelessWidget {
               ),
             ),
             const Gap(12),
-            Padding(
-              padding: AppInsets.sheetBottomPadding,
-              child: AppTextButton(
-                text: "Save",
-                onPressed: () => _onSavePressed(context),
-              ),
+            AppTextButton(
+              text: "Save",
+              onPressed: () => _onSavePressed(context),
             ),
+            const Gap(AppInsets.sheetBottomSmall),
           ],
         );
       },
@@ -98,22 +109,18 @@ class SelectTagsBottomSheet extends StatelessWidget {
       builder: (context, state) {
         return Padding(
           padding: AppInsets.sheetHorizontalSmallPadding,
-          child: SizedBox(
-            width: double.infinity,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Gap(12),
-                Text(
-                  "Select tags",
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+          child: Column(
+            children: [
+              const Gap(12),
+              Text(
+                "Select tags",
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 24),
-                _buildContent(context, state),
-              ],
-            ),
+              ),
+              const SizedBox(height: 24),
+              Expanded(child: _buildContent(context, state)),
+            ],
           ),
         );
       },

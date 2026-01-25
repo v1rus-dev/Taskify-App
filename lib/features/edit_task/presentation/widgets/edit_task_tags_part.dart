@@ -16,10 +16,10 @@ class EditTaskTagsPart extends StatelessWidget {
     final editTaskBloc = context.read<EditTaskBloc>();
     unfocusAndThen(
       context,
-      () => showFloatingBottomSheet<void>(
+      () => showAppBottomSheet(
         context: context,
-        useSafeArea: true,
-        handleKeyboardInsets: false,
+        type: AppBottomSheetType.fullScreen,
+        isScrollControlled: true,
         child: BlocProvider.value(
           value: editTaskBloc,
           child: const SelectTagsPage(),

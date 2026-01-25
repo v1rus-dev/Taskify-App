@@ -2,10 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-enum SelectTimePickerMode {
-  start,
-  end,
-}
+enum SelectTimePickerMode { start, end }
 
 class SelectTimePicker extends StatefulWidget {
   const SelectTimePicker({
@@ -183,8 +180,7 @@ class _SelectTimePickerState extends State<SelectTimePicker> {
 
   TimeOfDay get _minimumTime => _resolveMinimumTime(widget);
 
-  int get _minimumTotalMinutes =>
-      _minimumTime.hour * 60 + _minimumTime.minute;
+  int get _minimumTotalMinutes => _minimumTime.hour * 60 + _minimumTime.minute;
 
   bool _isBeforeMinimum(int hour24, int minute) {
     return (hour24 * 60 + minute) < _minimumTotalMinutes;
@@ -366,7 +362,12 @@ class _SelectTimePickerState extends State<SelectTimePicker> {
 
   String _formatTwoDigits(int value) => value.toString().padLeft(2, '0');
 
-  Color _itemColor(BuildContext context, bool isEnabled) {
+  Color _itemColor(BuildContext context, bool isEnabled, bool isSelected) {
+    if (isEnabled && isSelected) {
+      return AppColorExtensions.getPrimaryAccentColor(
+        context,
+      ).withValues(alpha: 0.6);
+    }
     if (isEnabled) {
       return AppColorExtensions.getTextPrimaryColor(context);
     }
@@ -375,12 +376,16 @@ class _SelectTimePickerState extends State<SelectTimePicker> {
     ).withValues(alpha: 0.45);
   }
 
-  TextStyle _itemTextStyle(BuildContext context, bool isEnabled) {
+  TextStyle _itemTextStyle(
+    BuildContext context,
+    bool isEnabled,
+    bool isSelected,
+  ) {
     final typography = Theme.of(context).extension<AppTypographyExtension>();
     final baseStyle =
         typography?.titleMedium ?? Theme.of(context).textTheme.titleMedium;
     return (baseStyle ?? const TextStyle()).copyWith(
-      color: _itemColor(context, isEnabled),
+      color: _itemColor(context, isEnabled, isSelected),
       fontWeight: FontWeight.w600,
     );
   }
@@ -389,6 +394,7 @@ class _SelectTimePickerState extends State<SelectTimePicker> {
     required BuildContext context,
     required String text,
     required bool isEnabled,
+    required bool isSelected,
   }) {
     return Center(
       child: SizedBox(
@@ -397,7 +403,7 @@ class _SelectTimePickerState extends State<SelectTimePicker> {
         child: Center(
           child: Text(
             text,
-            style: _itemTextStyle(context, isEnabled),
+            style: _itemTextStyle(context, isEnabled, isSelected),
             textAlign: TextAlign.center,
           ),
         ),
@@ -415,9 +421,7 @@ class _SelectTimePickerState extends State<SelectTimePicker> {
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: AppColorExtensions.getDividerColor(
-                context,
-              ).withValues(alpha: 0.6),
+              color: AppColorExtensions.getDividerColor(context),
             ),
           ),
         ),
@@ -449,6 +453,7 @@ class _SelectTimePickerState extends State<SelectTimePicker> {
             context: context,
             text: labelBuilder(index),
             isEnabled: isEnabled(index),
+            isSelected: controller.selectedItem == index,
           );
         },
       ),
@@ -479,7 +484,9 @@ class _SelectTimePickerState extends State<SelectTimePicker> {
         ),
         SizedBox(
           width: 16,
-          child: Center(child: Text(':', style: _itemTextStyle(context, true))),
+          child: Center(
+            child: Text(':', style: _itemTextStyle(context, true, false)),
+          ),
         ),
         _buildWheel(
           controller: _minutesController,

@@ -16,9 +16,35 @@ Future<T?> showAppBottomSheet<T>({
     isScrollControlled: isScrollControlled,
     useSafeArea: useSafeArea,
     builder: (context) => switch (type) {
-      AppBottomSheetType.floating => BaseFloatingBottomSheet(showDragHandle: showDragHandle, child: child),
-      AppBottomSheetType.standard => BaseDefaultBottomSheet(showDragHandle: showDragHandle, child: child),
-      AppBottomSheetType.fullScreen => BaseFullScreenBottomSheet(showDragHandle: showDragHandle, child: child),
+      AppBottomSheetType.floating => BaseFloatingBottomSheet(
+        showDragHandle: showDragHandle,
+        child: child,
+      ),
+      AppBottomSheetType.standard => BaseDefaultBottomSheet(
+        showDragHandle: showDragHandle,
+        child: child,
+      ),
+      AppBottomSheetType.fullScreen => SizedBox.expand(
+    child: Column(
+      children: [
+        SizedBox(
+          height: AppInsets.toolbarHeight,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => Navigator.of(context).pop(),
+            child: const SizedBox.expand(),
+          ),
+        ),
+
+        Expanded(
+          child: BaseFullScreenBottomSheet(
+            showDragHandle: showDragHandle,
+            child: child,
+          ),
+        ),
+      ],
+    ),
+  ),
     },
   );
 }

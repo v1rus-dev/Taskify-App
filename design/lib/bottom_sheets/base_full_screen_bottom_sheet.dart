@@ -13,12 +13,16 @@ class BaseFullScreenBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final mq = MediaQuery.of(context);
+    final bottomPadding = mq.padding.bottom;
 
-    return Padding(
-      padding: const EdgeInsets.only(top: AppInsets.toolbarHeight),
+    final sheetHeight = mq.size.height - AppInsets.toolbarHeight;
+
+    return SizedBox(
+      height: sheetHeight,
+      width: double.infinity,
       child: Container(
-        padding: EdgeInsetsGeometry.only(bottom: bottomPadding),
+        padding: EdgeInsets.only(bottom: bottomPadding),
         decoration: BoxDecoration(
           color: AppColorExtensions.getBackgroundColor(context),
           borderRadius: BorderRadius.vertical(

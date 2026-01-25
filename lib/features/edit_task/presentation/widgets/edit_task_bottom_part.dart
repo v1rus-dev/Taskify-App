@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_tags_part.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_time_button.dart';
-import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_date/select_task_date_page.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_when/select_task_when_page.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
 class EditTaskBottomPart extends StatelessWidget {
@@ -27,7 +27,7 @@ class EditTaskBottomPart extends StatelessWidget {
         type: AppBottomSheetType.floating,
         child: BlocProvider.value(
           value: editTaskBloc,
-          child: const SelectTaskDatePage(),
+          child: const SelectTaskWhenPage(),
         ),
       ),
     );

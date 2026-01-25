@@ -1,11 +1,11 @@
-part of 'select_task_date_bloc.dart';
+part of 'select_task_when_bloc.dart';
 
 @freezed
-abstract class SelectTaskDateState with _$SelectTaskDateState {
-  const factory SelectTaskDateState({
+abstract class SelectTaskWhenState with _$SelectTaskWhenState {
+  const factory SelectTaskWhenState({
     required DateSelection defaults,
     required DateSelection current,
-  }) = _SelectTaskDateState;
+  }) = _SelectTaskWhenState;
 }
 
 class DateSelection {

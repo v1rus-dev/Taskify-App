@@ -8,15 +8,16 @@ import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/utils/time_format_utils.dart';
 import 'package:taskify/domain/tasks/models/task_duration_type.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
-import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_date/bloc/select_task_date_bloc.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_when/bloc/select_task_when_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_period/select_task_period_bottom_sheet.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_time/select_time_bottom_sheet.dart';
 
-class SelectTaskDateBottomSheet extends StatelessWidget {
-  const SelectTaskDateBottomSheet({super.key});
+class SelectTaskWhenBottomSheet extends StatelessWidget {
+  const SelectTaskWhenBottomSheet({super.key});
 
   Future<void> _onDatePressed(
     BuildContext context,
-    SelectTaskDateBloc bloc,
+    SelectTaskWhenBloc bloc,
     DateTime initialDate,
   ) async {
     final picked = await AppDateTimePicker.pickDate(
@@ -26,13 +27,13 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
       lastDate: DateTime(2100),
     );
     if (picked != null) {
-      bloc.add(SelectTaskDateEvent.dateSelected(picked));
+      bloc.add(SelectTaskWhenEvent.dateSelected(picked));
     }
   }
 
   Future<void> _onDurationPressed(
     BuildContext context,
-    SelectTaskDateBloc bloc,
+    SelectTaskWhenBloc bloc,
     TaskDurationType selectedType,
   ) async {
     await showAppBottomSheet<void>(
@@ -41,14 +42,14 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
       child: SelectTaskPeriodBottomSheet(
         selectedType: selectedType,
         onSelected: (type) =>
-            bloc.add(SelectTaskDateEvent.durationTypeSelected(type)),
+            bloc.add(SelectTaskWhenEvent.durationTypeSelected(type)),
       ),
     );
   }
 
   Future<void> _onStartTimePressed(
     BuildContext context,
-    SelectTaskDateBloc bloc,
+    SelectTaskWhenBloc bloc,
     TimeOfDay? initialTime,
     bool use24Hour,
   ) async {
@@ -60,13 +61,21 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
       localeOverride: const Locale('en', 'US'),
     );
     if (picked != null) {
-      bloc.add(SelectTaskDateEvent.startTimeSelected(picked));
+      bloc.add(SelectTaskWhenEvent.startTimeSelected(picked));
     }
+  }
+
+  _onSelectTimePressed(BuildContext context,) async {
+    await showAppBottomSheet(
+      context: context,
+      type: AppBottomSheetType.fullScreen,
+      child: SelectTimeBottomSheet(),
+    );
   }
 
   Future<void> _onEndTimePressed(
     BuildContext context,
-    SelectTaskDateBloc bloc,
+    SelectTaskWhenBloc bloc,
     TimeOfDay? initialTime,
     bool use24Hour,
   ) async {
@@ -78,7 +87,7 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
       localeOverride: const Locale('en', 'US'),
     );
     if (picked != null) {
-      bloc.add(SelectTaskDateEvent.endTimeSelected(picked));
+      bloc.add(SelectTaskWhenEvent.endTimeSelected(picked));
     }
   }
 
@@ -89,8 +98,8 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
 
   List<CardAction> _buildCardActions(
     BuildContext context,
-    SelectTaskDateState selectTaskState,
-    SelectTaskDateBloc selectTaskBloc,
+    SelectTaskWhenState selectTaskState,
+    SelectTaskWhenBloc selectTaskBloc,
     bool isPeriod,
     bool use24Hour,
   ) {
@@ -112,32 +121,34 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
       ),
       if (isPeriod)
         CardAction(
-          title: 'Start time',
-          description: formatTimeOfDay(context, current.startTime, use24Hour),
-          onPressed: () => _onStartTimePressed(
-            context,
-            selectTaskBloc,
-            current.startTime,
-            use24Hour,
-          ),
+          title: 'Time',
+          description:
+              '${formatTimeOfDay(context, current.startTime, use24Hour)} - ${formatTimeOfDay(context, current.endTime, use24Hour)}',
+          onPressed: () => _onSelectTimePressed(context),
+          // onPressed: () => _onStartTimePressed(
+          //   context,
+          //   selectTaskBloc,
+          //   current.startTime,
+          //   use24Hour,
+          // ),
         ),
-      if (isPeriod)
-        CardAction(
-          title: 'End time',
-          description: formatTimeOfDay(context, current.endTime, use24Hour),
-          onPressed: () => _onEndTimePressed(
-            context,
-            selectTaskBloc,
-            current.endTime,
-            use24Hour,
-          ),
-        ),
+      // if (isPeriod)
+      //   CardAction(
+      //     title: 'End time',
+      //     description: formatTimeOfDay(context, current.endTime, use24Hour),
+      //     onPressed: () => _onEndTimePressed(
+      //       context,
+      //       selectTaskBloc,
+      //       current.endTime,
+      //       use24Hour,
+      //     ),
+      //   ),
     ];
   }
 
   void _onSavePressed(
     BuildContext context,
-    SelectTaskDateState selectTaskState,
+    SelectTaskWhenState selectTaskState,
   ) {
     final current = selectTaskState.current;
     final startDateTime =
@@ -173,8 +184,8 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
     Navigator.of(context).pop();
   }
 
-  void _onClearPressed(BuildContext context, SelectTaskDateBloc bloc) {
-    bloc.add(const SelectTaskDateEvent.selectionCleared());
+  void _onClearPressed(BuildContext context, SelectTaskWhenBloc bloc) {
+    bloc.add(const SelectTaskWhenEvent.selectionCleared());
   }
 
   @override
@@ -184,9 +195,9 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
       (cubit) => cubit.state.use24Hour,
     );
 
-    return BlocBuilder<SelectTaskDateBloc, SelectTaskDateState>(
+    return BlocBuilder<SelectTaskWhenBloc, SelectTaskWhenState>(
       builder: (context, selectTaskState) {
-        final selectTaskBloc = context.read<SelectTaskDateBloc>();
+        final selectTaskBloc = context.read<SelectTaskWhenBloc>();
         final current = selectTaskState.current;
         final isModified = !current.isSameAs(selectTaskState.defaults);
         final isPeriod = current.durationType == TaskDurationType.period;

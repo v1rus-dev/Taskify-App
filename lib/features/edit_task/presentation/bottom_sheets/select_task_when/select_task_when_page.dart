@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/domain/tasks/models/task_duration_type.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
-import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_date/bloc/select_task_date_bloc.dart';
-import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_date/select_task_date_bottom_sheet.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_when/bloc/select_task_when_bloc.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_when/select_task_when_bottom_sheet.dart';
 
-class SelectTaskDatePage extends StatelessWidget {
-  const SelectTaskDatePage({super.key});
+class SelectTaskWhenPage extends StatelessWidget {
+  const SelectTaskWhenPage({super.key});
 
   TaskDurationType _initialDurationType(bool? isAllDay) {
     return (isAllDay ?? true)
@@ -25,13 +25,13 @@ class SelectTaskDatePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final editState = context.read<EditTaskBloc>().state;
     return BlocProvider(
-      create: (_) => SelectTaskDateBloc(
+      create: (_) => SelectTaskWhenBloc(
         selectedDate: editState.selectedDate,
         durationType: _initialDurationType(editState.isAllDay),
         initialStartTime: _initialTimeOfDay(editState.startTime),
         initialEndTime: _initialTimeOfDay(editState.endTime),
       ),
-      child: const SelectTaskDateBottomSheet(),
+      child: const SelectTaskWhenBottomSheet(),
     );
   }
 }

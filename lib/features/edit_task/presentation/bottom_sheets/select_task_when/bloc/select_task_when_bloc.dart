@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:taskify/domain/tasks/models/task_duration_type.dart';
 
-part 'select_task_date_event.dart';
-part 'select_task_date_state.dart';
-part 'select_task_date_bloc.freezed.dart';
+part 'select_task_when_event.dart';
+part 'select_task_when_state.dart';
+part 'select_task_when_bloc.freezed.dart';
 
-class SelectTaskDateBloc extends Bloc<SelectTaskDateEvent, SelectTaskDateState> {
+class SelectTaskWhenBloc extends Bloc<SelectTaskWhenEvent, SelectTaskWhenState> {
   static const _defaultStartTime = TimeOfDay(hour: 9, minute: 0);
   static const _defaultEndTime = TimeOfDay(hour: 10, minute: 0);
 
-  SelectTaskDateBloc({
+  SelectTaskWhenBloc({
     required DateTime? selectedDate,
     required TaskDurationType? durationType,
     required TimeOfDay? initialStartTime,
@@ -31,7 +31,7 @@ class SelectTaskDateBloc extends Bloc<SelectTaskDateEvent, SelectTaskDateState> 
     on<_SelectionCleared>(_onSelectionCleared);
   }
 
-  static SelectTaskDateState _buildInitialState({
+  static SelectTaskWhenState _buildInitialState({
     required DateTime? selectedDate,
     required TaskDurationType? durationType,
     required TimeOfDay? initialStartTime,
@@ -48,12 +48,12 @@ class SelectTaskDateBloc extends Bloc<SelectTaskDateEvent, SelectTaskDateState> 
       endTime: isPeriod ? initialEndTime ?? _defaultEndTime : null,
     );
 
-    return SelectTaskDateState(defaults: current, current: current);
+    return SelectTaskWhenState(defaults: current, current: current);
   }
 
   void _onDateSelected(
     _DateSelected event,
-    Emitter<SelectTaskDateState> emit,
+    Emitter<SelectTaskWhenState> emit,
   ) {
     emit(
       state.copyWith(
@@ -64,7 +64,7 @@ class SelectTaskDateBloc extends Bloc<SelectTaskDateEvent, SelectTaskDateState> 
 
   void _onDurationTypeSelected(
     _DurationTypeSelected event,
-    Emitter<SelectTaskDateState> emit,
+    Emitter<SelectTaskWhenState> emit,
   ) {
     emit(
       state.copyWith(
@@ -81,7 +81,7 @@ class SelectTaskDateBloc extends Bloc<SelectTaskDateEvent, SelectTaskDateState> 
 
   void _onStartTimeSelected(
     _StartTimeSelected event,
-    Emitter<SelectTaskDateState> emit,
+    Emitter<SelectTaskWhenState> emit,
   ) {
     emit(
       state.copyWith(
@@ -92,7 +92,7 @@ class SelectTaskDateBloc extends Bloc<SelectTaskDateEvent, SelectTaskDateState> 
 
   void _onEndTimeSelected(
     _EndTimeSelected event,
-    Emitter<SelectTaskDateState> emit,
+    Emitter<SelectTaskWhenState> emit,
   ) {
     emit(
       state.copyWith(
@@ -103,7 +103,7 @@ class SelectTaskDateBloc extends Bloc<SelectTaskDateEvent, SelectTaskDateState> 
 
   void _onSelectionCleared(
     _SelectionCleared event,
-    Emitter<SelectTaskDateState> emit,
+    Emitter<SelectTaskWhenState> emit,
   ) {
     emit(
       state.copyWith(

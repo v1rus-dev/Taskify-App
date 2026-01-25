@@ -2,29 +2,40 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class AppTimePicker extends StatefulWidget {
-  const AppTimePicker({
+enum SelectTimePickerMode {
+  start,
+  end,
+}
+
+class SelectTimePicker extends StatefulWidget {
+  const SelectTimePicker({
     super.key,
+    required this.mode,
     required this.initialTime,
+    required this.currentStartTime,
+    required this.currentEndTime,
     required this.use24hFormat,
     required this.canSelectPastTime,
     required this.onTimeChanged,
   });
 
+  final SelectTimePickerMode mode;
   final TimeOfDay initialTime;
+  final TimeOfDay? currentStartTime;
+  final TimeOfDay? currentEndTime;
   final bool use24hFormat;
   final bool canSelectPastTime;
   final void Function(TimeOfDay) onTimeChanged;
 
   @override
-  State<AppTimePicker> createState() => _AppTimePickerState();
+  State<SelectTimePicker> createState() => _SelectTimePickerState();
 }
 
-class _AppTimePickerState extends State<AppTimePicker> {
-  static const _itemExtent = 44.0;
+class _SelectTimePickerState extends State<SelectTimePicker> {
+  static const _itemExtent = 56.0;
   static const _pickerWidth = 64.0;
   static const _periodWidth = 72.0;
-  static const _selectionBoxSize = 44.0;
+  static const _selectionBoxSize = 56.0;
   static const _scrollDuration = Duration(milliseconds: 250);
   static const _scrollCurve = Curves.easeInOut;
 
@@ -78,12 +89,23 @@ class _AppTimePickerState extends State<AppTimePicker> {
   }
 
   @override
-  void didUpdateWidget(covariant AppTimePicker oldWidget) {
+  void didUpdateWidget(covariant SelectTimePicker oldWidget) {
     super.didUpdateWidget(oldWidget);
     final didFormatChange = oldWidget.use24hFormat != widget.use24hFormat;
     final didInitialChange = oldWidget.initialTime != widget.initialTime;
+    final oldMinimumTime = _resolveMinimumTime(oldWidget);
+    final newMinimumTime = _minimumTime;
+    final didMinimumChange = oldMinimumTime != newMinimumTime;
     if (didFormatChange || didInitialChange) {
       _scrollToInitialTime();
+      return;
+    }
+    if (didMinimumChange) {
+      final hour24 = _selectedHour24;
+      final minute = _selectedMinuteIndex;
+      if (_isBeforeMinimum(hour24, minute)) {
+        _scrollToMinimumTime();
+      }
     }
   }
 
@@ -159,18 +181,28 @@ class _AppTimePickerState extends State<AppTimePicker> {
     return normalizedHour + 12;
   }
 
-  int get _initialTotalMinutes =>
-      widget.initialTime.hour * 60 + widget.initialTime.minute;
+  TimeOfDay get _minimumTime => _resolveMinimumTime(widget);
 
-  bool _isBeforeInitial(int hour24, int minute) {
-    return (hour24 * 60 + minute) < _initialTotalMinutes;
+  int get _minimumTotalMinutes =>
+      _minimumTime.hour * 60 + _minimumTime.minute;
+
+  bool _isBeforeMinimum(int hour24, int minute) {
+    return (hour24 * 60 + minute) < _minimumTotalMinutes;
   }
 
   bool _isValidSelection(int hour24, int minute) {
     if (widget.canSelectPastTime) {
       return true;
     }
-    return !_isBeforeInitial(hour24, minute);
+    return !_isBeforeMinimum(hour24, minute);
+  }
+
+  TimeOfDay _resolveMinimumTime(SelectTimePicker picker) {
+    if (picker.mode == SelectTimePickerMode.end &&
+        picker.currentStartTime != null) {
+      return picker.currentStartTime!;
+    }
+    return picker.initialTime;
   }
 
   Future<void> _scrollToInitialTime() async {
@@ -208,6 +240,46 @@ class _AppTimePickerState extends State<AppTimePicker> {
       _selectedPeriodIndex = periodIndex;
     });
     widget.onTimeChanged(widget.initialTime);
+    _isAutoScrolling = false;
+  }
+
+  Future<void> _scrollToMinimumTime() async {
+    if (_isAutoScrolling) {
+      return;
+    }
+    _isAutoScrolling = true;
+    final time = _minimumTime;
+    final displayHour = time.hour % 12 == 0 ? 12 : time.hour % 12;
+    final hourIndex = widget.use24hFormat ? time.hour : displayHour - 1;
+    final minuteIndex = time.minute;
+    final periodIndex = time.hour >= 12 ? 1 : 0;
+    await Future.wait([
+      _hoursController.animateToItem(
+        hourIndex,
+        duration: _scrollDuration,
+        curve: _scrollCurve,
+      ),
+      _minutesController.animateToItem(
+        minuteIndex,
+        duration: _scrollDuration,
+        curve: _scrollCurve,
+      ),
+      if (!widget.use24hFormat)
+        _periodController.animateToItem(
+          periodIndex,
+          duration: _scrollDuration,
+          curve: _scrollCurve,
+        ),
+    ]);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _selectedHourIndex = hourIndex;
+      _selectedMinuteIndex = minuteIndex;
+      _selectedPeriodIndex = periodIndex;
+    });
+    widget.onTimeChanged(time);
     _isAutoScrolling = false;
   }
 
@@ -286,7 +358,7 @@ class _AppTimePickerState extends State<AppTimePicker> {
     final hour24 = _selectedHour24;
     final minute = _selectedMinuteIndex;
     if (!_isValidSelection(hour24, minute)) {
-      _scrollToInitialTime();
+      _scrollToMinimumTime();
       return;
     }
     widget.onTimeChanged(TimeOfDay(hour: hour24, minute: minute));
@@ -385,7 +457,6 @@ class _AppTimePickerState extends State<AppTimePicker> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final hourValues = _hourValues;
 
     return Row(
@@ -402,7 +473,7 @@ class _AppTimePickerState extends State<AppTimePicker> {
             final hour24 = widget.use24hFormat
                 ? hourValues[index]
                 : _to24Hour(hourValues[index], _selectedPeriodIndex);
-            return !_isBeforeInitial(hour24, _selectedMinuteIndex);
+            return !_isBeforeMinimum(hour24, _selectedMinuteIndex);
           },
           onSelectedItemChanged: _onHourChanged,
         ),
@@ -418,7 +489,7 @@ class _AppTimePickerState extends State<AppTimePicker> {
             if (widget.canSelectPastTime) {
               return true;
             }
-            return !_isBeforeInitial(_selectedHour24, index);
+            return !_isBeforeMinimum(_selectedHour24, index);
           },
           onSelectedItemChanged: _onMinuteChanged,
         ),
@@ -433,7 +504,7 @@ class _AppTimePickerState extends State<AppTimePicker> {
                 return true;
               }
               final hour24 = _to24Hour(_selectedHourValue, index);
-              return !_isBeforeInitial(hour24, _selectedMinuteIndex);
+              return !_isBeforeMinimum(hour24, _selectedMinuteIndex);
             },
             onSelectedItemChanged: _onPeriodChanged,
             width: _periodWidth,

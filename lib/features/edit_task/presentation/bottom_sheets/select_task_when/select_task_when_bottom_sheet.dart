@@ -65,11 +65,18 @@ class SelectTaskWhenBottomSheet extends StatelessWidget {
     }
   }
 
-  _onSelectTimePressed(BuildContext context,) async {
+  void _onSelectTimePressed(
+    BuildContext context,
+    TimeOfDay? initialStartTime,
+    TimeOfDay? initialEndTime,
+  ) async {
     await showAppBottomSheet(
       context: context,
       type: AppBottomSheetType.fullScreen,
-      child: SelectTimeBottomSheet(),
+      child: SelectTimeBottomSheet(
+        initialStartTime: initialStartTime,
+        initialEndTime: initialEndTime,
+      ),
     );
   }
 
@@ -124,7 +131,8 @@ class SelectTaskWhenBottomSheet extends StatelessWidget {
           title: 'Time',
           description:
               '${formatTimeOfDay(context, current.startTime, use24Hour)} - ${formatTimeOfDay(context, current.endTime, use24Hour)}',
-          onPressed: () => _onSelectTimePressed(context),
+          onPressed: () =>
+              _onSelectTimePressed(context, current.startTime, current.endTime),
           // onPressed: () => _onStartTimePressed(
           //   context,
           //   selectTaskBloc,

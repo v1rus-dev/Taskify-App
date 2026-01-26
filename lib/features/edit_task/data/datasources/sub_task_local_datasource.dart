@@ -20,6 +20,7 @@ abstract class SubTaskLocalDataSource {
     int taskId,
   );
   Stream<List<db.SubtasksTableData>> observeSubTasks();
+  Stream<List<db.SubtasksTableData>> observeSubTasksByTaskId(int taskId);
 }
 
 class SubTaskLocalDataSourceImpl implements SubTaskLocalDataSource {
@@ -38,9 +39,9 @@ class SubTaskLocalDataSourceImpl implements SubTaskLocalDataSource {
       final ids = <int>[];
       await _database.transaction(() async {
         for (final subTask in subTasks) {
-          final id = await _database.into(_database.subtasksTable).insert(
-                subTask,
-              );
+          final id = await _database
+              .into(_database.subtasksTable)
+              .insert(subTask);
           ids.add(id);
         }
       });
@@ -49,9 +50,9 @@ class SubTaskLocalDataSourceImpl implements SubTaskLocalDataSource {
         return const Right([]);
       }
 
-      final created = await (_database.select(_database.subtasksTable)
-            ..where((t) => t.id.isIn(ids)))
-          .get();
+      final created = await (_database.select(
+        _database.subtasksTable,
+      )..where((t) => t.id.isIn(ids))).get();
       TalkerService.instance.info(
         'syncTag insertSubTasks result: ${created.length}',
       );
@@ -82,9 +83,9 @@ class SubTaskLocalDataSourceImpl implements SubTaskLocalDataSource {
         return const Right([]);
       }
 
-      final updated = await (_database.select(_database.subtasksTable)
-            ..where((t) => t.id.isIn(ids)))
-          .get();
+      final updated = await (_database.select(
+        _database.subtasksTable,
+      )..where((t) => t.id.isIn(ids))).get();
       TalkerService.instance.info(
         'syncTag updateSubTasks result: ${updated.length}',
       );
@@ -104,9 +105,9 @@ class SubTaskLocalDataSourceImpl implements SubTaskLocalDataSource {
       TalkerService.instance.info(
         'syncTag removeSubTasks start: ${subTaskIds.length}',
       );
-      await (_database.update(_database.subtasksTable)
-            ..where((t) => t.id.isIn(subTaskIds)))
-          .write(
+      await (_database.update(
+        _database.subtasksTable,
+      )..where((t) => t.id.isIn(subTaskIds))).write(
         db.SubtasksTableCompanion(
           deletedAt: Value(DateTime.now()),
           updatedAt: Value(DateTime.now()),
@@ -124,9 +125,9 @@ class SubTaskLocalDataSourceImpl implements SubTaskLocalDataSource {
   Future<Either<Failure, void>> removeSubTask(int subTaskId) async {
     try {
       TalkerService.instance.info('syncTag removeSubTask start: $subTaskId');
-      await (_database.update(_database.subtasksTable)
-            ..where((t) => t.id.equals(subTaskId)))
-          .write(
+      await (_database.update(
+        _database.subtasksTable,
+      )..where((t) => t.id.equals(subTaskId))).write(
         db.SubtasksTableCompanion(
           deletedAt: Value(DateTime.now()),
           updatedAt: Value(DateTime.now()),
@@ -151,9 +152,9 @@ class SubTaskLocalDataSourceImpl implements SubTaskLocalDataSource {
       TalkerService.instance.info(
         'syncTag getSubTasksByIds start: ${subTaskIds.length}',
       );
-      final subtasks = await (_database.select(_database.subtasksTable)
-            ..where((t) => t.id.isIn(subTaskIds)))
-          .get();
+      final subtasks = await (_database.select(
+        _database.subtasksTable,
+      )..where((t) => t.id.isIn(subTaskIds))).get();
       TalkerService.instance.info(
         'syncTag getSubTasksByIds result: ${subtasks.length}',
       );
@@ -170,9 +171,9 @@ class SubTaskLocalDataSourceImpl implements SubTaskLocalDataSource {
   ) async {
     try {
       TalkerService.instance.info('syncTag getSubTasksByTaskId start: $taskId');
-      final subtasks = await (_database.select(_database.subtasksTable)
-            ..where((t) => t.taskId.equals(taskId) & t.deletedAt.isNull()))
-          .get();
+      final subtasks = await (_database.select(
+        _database.subtasksTable,
+      )..where((t) => t.taskId.equals(taskId) & t.deletedAt.isNull())).get();
       TalkerService.instance.info(
         'syncTag getSubTasksByTaskId result: ${subtasks.length}',
       );
@@ -188,6 +189,18 @@ class SubTaskLocalDataSourceImpl implements SubTaskLocalDataSource {
     TalkerService.instance.info('syncTag observeSubTasks start');
     return (_database.select(_database.subtasksTable)
           ..where((task) => task.deletedAt.isNull()))
+        .watch()
+        .map((driftSubTasks) => driftSubTasks.toList());
+  }
+
+  @override
+  Stream<List<db.SubtasksTableData>> observeSubTasksByTaskId(int taskId) {
+    TalkerService.instance.info(
+      'syncTag observeSubTasksByTaskId start: $taskId',
+    );
+    return (_database.select(_database.subtasksTable)..where(
+          (task) => task.taskId.equals(taskId) & task.deletedAt.isNull(),
+        ))
         .watch()
         .map((driftSubTasks) => driftSubTasks.toList());
   }

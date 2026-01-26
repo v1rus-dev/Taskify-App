@@ -4,7 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
-import 'package:taskify/data/database/tables/subtasks_table.dart';
 import 'package:taskify/domain/tags/models/sub_task.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';

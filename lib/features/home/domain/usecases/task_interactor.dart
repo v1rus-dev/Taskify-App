@@ -38,4 +38,8 @@ class TaskInteractor {
   Stream<List<TaskWrapperEntity>> observeTasks() {
     return _repository.observeTasks();
   }
+
+  Stream<TaskWrapperEntity> observeTaskById(int id) {
+    return _repository.observeTaskById(id);
+  }
 }

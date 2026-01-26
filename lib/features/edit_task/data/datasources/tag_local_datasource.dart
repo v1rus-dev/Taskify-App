@@ -21,6 +21,7 @@ abstract class TagLocalDataSource {
   );
   Stream<List<db.CustomTagsTableData>> observeCustomTags();
   Stream<List<db.TaskTagsTableData>> observeTaskTags();
+  Stream<db.TaskTagsTableData> observeTaskTagsByTaskId(int taskId);
 }
 
 class TagLocalDataSourceImpl implements TagLocalDataSource {
@@ -157,6 +158,18 @@ class TagLocalDataSourceImpl implements TagLocalDataSource {
     TalkerService.instance.info('syncTag observeTaskTags start');
     return _database.select(_database.taskTagsTable).watch().map((driftTags) {
       return driftTags.toList();
+    });
+  }
+
+  @override
+  Stream<db.TaskTagsTableData> observeTaskTagsByTaskId(int taskId) {
+    TalkerService.instance.info(
+      'syncTag observeTaskTagsByTaskId start: $taskId',
+    );
+    return (_database.select(
+      _database.taskTagsTable,
+    )..where((t) => t.taskId.equals(taskId))).watch().map((driftTags) {
+      return driftTags.toList().first;
     });
   }
 }

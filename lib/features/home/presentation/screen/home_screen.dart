@@ -1,13 +1,13 @@
+import 'package:design/design.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reorderable_list_2.dart';
 import 'package:implicitly_animated_reorderable_list_2/transitions.dart';
 import 'package:sliver_tools/sliver_tools.dart';
-import 'package:taskify/app/router/app_router.dart';
-import 'package:taskify/app/router/router_paths.dart';
 import 'package:taskify/domain/tasks/models/task_wrapper.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
+import 'package:taskify/features/home/bottom_sheets/task_info/presentation/task_info_bottom_sheet.dart';
 import 'package:taskify/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:taskify/features/home/presentation/widgets/home_hided_header.dart';
 import 'package:taskify/features/home/presentation/widgets/task_card.dart';
@@ -17,8 +17,8 @@ import 'package:taskify/core/sync/sync_coordinator.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomeScreenPage extends StatelessWidget {
+  const HomeScreenPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,26 +28,30 @@ class HomePage extends StatelessWidget {
         subTaskInteractor: locator<SubTaskInteractor>(),
         syncCoordinator: locator<SyncCoordinator>(),
       )..add(const HomeEvent.started()),
-      child: const HomeScreen(),
+      child: const _HomeScreen(),
     );
   }
 }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class _HomeScreen extends StatelessWidget {
+  const _HomeScreen();
 
   final Duration _animationDuration = const Duration(milliseconds: 360);
   static const double _insertSlideOffset = 0.08;
   static const double _removeSlideOffset = 0.05;
 
-  void _onTaskClicked(TaskWrapperEntity task) {
-    appRouter.push(RouterPaths.editTask, extra: task.task.id);
+  void _onTaskClicked(BuildContext context, TaskWrapperEntity task) {
+    if (task.task.id == null) return;
+    showAppBottomSheet(
+      context: context,
+      type: AppBottomSheetType.floating,
+      showDragHandle: false,
+      barrierColor: Colors.white,
+      child: TaskInfoBottomSheet(taskId: task.task.id!),
+    );
   }
 
-  void _onTaskCheckboxPressed(
-    BuildContext context,
-    TaskWrapperEntity task,
-  ) {
+  void _onTaskCheckboxPressed(BuildContext context, TaskWrapperEntity task) {
     context.read<HomeBloc>().add(HomeEvent.updateTaskCompletion(task));
   }
 
@@ -59,9 +63,7 @@ class HomeScreen extends StatelessWidget {
   }) {
     final curve = isRemoving ? Curves.easeInCubic : Curves.easeOutCubic;
     final slide = Tween<Offset>(
-      begin: isRemoving
-          ? Offset.zero
-          : const Offset(0, _insertSlideOffset),
+      begin: isRemoving ? Offset.zero : const Offset(0, _insertSlideOffset),
       end: isRemoving ? const Offset(0, -_removeSlideOffset) : Offset.zero,
     ).animate(CurvedAnimation(parent: animation, curve: curve));
 
@@ -76,9 +78,8 @@ class HomeScreen extends StatelessWidget {
             TaskCard(
               key: ValueKey(item.task.id),
               task: item,
-              onTaskClicked: () => _onTaskClicked(item),
-              onCheckboxPressed: () =>
-                  _onTaskCheckboxPressed(context, item),
+              onTaskClicked: () => _onTaskClicked(context, item),
+              onCheckboxPressed: () => _onTaskCheckboxPressed(context, item),
             ),
             const Gap(8),
           ],

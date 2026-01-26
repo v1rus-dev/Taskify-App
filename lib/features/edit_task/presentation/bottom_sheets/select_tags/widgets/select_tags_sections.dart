@@ -2,7 +2,7 @@ import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/domain/tags/models/tag.dart';
-import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_tags/widgets/tag_cheap.dart';
+import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_tags/widgets/tag_button.dart';
 
 class TagsSection extends StatelessWidget {
   const TagsSection({
@@ -41,7 +41,7 @@ class TagsSection extends StatelessWidget {
           runSpacing: 8,
           children: tags
               .map(
-                (tag) => TagChip(
+                (tag) => TagButton(
                   tag: tag,
                   isSelected: selectedTagKeys.contains(tag.key),
                   onPressed: () => _onTagChipPressed(tag),
@@ -110,7 +110,7 @@ class CustomTagsSection extends StatelessWidget {
             runSpacing: 8,
             children: tags
                 .map(
-                  (tag) => TagChip(
+                  (tag) => TagButton(
                     tag: tag,
                     isSelected: selectedTagKeys.contains(tag.key),
                     onPressed: () => _onTagChipPressed(tag),

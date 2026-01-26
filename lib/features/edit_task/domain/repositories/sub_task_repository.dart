@@ -12,4 +12,5 @@ abstract class SubTaskRepository {
   Future<Either<Failure, void>> removeSubTasks(List<int> subTaskIds);
   Future<Either<Failure, void>> removeSubTask(int subTaskId);
   Future<Either<Failure, List<SubTaskEntity>>> getSubTasksByTaskId(int taskId);
+  Stream<List<SubTaskEntity>> observeSubTasksByTaskId(int taskId);
 }

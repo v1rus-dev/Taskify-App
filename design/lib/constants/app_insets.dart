@@ -5,7 +5,7 @@ class AppInsets {
 
   static const double sheetHorizontalSmall = 20;
   static const double sheetHorizontal = 24;
-  static const double sheetVertical = 24;
+  static const double sheetVertical = 20;
   static const double sheetBottomSmall = 16;
   static const double sheetTitleTop = 16;
   static const double sheetTitleBottom = 28;

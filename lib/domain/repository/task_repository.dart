@@ -11,4 +11,5 @@ abstract class TaskRepository {
   Future<Either<Failure, TaskEntity>> updateTask(TaskEntity task);
   Future<Either<Failure, void>> deleteTask(int id);
   Stream<List<TaskWrapperEntity>> observeTasks();
+  Stream<TaskWrapperEntity> observeTaskById(int id);
 }

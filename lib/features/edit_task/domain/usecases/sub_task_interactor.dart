@@ -33,4 +33,8 @@ class SubTaskInteractor {
   ) async {
     return await _repository.getSubTasksByTaskId(taskId);
   }
+
+  Stream<List<SubTaskEntity>> observeSubTasksByTaskId(int taskId) {
+    return _repository.observeSubTasksByTaskId(taskId);
+  }
 }

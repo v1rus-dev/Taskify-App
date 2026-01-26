@@ -199,6 +199,103 @@ class TaskRepositoryImpl implements TaskRepository {
     return controller.stream;
   }
 
+  @override
+  Stream<TaskWrapperEntity> observeTaskById(int id) {
+    final controller = StreamController<TaskWrapperEntity>();
+    StreamSubscription<db.TasksTableData>? taskSubscription;
+    StreamSubscription<List<db.SubtasksTableData>>? subTasksSubscription;
+    StreamSubscription<List<db.TaskTagsTableData>>? taskTagsSubscription;
+    StreamSubscription<List<db.CustomTagsTableData>>? customTagsSubscription;
+
+    db.TasksTableData? taskSnapshot;
+    List<db.SubtasksTableData>? subTasksSnapshot;
+    List<db.TaskTagsTableData>? taskTagsSnapshot;
+    List<db.CustomTagsTableData>? customTagsSnapshot;
+
+    void emitIfReady() {
+      if (taskSnapshot == null ||
+          subTasksSnapshot == null ||
+          taskTagsSnapshot == null ||
+          customTagsSnapshot == null) {
+        return;
+      }
+
+      final tagsRows = taskTagsSnapshot!
+          .where((row) => row.taskId == id)
+          .toList();
+      if (tagsRows.length > 1) {
+        tagsRows.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+      }
+
+      final customTagsById = <int, CustomTagEntity>{
+        for (final tag in customTagsSnapshot!) tag.id: tag.toDomain(),
+      };
+
+      final tags = <TagEntity>[];
+      for (final row in tagsRows) {
+        final tag = row.isCustom
+            ? customTagsById[row.tagId]
+            : _defaultTagsById[row.tagId];
+        if (tag != null) {
+          tags.add(tag);
+        }
+      }
+
+      controller.add(
+        TaskWrapperEntity(
+          task: taskSnapshot!.toDomain(),
+          subTasks: subTasksSnapshot!
+              .map((subTask) => subTask.toDomain())
+              .toList(),
+          tags: tags,
+        ),
+      );
+    }
+
+    controller.onListen = () {
+      taskSubscription = localDataSource.observeTaskById(id).listen(
+        (task) {
+          taskSnapshot = task;
+          emitIfReady();
+        },
+        onError: controller.addError,
+      );
+      subTasksSubscription = subTaskLocalDataSource
+          .observeSubTasksByTaskId(id)
+          .listen(
+        (subTasks) {
+          subTasksSnapshot = subTasks;
+          emitIfReady();
+        },
+        onError: controller.addError,
+      );
+      taskTagsSubscription = tagLocalDataSource.observeTaskTags().listen(
+        (taskTags) {
+          taskTagsSnapshot = taskTags;
+          emitIfReady();
+        },
+        onError: controller.addError,
+      );
+      customTagsSubscription = tagLocalDataSource.observeCustomTags().listen(
+        (customTags) {
+          customTagsSnapshot = customTags;
+          emitIfReady();
+        },
+        onError: controller.addError,
+      );
+    };
+
+    controller.onCancel = () async {
+      await taskSubscription?.cancel();
+      await subTasksSubscription?.cancel();
+      await taskTagsSubscription?.cancel();
+      await customTagsSubscription?.cancel();
+      await controller.close();
+    };
+
+    return controller.stream;
+  }
+
   List<TaskWrapperEntity> _buildTaskWrappers({
     required List<db.TasksTableData> tasks,
     required List<db.SubtasksTableData> subTasks,

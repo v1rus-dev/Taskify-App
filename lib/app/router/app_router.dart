@@ -19,7 +19,7 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: RouterPaths.home,
-              builder: (context, state) => const HomePage(),
+              builder: (context, state) => const HomeScreenPage(),
             ),
           ],
         ),

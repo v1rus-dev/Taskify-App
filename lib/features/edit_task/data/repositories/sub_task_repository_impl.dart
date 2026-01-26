@@ -43,8 +43,9 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
           ),
         )
         .toList();
-    final companions =
-        normalized.map((subTask) => subTask.toInsertCompanion()).toList();
+    final companions = normalized
+        .map((subTask) => subTask.toInsertCompanion())
+        .toList();
     final result = await _localDataSource.insertSubTasks(companions);
     Failure? failure;
     List<SubTaskEntity> created = const [];
@@ -65,8 +66,9 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
   Future<Either<Failure, List<SubTaskEntity>>> updateSubTasks(
     List<SubTaskEntity> subTasks,
   ) async {
-    final companions =
-        subTasks.map((subTask) => subTask.toUpdateCompanion()).toList();
+    final companions = subTasks
+        .map((subTask) => subTask.toUpdateCompanion())
+        .toList();
     final result = await _localDataSource.updateSubTasks(companions);
     Failure? failure;
     List<SubTaskEntity> updated = const [];
@@ -109,8 +111,7 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
     SubTaskEntity? item;
     existing.fold(
       ifLeft: (_) {},
-      ifRight: (value) =>
-          item = value.isEmpty ? null : value.first.toDomain(),
+      ifRight: (value) => item = value.isEmpty ? null : value.first.toDomain(),
     );
     final result = await _localDataSource.removeSubTask(subTaskId);
     await result.fold(
@@ -166,9 +167,7 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
   Future<void> _enqueueSubTaskUpdates(List<SubTaskEntity> subTasks) async {
     for (final subTask in subTasks) {
       if (subTask.networkId == null && subTask.clientId == null) {
-        TalkerService.instance.warning(
-          'syncTag subtask update missing ids',
-        );
+        TalkerService.instance.warning('syncTag subtask update missing ids');
       }
       final entry = SyncQueueEntry(
         opId: _uuid.v4(),
@@ -176,10 +175,7 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
         op: 'update',
         id: subTask.networkId,
         clientId: subTask.clientId,
-        data: SyncOpData(
-          text: subTask.title,
-          isCompleted: subTask.isCompleted,
-        ),
+        data: SyncOpData(text: subTask.title, isCompleted: subTask.isCompleted),
       );
       await _enqueue(entry);
     }
@@ -188,9 +184,7 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
   Future<void> _enqueueSubTaskDeletes(List<SubTaskEntity> subTasks) async {
     for (final subTask in subTasks) {
       if (subTask.networkId == null && subTask.clientId == null) {
-        TalkerService.instance.warning(
-          'syncTag subtask delete missing ids',
-        );
+        TalkerService.instance.warning('syncTag subtask delete missing ids');
       }
       final entry = SyncQueueEntry(
         opId: _uuid.v4(),
@@ -237,6 +231,15 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
       );
     }
     return result;
+  }
+
+  @override
+  Stream<List<SubTaskEntity>> observeSubTasksByTaskId(int taskId) {
+    return _localDataSource
+        .observeSubTasksByTaskId(taskId)
+        .map(
+          (subtasks) => subtasks.map((subtask) => subtask.toDomain()).toList(),
+        );
   }
 }
 

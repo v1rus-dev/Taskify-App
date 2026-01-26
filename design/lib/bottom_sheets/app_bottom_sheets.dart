@@ -9,12 +9,14 @@ Future<T?> showAppBottomSheet<T>({
   bool useRootNavigator = true,
   bool isScrollControlled = true,
   bool useSafeArea = true,
+  Color? barrierColor
 }) {
   return showModalBottomSheet<T>(
     context: context,
     useRootNavigator: useRootNavigator,
     isScrollControlled: isScrollControlled,
     useSafeArea: useSafeArea,
+    barrierColor: barrierColor,
     builder: (context) => switch (type) {
       AppBottomSheetType.floating => BaseFloatingBottomSheet(
         showDragHandle: showDragHandle,

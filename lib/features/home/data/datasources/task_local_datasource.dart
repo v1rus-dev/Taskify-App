@@ -16,6 +16,7 @@ abstract class TaskLocalDataSource {
   Future<Either<Failure, db.TasksTableData>> updateTask(db.TasksTableData task);
   Future<Either<Failure, void>> deleteTask(int id);
   Stream<List<db.TasksTableData>> observeTasks();
+  Stream<db.TasksTableData> observeTaskById(int id);
 }
 
 class TaskLocalDataSourceImpl implements TaskLocalDataSource {
@@ -27,10 +28,12 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource {
   Future<Either<Failure, List<db.TasksTableData>>> getTasks() async {
     try {
       TalkerService.instance.info('syncTag getTasks start');
-      final driftTasks = await (database.select(database.tasksTable)
-            ..where((task) => task.deletedAt.isNull()))
-          .get();
-      TalkerService.instance.info('syncTag getTasks result: ${driftTasks.length}');
+      final driftTasks = await (database.select(
+        database.tasksTable,
+      )..where((task) => task.deletedAt.isNull())).get();
+      TalkerService.instance.info(
+        'syncTag getTasks result: ${driftTasks.length}',
+      );
       return Right(driftTasks);
     } catch (e) {
       TalkerService.instance.error('syncTag getTasks error', e);
@@ -47,13 +50,13 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource {
       final startOfDay = DateTime(date.year, date.month, date.day);
       final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
 
-      final driftTasks = await (database.select(database.tasksTable)
-            ..where(
-              (task) =>
-                  task.date.isBetweenValues(startOfDay, endOfDay) &
-                  task.deletedAt.isNull(),
-            ))
-          .get();
+      final driftTasks =
+          await (database.select(database.tasksTable)..where(
+                (task) =>
+                    task.date.isBetweenValues(startOfDay, endOfDay) &
+                    task.deletedAt.isNull(),
+              ))
+              .get();
 
       TalkerService.instance.info(
         'syncTag getTasksByDate result: ${driftTasks.length}',
@@ -72,7 +75,9 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource {
       final driftTask = await (database.select(
         database.tasksTable,
       )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).getSingle();
-      TalkerService.instance.info('syncTag getTaskById result: ${driftTask.id}');
+      TalkerService.instance.info(
+        'syncTag getTaskById result: ${driftTask.id}',
+      );
       return Right(driftTask);
     } catch (e) {
       TalkerService.instance.error('syncTag getTaskById error', e);
@@ -147,11 +152,21 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource {
   @override
   Stream<List<db.TasksTableData>> observeTasks() {
     TalkerService.instance.info('syncTag observeTasks start');
-    return (database.select(database.tasksTable)
-          ..where((task) => task.deletedAt.isNull()))
-        .watch()
-        .map((driftTasks) {
+    return (database.select(
+      database.tasksTable,
+    )..where((task) => task.deletedAt.isNull())).watch().map((driftTasks) {
       return driftTasks.toList();
     });
+  }
+
+  @override
+  Stream<db.TasksTableData> observeTaskById(int id) {
+    TalkerService.instance.info('syncTag observeTaskById start: $id');
+    return (database.select(database.tasksTable)
+          ..where((task) => task.id.equals(id) & task.deletedAt.isNull()))
+        .watch()
+        .map((driftTask) {
+          return driftTask.first;
+        });
   }
 }

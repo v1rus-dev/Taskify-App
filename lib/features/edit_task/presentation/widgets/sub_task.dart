@@ -13,6 +13,9 @@ class SubTask extends StatefulWidget {
     required this.onTextChanged,
     this.hintText,
     this.focusNode,
+    this.onSubmitted,
+    this.onEditingComplete,
+    this.textInputAction,
   });
 
   final String text;
@@ -21,6 +24,9 @@ class SubTask extends StatefulWidget {
   final ValueChanged<String> onTextChanged;
   final String? hintText;
   final FocusNode? focusNode;
+  final ValueChanged<String>? onSubmitted;
+  final VoidCallback? onEditingComplete;
+  final TextInputAction? textInputAction;
 
   @override
   State<SubTask> createState() => _SubTaskState();
@@ -67,6 +73,9 @@ class _SubTaskState extends State<SubTask> {
             controller: _controller,
             focusNode: widget.focusNode,
             onChanged: widget.onTextChanged,
+            onSubmitted: widget.onSubmitted,
+            onEditingComplete: widget.onEditingComplete,
+            textInputAction: widget.textInputAction,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: AppColorExtensions.getTextPrimaryColor(context),
             ),

@@ -13,7 +13,17 @@ class SubTaskPart extends StatefulWidget {
 
 class _SubTaskPartState extends State<SubTaskPart> {
   final List<FocusNode> _focusNodes = [];
+  final FocusNode _addFocusNode = FocusNode();
   int? _pendingFocusIndex;
+  String _draftText = '';
+  int _lastSubTaskCount = 0;
+  bool _isAddFieldUnlocked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _addFocusNode.addListener(_onAddFocusChange);
+  }
 
   @override
   void dispose() {
@@ -21,7 +31,16 @@ class _SubTaskPartState extends State<SubTaskPart> {
       node.dispose();
     }
     _focusNodes.clear();
+    _addFocusNode
+      ..removeListener(_onAddFocusChange)
+      ..dispose();
     super.dispose();
+  }
+
+  FocusNode _createFocusNode() {
+    final node = FocusNode();
+    node.addListener(_onAnyFocusChange);
+    return node;
   }
 
   void _syncFocusNodes(int count) {
@@ -30,7 +49,10 @@ class _SubTaskPartState extends State<SubTaskPart> {
     }
     if (_focusNodes.length < count) {
       _focusNodes.addAll(
-        List.generate(count - _focusNodes.length, (_) => FocusNode()),
+        List.generate(
+          count - _focusNodes.length,
+          (_) => _createFocusNode(),
+        ),
       );
       return;
     }
@@ -38,6 +60,62 @@ class _SubTaskPartState extends State<SubTaskPart> {
     for (int i = 0; i < removeCount; i++) {
       _focusNodes.removeLast().dispose();
     }
+  }
+
+  void _onAnyFocusChange() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  void _onAddFocusChange() {
+    if (!mounted) return;
+    if (!_addFocusNode.hasFocus) {
+      _commitDraftSubTask();
+    }
+    setState(() {});
+  }
+
+  void _onSubTaskSubmitted(int index, int subTaskCount) {
+    if (index < subTaskCount - 1) {
+      _focusNodes[index + 1].requestFocus();
+      return;
+    }
+    _isAddFieldUnlocked = true;
+    setState(() {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _addFocusNode.requestFocus();
+      }
+    });
+  }
+
+  void _commitDraftSubTask() {
+    final text = _draftText.trim();
+    if (text.isEmpty) {
+      return;
+    }
+    context.read<EditSubTaskBloc>().add(
+      EditSubTaskEvent.subTaskTextChanged(_lastSubTaskCount, text),
+    );
+    _draftText = '';
+    _isAddFieldUnlocked = true;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  bool _shouldShowAddField(int subTaskCount) {
+    if (subTaskCount == 0) {
+      _isAddFieldUnlocked = true;
+      return true;
+    }
+    if (_focusNodes.length < subTaskCount) {
+      return _isAddFieldUnlocked;
+    }
+    if (!_focusNodes.last.hasFocus) {
+      _isAddFieldUnlocked = true;
+    }
+    return _isAddFieldUnlocked;
   }
 
   @override
@@ -56,42 +134,59 @@ class _SubTaskPartState extends State<SubTaskPart> {
     return BlocBuilder<EditSubTaskBloc, EditSubTaskState>(
       builder: (context, state) {
         final subTasks = state.subTasks;
-        final displayCount = subTasks.length + 1;
-        _syncFocusNodes(displayCount);
+        final subTaskCount = subTasks.length;
+        _lastSubTaskCount = subTaskCount;
+        _syncFocusNodes(subTaskCount);
+        final showAddField = _shouldShowAddField(subTaskCount);
         return Padding(
           padding: const EdgeInsets.only(left: 16),
           child: Column(
-            children: List.generate(displayCount, (index) {
-              final isPlaceholder = index == subTasks.length;
-              final item = isPlaceholder ? null : subTasks[index];
+            children: [
+              ...List.generate(subTaskCount, (index) {
+                final item = subTasks[index];
 
-              return SubTask(
-                key: ValueKey('subtask_$index'),
-                text: item?.title ?? '',
-                isCompleted: item?.isCompleted ?? false,
-                hintText: isPlaceholder ? l10n?.addSubTask ?? '' : null,
-                focusNode: _focusNodes[index],
-                onCheckboxPressed: () {
-                  if (!isPlaceholder) {
+                return SubTask(
+                  key: ValueKey('subtask_$index'),
+                  text: item.title,
+                  isCompleted: item.isCompleted,
+                  focusNode: _focusNodes[index],
+                  textInputAction: TextInputAction.next,
+                  onCheckboxPressed: () {
                     context.read<EditSubTaskBloc>().add(
                       EditSubTaskEvent.subTaskToggle(index),
                     );
-                  }
-                },
-                onTextChanged: (value) {
-                  if (!isPlaceholder && value.isEmpty) {
+                  },
+                  onTextChanged: (value) {
+                    if (value.isEmpty) {
+                      context.read<EditSubTaskBloc>().add(
+                        EditSubTaskEvent.subTaskRemoved(index),
+                      );
+                      _pendingFocusIndex = index;
+                      return;
+                    }
                     context.read<EditSubTaskBloc>().add(
-                      EditSubTaskEvent.subTaskRemoved(index),
+                      EditSubTaskEvent.subTaskTextChanged(index, value),
                     );
-                    _pendingFocusIndex = index;
-                    return;
-                  }
-                  context.read<EditSubTaskBloc>().add(
-                    EditSubTaskEvent.subTaskTextChanged(index, value),
-                  );
-                },
-              );
-            }),
+                  },
+                  onSubmitted: (_) => _onSubTaskSubmitted(index, subTaskCount),
+                  onEditingComplete:
+                      () => _onSubTaskSubmitted(index, subTaskCount),
+                );
+              }),
+              if (showAddField)
+                SubTask(
+                  key: const ValueKey('subtask_add'),
+                  text: _draftText,
+                  isCompleted: false,
+                  hintText: l10n?.addSubTask ?? '',
+                  focusNode: _addFocusNode,
+                  textInputAction: TextInputAction.done,
+                  onCheckboxPressed: () {},
+                  onTextChanged: (value) => _draftText = value,
+                  onSubmitted: (_) => _commitDraftSubTask(),
+                  onEditingComplete: _commitDraftSubTask,
+                ),
+            ],
           ),
         );
       },

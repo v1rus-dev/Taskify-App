@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:animated_visibility/animated_visibility.dart';
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +40,7 @@ class EditTaskPage extends StatelessWidget {
           )..add(const EditSubTaskEvent.started()),
         ),
       ],
-      child: const EditTaskScreen(),
+      child: EditTaskScreen(taskId: taskId),
     );
   }
 }
@@ -68,27 +66,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     titleFocusNode.dispose();
     descriptionFocusNode.dispose();
     super.dispose();
-  }
-
-  Future<void> _saveTask({required BuildContext context}) async {
-    final completer = Completer<void>();
-
-    context.read<EditTaskBloc>().add(
-      EditTaskEvent.saveTask(
-        completer,
-        titleController.text,
-        descriptionController.text,
-        context.read<EditSubTaskBloc>().state.subTasks,
-      ),
-    );
-
-    try {
-      await completer.future;
-      if (!context.mounted) return;
-      Navigator.pop(context);
-    } catch (_) {
-      if (!context.mounted) return;
-    }
   }
 
   void _onTitleSubmitted(String value) {
@@ -122,9 +99,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           dismissOnTapOutside: true,
           safeArea: true,
           keyboardAnimationDuration: const Duration(milliseconds: 120),
-          child: EditTaskBottomPart(
-            onSavePressed: () => _saveTask(context: context),
-          ),
+          child: const EditTaskBottomPart(),
         ),
 
         body: SafeArea(
@@ -133,7 +108,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             behavior: HitTestBehavior.translucent,
             onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
             child: SingleChildScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(

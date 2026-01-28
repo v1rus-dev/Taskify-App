@@ -61,7 +61,7 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
     final safeAreaTop = mediaQuery.padding.top;
 
     return Container(
-      padding: EdgeInsets.only(top: safeAreaTop, left: 20.0, right: 20.0),
+      padding: EdgeInsets.only(top: safeAreaTop, left: 12.0, right: 12.0),
         decoration: const BoxDecoration(color: Colors.white),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

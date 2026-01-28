@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/sub_task.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_sub_task/edit_sub_task_bloc.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class SubTaskPart extends StatefulWidget {
   const SubTaskPart({super.key});
@@ -41,6 +42,7 @@ class _SubTaskPartState extends State<SubTaskPart> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (_pendingFocusIndex != null) {
       final focusIndex = _pendingFocusIndex!;
       _pendingFocusIndex = null;
@@ -67,7 +69,7 @@ class _SubTaskPartState extends State<SubTaskPart> {
                 key: ValueKey('subtask_$index'),
                 text: item?.title ?? '',
                 isCompleted: item?.isCompleted ?? false,
-                hintText: isPlaceholder ? 'Add sub task' : null,
+                hintText: isPlaceholder ? l10n?.addSubTask ?? '' : null,
                 focusNode: _focusNodes[index],
                 onCheckboxPressed: () {
                   if (!isPlaceholder) {

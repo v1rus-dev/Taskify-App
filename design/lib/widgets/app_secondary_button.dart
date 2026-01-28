@@ -27,7 +27,7 @@ class AppSecondaryButton extends StatelessWidget {
         onTap: onPressed,
         borderRadius: BorderRadius.circular(24),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 80),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 60),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: color, width: 1),

@@ -2,6 +2,7 @@ import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/domain/tasks/models/task_duration_type.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class SelectTaskPeriodBottomSheet extends StatelessWidget {
   const SelectTaskPeriodBottomSheet({
@@ -13,8 +14,10 @@ class SelectTaskPeriodBottomSheet extends StatelessWidget {
   final TaskDurationType selectedType;
   final ValueChanged<TaskDurationType> onSelected;
 
-  String _descriptionFor(TaskDurationType type) {
-    return selectedType == type ? 'Selected' : '';
+  String _descriptionFor(BuildContext context, TaskDurationType type) {
+    return selectedType == type
+        ? AppLocalizations.of(context)?.selected ?? ''
+        : '';
   }
 
   Color? _descriptionColorFor(BuildContext context, TaskDurationType type) {
@@ -24,6 +27,7 @@ class SelectTaskPeriodBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return Padding(
       padding: AppInsets.sheetHorizontalSmallPadding,
@@ -31,13 +35,18 @@ class SelectTaskPeriodBottomSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Gap(12),
-          Text('Period', style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            l10n?.period ?? '',
+            style: theme.textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 24),
           CardWithActions(
             actions: [
               CardAction(
-                title: 'All day',
-                description: _descriptionFor(TaskDurationType.allDay),
+                title: l10n?.allDay ?? '',
+                description: _descriptionFor(context, TaskDurationType.allDay),
                 descriptionColor: _descriptionColorFor(context, TaskDurationType.allDay),
                 onPressed: () {
                   onSelected(TaskDurationType.allDay);
@@ -45,8 +54,8 @@ class SelectTaskPeriodBottomSheet extends StatelessWidget {
                 },
               ),
               CardAction(
-                title: 'Period',
-                description: _descriptionFor(TaskDurationType.period),
+                title: l10n?.period ?? '',
+                description: _descriptionFor(context, TaskDurationType.period),
                 descriptionColor: _descriptionColorFor(context, TaskDurationType.period),
                 onPressed: () {
                   onSelected(TaskDurationType.period);

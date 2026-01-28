@@ -1,3 +1,4 @@
+import 'package:animated_line_through/animated_line_through.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/domain/tasks/models/task_wrapper.dart';
@@ -21,6 +22,18 @@ class TaskCard extends StatefulWidget {
 }
 
 class _TaskCardState extends State<TaskCard> {
+  Color _getTextColor(BuildContext context) {
+    return widget.task.task.isCompleted
+        ? AppColorExtensions.getTextPrimaryColor(context).withValues(alpha: 0.4)
+        : AppColorExtensions.getTextPrimaryColor(context);
+  }
+
+  Color _getSecondaryTextColor(BuildContext context) {
+    return widget.task.task.isCompleted
+        ? AppColorExtensions.getTextSecondaryColor(context).withValues(alpha: 0.4)
+        : AppColorExtensions.getTextSecondaryColor(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -49,20 +62,32 @@ class _TaskCardState extends State<TaskCard> {
                               SubTaskCounter(subTasks: widget.task.subTasks),
                               const Gap(8),
                             ],
-                            Text(
-                              widget.task.task.title,
-                              style: theme.textTheme.titleSmall,
+                            AnimatedLineThrough(
+                              duration: const Duration(milliseconds: 260),
+                              isCrossed: widget.task.task.isCompleted,
+                              color: _getTextColor(context),
+                              child: Text(
+                                widget.task.task.title,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  color: _getTextColor(context),
+                                ),
+                              ),
                             ),
                           ],
                         ),
                         if (widget.task.task.description != null &&
                             widget.task.task.description!.isNotEmpty) ...[
                           const Gap(8),
-                          Text(
-                            widget.task.task.description!,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: AppColorExtensions.getTextSecondaryColor(
-                                context,
+                          AnimatedLineThrough(
+                            duration: const Duration(milliseconds: 260),
+                            isCrossed: widget.task.task.isCompleted,
+                            color: _getSecondaryTextColor(context),
+                            child: Text(
+                              widget.task.task.description!,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: _getSecondaryTextColor(
+                                  context,
+                                ),
                               ),
                             ),
                           ),

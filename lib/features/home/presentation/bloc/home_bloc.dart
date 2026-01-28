@@ -4,8 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
-import 'package:taskify/domain/tags/models/sub_task.dart';
-import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 import 'package:taskify/domain/tasks/models/task_wrapper.dart';
 import 'package:taskify/domain/tasks/models/tasks_view_type.dart';
@@ -16,13 +14,12 @@ part 'home_bloc.freezed.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final TaskInteractor taskInteractor;
-  final SubTaskInteractor subTaskInteractor;
   final SyncCoordinator syncCoordinator;
 
   StreamSubscription<List<TaskWrapperEntity>>? _tasksSubscription;
   List<TaskWrapperEntity> _allTasks = [];
 
-  HomeBloc({required this.taskInteractor, required this.subTaskInteractor, required this.syncCoordinator})
+  HomeBloc({required this.taskInteractor, required this.syncCoordinator})
     : super(
         HomeState(
           selectedDate: DateTime.now(),
@@ -36,7 +33,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<_ChangeTasksViewType>(_onChangeTasksViewType);
     on<_ChangeCalendarVisibility>(_onChangeCalendarVisibility);
     on<_SelectDate>(_onSelectDate);
-    on<_ToogleSubTask>(_onToogleSubTask);
   }
 
   void _onStarted(_Started event, Emitter<HomeState> emit) {
@@ -67,26 +63,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       ifRight: (task) =>
           TalkerService.instance.info('syncTag Task updated: ${task.id}'),
     );
-
-    final hasIncompleteSubTasks =
-        event.task.subTasks.any((subTask) => !subTask.isCompleted);
-    if (shouldComplete && hasIncompleteSubTasks) {
-      final updatedSubTasks = event.task.subTasks
-          .map(
-            (subTask) => subTask.isCompleted
-                ? subTask
-                : subTask.copyWith(isCompleted: true),
-          )
-          .toList();
-      final subTaskResult =
-          await subTaskInteractor.updateSubTasks(updatedSubTasks);
-      subTaskResult.fold(
-        ifLeft: (failure) =>
-            TalkerService.instance.error('syncTag ${failure.message}'),
-        ifRight: (subTasks) => TalkerService.instance
-            .info('syncTag SubTasks updated: ${subTasks.length}'),
-      );
-    }
   }
 
   void _onChangeTasksViewType(_ChangeTasksViewType event, Emitter<HomeState> emit) {
@@ -100,11 +76,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   void _onSelectDate(_SelectDate event, Emitter<HomeState> emit) {
     emit(state.copyWith(selectedDate: event.date));
     add(HomeEvent.tasksUpdated(_filterTasksByDate(_allTasks, event.date)));
-  }
-
-  void _onToogleSubTask(_ToogleSubTask event, Emitter<HomeState> emit) {
-    final subTask = event.subTask;
-    final result = subTaskInteractor.updateSubTasks([event.subTask.copyWith(isCompleted: !event.subTask.isCompleted)]);
   }
 
   List<TaskWrapperEntity> _filterTasksByDate(

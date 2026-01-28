@@ -106,6 +106,7 @@ dependencies:
   sliver_tools: ^0.2.12
   animated_visibility: ^0.0.4
   implicitly_animated_reorderable_list_2: ^0.6.0
+  animated_line_through: ^1.0.5
 
 dev_dependencies:
   flutter_test:

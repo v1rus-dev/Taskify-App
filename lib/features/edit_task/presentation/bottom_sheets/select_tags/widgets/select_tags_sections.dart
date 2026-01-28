@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/domain/tags/models/tag.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_tags/widgets/tag_button.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class TagsSection extends StatelessWidget {
   const TagsSection({
@@ -79,13 +80,14 @@ class CustomTagsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Text(
-              'Customs',
+              l10n?.customs ?? '',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
@@ -98,7 +100,7 @@ class CustomTagsSection extends StatelessWidget {
         const Gap(12),
         if (tags.isEmpty)
           Text(
-            'No custom tags yet. Create one to keep your tasks organized.',
+            l10n?.noCustomTags ?? '',
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppColorExtensions.getTextSecondaryColor(context),
             ),
@@ -136,6 +138,7 @@ class CreateTagButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textColor = AppColorExtensions.getPrimaryAccentColor(context);
+    final l10n = AppLocalizations.of(context);
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(12),
@@ -145,7 +148,7 @@ class CreateTagButton extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
           child: Text(
-            'Create tag',
+            l10n?.createTag ?? '',
             style: theme.textTheme.bodySmall?.copyWith(
               color: textColor,
               fontWeight: FontWeight.w600,

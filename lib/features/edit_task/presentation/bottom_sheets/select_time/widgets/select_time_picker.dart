@@ -1,6 +1,7 @@
 ﻿import 'package:design/design.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 enum SelectTimePickerMode { start, end }
 
@@ -59,7 +60,13 @@ class _SelectTimePickerState extends State<SelectTimePicker> {
     return List.generate(12, (index) => index + 1);
   }
 
-  List<String> get _periodValues => const ['AM', 'PM'];
+  List<String> _periodValues(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return [
+      l10n?.am ?? 'AM',
+      l10n?.pm ?? 'PM',
+    ];
+  }
 
   @override
   void initState() {
@@ -463,6 +470,7 @@ class _SelectTimePickerState extends State<SelectTimePicker> {
   @override
   Widget build(BuildContext context) {
     final hourValues = _hourValues;
+    final periodValues = _periodValues(context);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -504,8 +512,8 @@ class _SelectTimePickerState extends State<SelectTimePicker> {
           const SizedBox(width: 12),
           _buildWheel(
             controller: _periodController,
-            itemCount: _periodValues.length,
-            labelBuilder: (index) => _periodValues[index],
+            itemCount: periodValues.length,
+            labelBuilder: (index) => periodValues[index],
             isEnabled: (index) {
               if (widget.canSelectPastTime) {
                 return true;

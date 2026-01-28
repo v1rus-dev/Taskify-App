@@ -1,4 +1,1 @@
-enum TaskDurationType {
-  allDay,
-  period,
-}
+enum TaskDurationType { allDay, period }

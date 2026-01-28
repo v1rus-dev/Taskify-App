@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/core/providers/time_format_notifier.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_time/widgets/select_time_picker.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class SelectTimeBottomSheet extends StatefulWidget {
   const SelectTimeBottomSheet({
@@ -38,6 +39,7 @@ class _SelectTimeBottomSheetState extends State<SelectTimeBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final use24Hour = context.select<TimeFormatCubit, bool>(
       (cubit) => cubit.state.use24Hour,
     );
@@ -47,7 +49,7 @@ class _SelectTimeBottomSheetState extends State<SelectTimeBottomSheet> {
         children: [
           const Gap(12),
           Text(
-            "Select times",
+            l10n?.selectTimes ?? '',
             style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -58,7 +60,7 @@ class _SelectTimeBottomSheetState extends State<SelectTimeBottomSheet> {
               child: Column(
                 children: [
                   Text(
-                    'from',
+                    l10n?.from ?? '',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -74,7 +76,7 @@ class _SelectTimeBottomSheetState extends State<SelectTimeBottomSheet> {
                   ),
                   const Gap(12),
                   Text(
-                    'to',
+                    l10n?.to ?? '',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -93,7 +95,10 @@ class _SelectTimeBottomSheetState extends State<SelectTimeBottomSheet> {
             ),
           ),
           const Gap(12),
-          AppTextButton(text: "Save", onPressed: () => _onSavePressed(context)),
+          AppTextButton(
+            text: l10n?.save ?? '',
+            onPressed: () => _onSavePressed(context),
+          ),
           const Gap(AppInsets.sheetBottomSmall),
         ],
       ),

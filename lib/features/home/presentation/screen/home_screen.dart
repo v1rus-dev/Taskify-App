@@ -6,7 +6,6 @@ import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reord
 import 'package:implicitly_animated_reorderable_list_2/transitions.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:taskify/domain/tasks/models/task_wrapper.dart';
-import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/home/bottom_sheets/task_info/presentation/task_info_bottom_sheet.dart';
 import 'package:taskify/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:taskify/features/home/presentation/widgets/home_hided_header.dart';
@@ -25,7 +24,6 @@ class HomeScreenPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => HomeBloc(
         taskInteractor: locator<TaskInteractor>(),
-        subTaskInteractor: locator<SubTaskInteractor>(),
         syncCoordinator: locator<SyncCoordinator>(),
       )..add(const HomeEvent.started()),
       child: const _HomeScreen(),

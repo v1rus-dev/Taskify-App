@@ -9,6 +9,7 @@ import 'package:taskify/core/utils/time_format_utils.dart';
 import 'package:taskify/domain/tasks/models/task_duration_type.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_when/bloc/select_task_when_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_period/select_task_period_bottom_sheet.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class SelectTaskDateBottomSheet extends StatelessWidget {
   const SelectTaskDateBottomSheet({
@@ -112,25 +113,26 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
     bool isPeriod,
     bool use24Hour,
   ) {
+    final l10n = AppLocalizations.of(context);
     final current = selectTaskState.current;
     return [
       CardAction(
-        title: 'Date',
+        title: l10n?.date ?? '',
         description: _formatDate(context, current.selectedDate),
         onPressed: () =>
             _onDatePressed(context, selectTaskBloc, current.selectedDate),
       ),
       CardAction(
-        title: 'Period',
+        title: l10n?.period ?? '',
         description: current.durationType == TaskDurationType.allDay
-            ? 'All day'
-            : 'Period',
+            ? l10n?.allDay ?? ''
+            : l10n?.period ?? '',
         onPressed: () =>
             _onDurationPressed(context, selectTaskBloc, current.durationType),
       ),
       if (isPeriod)
         CardAction(
-          title: 'Start time',
+          title: l10n?.startTime ?? '',
           description: formatTimeOfDay(context, current.startTime, use24Hour),
           onPressed: () => _onStartTimePressed(
             context,
@@ -141,7 +143,7 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
         ),
       if (isPeriod)
         CardAction(
-          title: 'End time',
+          title: l10n?.endTime ?? '',
           description: formatTimeOfDay(context, current.endTime, use24Hour),
           onPressed: () => _onEndTimePressed(
             context,
@@ -196,6 +198,7 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final use24Hour = context.select<TimeFormatCubit, bool>(
       (cubit) => cubit.state.use24Hour,
     );
@@ -214,7 +217,7 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
             children: [
               const Gap(12),
               Text(
-                "When",
+                l10n?.when ?? '',
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -235,7 +238,7 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
                 GestureDetector(
                   onTap: () => _onClearPressed(context, selectTaskBloc),
                   child: Text(
-                    'Clear selection',
+                    l10n?.clearSelection ?? '',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: AppColorExtensions.getPrimaryAccentColor(context),
                       fontWeight: FontWeight.w500,
@@ -246,7 +249,7 @@ class SelectTaskDateBottomSheet extends StatelessWidget {
               Padding(
                 padding: AppInsets.sheetBottomPadding,
                 child: AppTextButton(
-                  text: "Save",
+                  text: l10n?.save ?? '',
                   onPressed: () => _onSavePressed(context, selectTaskState),
                 ),
               ),

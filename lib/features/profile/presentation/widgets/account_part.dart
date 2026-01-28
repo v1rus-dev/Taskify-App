@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/core/auth/auth_cubit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:taskify/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class AccountPart extends StatelessWidget {
   const AccountPart({super.key});
@@ -18,9 +19,10 @@ class AccountPart extends StatelessWidget {
   }
 
   List<CardAction> _buildActions(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return [
       CardAction(
-        title: 'Exit from account',
+        title: l10n?.exitFromAccount ?? '',
         icon: SvgPicture.asset(
           AppIcons.logout,
           package: AppIcons.packageName,
@@ -30,7 +32,7 @@ class AccountPart extends StatelessWidget {
         onPressed: () => _onSignOutPressed(context),
       ),
       CardAction(
-        title: 'Delete account',
+        title: l10n?.deleteAccount ?? '',
         icon: SvgPicture.asset(
           AppIcons.trash,
           package: AppIcons.packageName,

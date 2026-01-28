@@ -8,4 +8,6 @@ class TaskInfoEvent with _$TaskInfoEvent {
   const factory TaskInfoEvent.taskCheckBoxPressed() = _TaskCheckBoxPressed;
   const factory TaskInfoEvent.subTasksUpdated(List<SubTaskEntity> subTasks) =
       _SubTasksUpdated;
+  const factory TaskInfoEvent.subTaskCheckBoxPressed(SubTaskEntity subTask) =
+      _SubTaskCheckBoxPressed;
 }

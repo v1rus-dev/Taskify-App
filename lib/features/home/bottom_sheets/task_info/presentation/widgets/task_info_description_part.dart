@@ -15,16 +15,21 @@ class TaskInfoDescriptionPart extends StatelessWidget {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppInsets.sheetHorizontalSmall),
-      child: Column(
-        children: [
-          const Gap(12),
-          Text(
-            description,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: AppColorExtensions.getTextSecondaryColor(context),
+      child: SizedBox(
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Gap(12),
+            Text(
+              description,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColorExtensions.getTextSecondaryColor(context),
+              ),
+              textAlign: TextAlign.start,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -11,6 +11,7 @@ import 'package:taskify/features/profile/presentation/widgets/sign_in_part.dart'
 import 'package:taskify/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/data/interactors/app_configuration_interactor.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -45,9 +46,20 @@ class ProfileScreen extends StatelessWidget {
     }
   }
 
+  String _timeFormatLabel(BuildContext context, TimeFormatType type) {
+    final l10n = AppLocalizations.of(context);
+    switch (type) {
+      case TimeFormatType.hour24:
+        return l10n?.timeFormat24 ?? '';
+      case TimeFormatType.hour12:
+        return l10n?.timeFormat12 ?? '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return BlocSideEffectListener<ProfileBloc, ProfileSideEffect>(
       bloc: context.read<ProfileBloc>(),
@@ -87,7 +99,7 @@ class ProfileScreen extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: const ScreenAppBar(title: 'Profile'),
+        appBar: ScreenAppBar(title: l10n?.profile ?? ''),
         body: BlocBuilder<ProfileBloc, ProfileState>(
           builder: (context, state) {
             return Column(
@@ -102,8 +114,9 @@ class ProfileScreen extends StatelessWidget {
                         CardWithActions(
                           actions: [
                             CardAction(
-                              title: 'Time format',
-                              description: state.timeFormat.label,
+                              title: l10n?.timeFormat ?? '',
+                              description:
+                                  _timeFormatLabel(context, state.timeFormat),
                               onPressed: () => _openTimeFormatSheet(
                                 context,
                                 state.timeFormat,

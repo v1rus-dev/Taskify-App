@@ -6,6 +6,7 @@ import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/app/router/router_paths.dart';
 import 'package:taskify/features/root/presentation/widgets/app_add_action_button.dart';
 import 'package:taskify/features/root/presentation/widgets/app_navigation_button.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class AppBottomNavigationBar extends StatefulWidget {
   const AppBottomNavigationBar({super.key});
@@ -45,6 +46,7 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32),
@@ -70,7 +72,7 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 AppNavigationButton(
-                  title: 'Home',
+                  title: l10n?.home ?? '',
                   iconPath: AppIcons.home,
                   packageName: AppIcons.packageName,
                   isSelected: appRouter.state.uri.path == RouterPaths.home,
@@ -78,7 +80,7 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
                 ),
                 AppAddActionButton(onPressed: _onAddPressed),
                 AppNavigationButton(
-                  title: 'Profile',
+                  title: l10n?.profile ?? '',
                   iconPath: AppIcons.profile,
                   packageName: AppIcons.packageName,
                   isSelected: appRouter.state.uri.path == RouterPaths.profile,

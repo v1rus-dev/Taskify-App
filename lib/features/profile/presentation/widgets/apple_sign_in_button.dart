@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:design/constants/app_icons.dart';
 import 'package:gap/gap.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class AppleSignInButton extends StatelessWidget {
   const AppleSignInButton({super.key, this.showText = true, required this.onPressed});
@@ -12,6 +13,7 @@ class AppleSignInButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return Material(
       color: Colors.black,
@@ -34,7 +36,7 @@ class AppleSignInButton extends StatelessWidget {
               if (showText) ...[
               const Gap(8),
               Text(
-                'Sign in with Apple',
+                l10n?.signInWithApple ?? '',
                 style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
               ),
               ],

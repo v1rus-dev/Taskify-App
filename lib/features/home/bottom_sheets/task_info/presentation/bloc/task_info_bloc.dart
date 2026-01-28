@@ -28,6 +28,7 @@ class TaskInfoBloc extends Bloc<TaskInfoEvent, TaskInfoState> {
     on<_Started>(_onStarted);
     on<_TaskUpdated>(_onTaskUpdated);
     on<_TaskCheckBoxPressed>(_onTaskCheckBoxPressed);
+    on<_SubTaskCheckBoxPressed>(_onSubTaskCheckBoxPressed);
   }
 
   void _onStarted(_Started event, Emitter<TaskInfoState> emit) async {
@@ -47,6 +48,16 @@ class TaskInfoBloc extends Bloc<TaskInfoEvent, TaskInfoState> {
     taskInteractor.updateTask(
       task.task.copyWith(isCompleted: !task.task.isCompleted),
     );
+  }
+
+  void _onSubTaskCheckBoxPressed(
+    _SubTaskCheckBoxPressed event,
+    Emitter<TaskInfoState> emit,
+  ) {
+    final subTask = event.subTask;
+    subTaskInteractor.updateSubTasks([
+      subTask.copyWith(isCompleted: !subTask.isCompleted),
+    ]);
   }
 
   void _observeTask() {

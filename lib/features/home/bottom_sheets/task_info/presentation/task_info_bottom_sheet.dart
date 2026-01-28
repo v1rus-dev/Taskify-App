@@ -8,7 +8,9 @@ import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/features/home/bottom_sheets/task_info/presentation/bloc/task_info_bloc.dart';
 import 'package:taskify/features/home/bottom_sheets/task_info/presentation/widgets/task_info_description_part.dart';
 import 'package:taskify/features/home/bottom_sheets/task_info/presentation/widgets/task_info_header_part.dart';
+import 'package:taskify/features/home/bottom_sheets/task_info/presentation/widgets/task_info_sub_tasks_part.dart';
 import 'package:taskify/features/home/bottom_sheets/task_info/presentation/widgets/task_info_tags_part.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class TaskInfoBottomSheet extends StatelessWidget {
   final int taskId;
@@ -46,6 +48,7 @@ class _TaskInfoBottomSheetContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return BlocBuilder<TaskInfoBloc, TaskInfoState>(
       builder: (context, state) {
         return state.when(
@@ -63,8 +66,12 @@ class _TaskInfoBottomSheetContent extends StatelessWidget {
                 TaskInfoDescriptionPart(
                   description: task.task.description ?? '',
                 ),
+                TaskInfoSubTasksPart(subTasks: task.subTasks),
                 const Gap(24),
-                AppSecondaryButton(title: 'Edit', onPressed: _onEditPressed),
+                AppSecondaryButton(
+                  title: l10n?.edit ?? '',
+                  onPressed: _onEditPressed,
+                ),
               ],
             ),
           ),

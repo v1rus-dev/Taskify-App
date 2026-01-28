@@ -5,6 +5,7 @@ import 'package:taskify/features/edit_task/presentation/bottom_sheets/create_use
 import 'package:gap/gap.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/create_user_tag/widgets/color_list.dart';
 import 'package:taskify/domain/tags/models/default_tag_color.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class CreateUserTagBottomSheet extends StatefulWidget {
   const CreateUserTagBottomSheet({super.key});
@@ -53,6 +54,7 @@ class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return BlocConsumer<CreateUserTagBloc, CreateUserTagState>(
       listener: (context, state) {
         state.mapOrNull(
@@ -87,14 +89,14 @@ class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
                       children: [
                         const Gap(12),
                         Text(
-                          'Create tag',
+                          l10n?.createTag ?? '',
                           style: theme.textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const Gap(16),
                         AppEditText(
-                          hint: 'Tag name',
+                          hint: l10n?.tagName ?? '',
                           controller: _nameController,
                           trailing: null,
                         ),
@@ -107,7 +109,7 @@ class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
                     child: Padding(
                       padding: AppInsets.sheetHorizontalSmallPadding,
                       child: Text(
-                        'Color',
+                        l10n?.color ?? '',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
@@ -122,7 +124,7 @@ class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
                   ),
                   const Gap(24),
                   Text(
-                    'Create a custom tag for your tasks',
+                    l10n?.createCustomTagHint ?? '',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: AppColorExtensions.getTextSecondaryColor(context),
                     ),
@@ -131,7 +133,7 @@ class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
                   Padding(
                     padding: AppInsets.sheetBottomPadding,
                     child: AppTextButton(
-                      text: 'Create tag',
+                      text: l10n?.createTag ?? '',
                       isEnabled: isEnabled,
                       onPressed: _onCreateTagPressed,
                     ),

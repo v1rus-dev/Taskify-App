@@ -7,6 +7,7 @@ import 'bloc/select_tags_bloc.dart';
 import 'widgets/select_tags_sections.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/create_user_tag/create_user_tag_page.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class SelectTagsBottomSheet extends StatelessWidget {
   const SelectTagsBottomSheet({super.key});
@@ -47,6 +48,7 @@ class SelectTagsBottomSheet extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, SelectTagsState state) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return state.maybeWhen(
       success: (defaultTags, customTags, selectedTagKeys) {
@@ -61,7 +63,7 @@ class SelectTagsBottomSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TagsSection(
-                      title: 'Defaults',
+                      title: l10n?.defaults ?? '',
                       tags: defaultTags,
                       selectedTagKeys: selectedTagKeys,
                       onTagPressed: (tag) => _onTagPressed(context, tag),
@@ -81,7 +83,7 @@ class SelectTagsBottomSheet extends StatelessWidget {
             const Gap(12),
             Center(
               child: Text(
-                'Tags help you organize and filter your tasks',
+                l10n?.tagsHelpText ?? '',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: AppColorExtensions.getTextSecondaryColor(context),
                 ),
@@ -90,7 +92,7 @@ class SelectTagsBottomSheet extends StatelessWidget {
             ),
             const Gap(12),
             AppTextButton(
-              text: "Save",
+              text: l10n?.save ?? '',
               onPressed: () => _onSavePressed(context),
             ),
             const Gap(AppInsets.sheetBottomSmall),
@@ -104,6 +106,7 @@ class SelectTagsBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return BlocBuilder<SelectTagsBloc, SelectTagsState>(
       builder: (context, state) {
         return Padding(
@@ -112,7 +115,7 @@ class SelectTagsBottomSheet extends StatelessWidget {
             children: [
               const Gap(12),
               Text(
-                "Select tags",
+                l10n?.selectTags ?? '',
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),

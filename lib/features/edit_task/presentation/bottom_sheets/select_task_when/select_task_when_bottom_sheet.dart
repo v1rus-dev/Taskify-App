@@ -11,6 +11,7 @@ import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_when/bloc/select_task_when_bloc.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_task_period/select_task_period_bottom_sheet.dart';
 import 'package:taskify/features/edit_task/presentation/bottom_sheets/select_time/select_time_bottom_sheet.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class SelectTaskWhenBottomSheet extends StatelessWidget {
   const SelectTaskWhenBottomSheet({super.key});
@@ -110,25 +111,26 @@ class SelectTaskWhenBottomSheet extends StatelessWidget {
     bool isPeriod,
     bool use24Hour,
   ) {
+    final l10n = AppLocalizations.of(context);
     final current = selectTaskState.current;
     return [
       CardAction(
-        title: 'Date',
+        title: l10n?.date ?? '',
         description: _formatDate(context, current.selectedDate),
         onPressed: () =>
             _onDatePressed(context, selectTaskBloc, current.selectedDate),
       ),
       CardAction(
-        title: 'Period',
+        title: l10n?.period ?? '',
         description: current.durationType == TaskDurationType.allDay
-            ? 'All day'
-            : 'Period',
+            ? l10n?.allDay ?? ''
+            : l10n?.period ?? '',
         onPressed: () =>
             _onDurationPressed(context, selectTaskBloc, current.durationType),
       ),
       if (isPeriod)
         CardAction(
-          title: 'Time',
+          title: l10n?.time ?? '',
           description:
               '${formatTimeOfDay(context, current.startTime, use24Hour)} - ${formatTimeOfDay(context, current.endTime, use24Hour)}',
           onPressed: () =>
@@ -199,6 +201,7 @@ class SelectTaskWhenBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final use24Hour = context.select<TimeFormatCubit, bool>(
       (cubit) => cubit.state.use24Hour,
     );
@@ -217,7 +220,7 @@ class SelectTaskWhenBottomSheet extends StatelessWidget {
             children: [
               const Gap(12),
               Text(
-                "When",
+                l10n?.when ?? '',
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -238,7 +241,7 @@ class SelectTaskWhenBottomSheet extends StatelessWidget {
                 GestureDetector(
                   onTap: () => _onClearPressed(context, selectTaskBloc),
                   child: Text(
-                    'Clear selection',
+                    l10n?.clearSelection ?? '',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: AppColorExtensions.getPrimaryAccentColor(context),
                       fontWeight: FontWeight.w500,
@@ -249,7 +252,7 @@ class SelectTaskWhenBottomSheet extends StatelessWidget {
               Padding(
                 padding: AppInsets.sheetBottomPadding,
                 child: AppTextButton(
-                  text: "Save",
+                  text: l10n?.save ?? '',
                   onPressed: () => _onSavePressed(context, selectTaskState),
                 ),
               ),

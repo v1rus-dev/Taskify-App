@@ -4,14 +4,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BlocSideEffectListener<B extends BlocBase, E> extends StatefulWidget {
-  final B bloc;
-  final void Function(BuildContext, E) listener;
+  final void Function(E)? listener;
   final Widget child;
 
   const BlocSideEffectListener({
     super.key,
-    required this.bloc,
-    required this.listener,
+    this.listener,
     required this.child,
   });
 
@@ -26,8 +24,8 @@ class _BlocSideEffectListenerState<B extends BlocBase, E>
   @override
   void initState() {
     super.initState();
-    _sub = (widget.bloc as BlocSideEffectMixin<B, E>).sideEffects.listen((effect) {
-      widget.listener(context, effect);
+    _sub = (context.read<B>() as BlocSideEffectMixin<B, E>).sideEffects.listen((effect) {
+      widget.listener?.call(effect);
     });
   }
 

@@ -62,8 +62,7 @@ class ProfileScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return BlocSideEffectListener<ProfileBloc, ProfileSideEffect>(
-      bloc: context.read<ProfileBloc>(),
-      listener: (context, effect) {
+      listener: (effect) {
         effect.when(
           showLoadingDialog: () {
             showDialog(

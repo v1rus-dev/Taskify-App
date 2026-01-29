@@ -135,24 +135,7 @@ class SelectTaskWhenBottomSheet extends StatelessWidget {
               '${formatTimeOfDay(context, current.startTime, use24Hour)} - ${formatTimeOfDay(context, current.endTime, use24Hour)}',
           onPressed: () =>
               _onSelectTimePressed(context, current.startTime, current.endTime),
-          // onPressed: () => _onStartTimePressed(
-          //   context,
-          //   selectTaskBloc,
-          //   current.startTime,
-          //   use24Hour,
-          // ),
         ),
-      // if (isPeriod)
-      //   CardAction(
-      //     title: 'End time',
-      //     description: formatTimeOfDay(context, current.endTime, use24Hour),
-      //     onPressed: () => _onEndTimePressed(
-      //       context,
-      //       selectTaskBloc,
-      //       current.endTime,
-      //       use24Hour,
-      //     ),
-      //   ),
     ];
   }
 

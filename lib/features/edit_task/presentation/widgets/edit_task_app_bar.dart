@@ -22,7 +22,7 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
     context.pop();
   }
 
-  void _onDelete(BuildContext context, EditTaskBloc bloc,) async {
+  void _onDelete(BuildContext context, EditTaskBloc bloc) async {
     final completer = Completer<void>();
     // ref.read(editTaskNotifierProvider(taskId).notifier).onDeleteTask(taskId: taskId!, completer: completer);
     await completer.future;
@@ -55,29 +55,44 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
+  void _onTaskCheckBoxPressed(BuildContext context) {
+    // context.read<EditTaskBloc>().add(EditTaskEvent.taskCheckBoxPressed());
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final safeAreaTop = mediaQuery.padding.top;
 
-    return Container(
-      padding: EdgeInsets.only(top: safeAreaTop, left: 12.0, right: 12.0),
-        decoration: const BoxDecoration(color: Colors.white),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildIconButton(
-              iconPath: AppIcons.close,
-              onPressed: () => _onClose(context),
-            ),
-            if (taskId != null)
+    return BlocBuilder<EditTaskBloc, EditTaskState>(
+      builder: (context, state) {
+        return Container(
+          padding: EdgeInsets.only(top: safeAreaTop, left: 12.0, right: 12.0),
+          decoration: BoxDecoration(
+            color: AppColorExtensions.getBackgroundColor(context),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
               _buildIconButton(
-                iconPath: AppIcons.trash,
-                onPressed: () => _onDelete(context, context.read<EditTaskBloc>()),
+                iconPath: AppIcons.close,
+                onPressed: () => _onClose(context),
               ),
-          ],
-      ),
+              if (taskId != null)
+                _buildIconButton(
+                  iconPath: AppIcons.trash,
+                  onPressed: () =>
+                      _onDelete(context, context.read<EditTaskBloc>()),
+                ),
+              TaskCheckbox(
+                isChecked: state.isCompleted,
+                onPressed: () => _onTaskCheckBoxPressed(context),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

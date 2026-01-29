@@ -24,6 +24,7 @@
   "selectTimes": "Select times",
   "from": "from",
   "to": "to",
+  "addTags": "Add tags",
   "createTag": "Create tag",
   "tagName": "Tag name",
   "color": "Color",

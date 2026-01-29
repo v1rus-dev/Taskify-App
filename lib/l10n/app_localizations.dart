@@ -42,6 +42,7 @@ class AppLocalizations {
   String get selectTimes => translate('selectTimes');
   String get from => translate('from');
   String get to => translate('to');
+  String get addTags => translate('addTags');
   String get createTag => translate('createTag');
   String get tagName => translate('tagName');
   String get color => translate('color');

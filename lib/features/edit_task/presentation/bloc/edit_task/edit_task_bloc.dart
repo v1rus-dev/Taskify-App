@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:dart_either/dart_either.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
 import 'package:taskify/domain/tasks/models/task.dart';
+import 'package:taskify/domain/tasks/models/task_duration_type.dart';
 import 'package:taskify/domain/tags/models/sub_task.dart';
 import 'package:taskify/domain/tags/models/tag.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
@@ -21,6 +23,9 @@ part 'edit_task_bloc.freezed.dart';
 
 class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     with BlocSideEffectMixin<EditTaskBloc, EditTaskSideEffect> {
+  static const _defaultStartTime = TimeOfDay(hour: 9, minute: 0);
+  static const _defaultEndTime = TimeOfDay(hour: 10, minute: 0);
+
   final int? taskId;
   final TaskInteractor taskInteractor;
   final SubTaskInteractor subTaskInteractor;
@@ -42,6 +47,10 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     on<_Started>(_onStarted);
     on<_TitleChanged>(_onTitleChanged);
     on<_SelectDate>(_onSelectDate);
+    on<_DateSelected>(_onDateSelected);
+    on<_DurationTypeSelected>(_onDurationTypeSelected);
+    on<_TimeRangeSelected>(_onTimeRangeSelected);
+    on<_DateSelectionCleared>(_onDateSelectionCleared);
     on<_TagsUpdated>(_onTagsUpdated);
     on<_SaveTask>(_onSaveTask);
     on<_RemoveTag>(_onRemoveTag);
@@ -63,22 +72,68 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
   }
 
   void _onSelectDate(_SelectDate event, Emitter<EditTaskState> emit) {
-    final resolvedStartTime = event.isAllDay ? null : event.startTime;
-    final resolvedEndTime = event.isAllDay ? null : event.endTime;
-    final isDateModified = _isDateModified(
+    _emitDateSelection(
+      emit,
       selectedDate: event.date,
       isAllDay: event.isAllDay,
-      startTime: resolvedStartTime,
-      endTime: resolvedEndTime,
+      startTime: event.startTime,
+      endTime: event.endTime,
     );
-    emit(
-      state.copyWith(
-        selectedDate: event.date,
-        startTime: resolvedStartTime,
-        endTime: resolvedEndTime,
-        isAllDay: event.isAllDay,
-        isDateModified: isDateModified,
-      ),
+  }
+
+  void _onDateSelected(_DateSelected event, Emitter<EditTaskState> emit) {
+    final updatedStartTime =
+        state.startTime == null ? null : _withDate(state.startTime!, event.date);
+    final updatedEndTime =
+        state.endTime == null ? null : _withDate(state.endTime!, event.date);
+    _emitDateSelection(
+      emit,
+      selectedDate: event.date,
+      isAllDay: state.isAllDay,
+      startTime: updatedStartTime,
+      endTime: updatedEndTime,
+    );
+  }
+
+  void _onDurationTypeSelected(
+    _DurationTypeSelected event,
+    Emitter<EditTaskState> emit,
+  ) {
+    final isAllDay = event.type == TaskDurationType.allDay;
+    _emitDateSelection(
+      emit,
+      selectedDate: state.selectedDate,
+      isAllDay: isAllDay,
+      startTime: state.startTime,
+      endTime: state.endTime,
+    );
+  }
+
+  void _onTimeRangeSelected(
+    _TimeRangeSelected event,
+    Emitter<EditTaskState> emit,
+  ) {
+    final startTime = _combineDateAndTime(state.selectedDate, event.startTime);
+    final endTime = _combineDateAndTime(state.selectedDate, event.endTime);
+    _emitDateSelection(
+      emit,
+      selectedDate: state.selectedDate,
+      isAllDay: false,
+      startTime: startTime,
+      endTime: endTime,
+    );
+  }
+
+  void _onDateSelectionCleared(
+    _DateSelectionCleared event,
+    Emitter<EditTaskState> emit,
+  ) {
+    _emitDateSelection(
+      emit,
+      selectedDate: _initialSelection.selectedDate,
+      isAllDay: _initialSelection.isAllDay,
+      startTime: _initialSelection.startTime,
+      endTime: _initialSelection.endTime,
     );
   }
 
@@ -326,6 +381,71 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     return false;
   }
 
+  void _emitDateSelection(
+    Emitter<EditTaskState> emit, {
+    required DateTime selectedDate,
+    required bool isAllDay,
+    DateTime? startTime,
+    DateTime? endTime,
+  }) {
+    final resolvedTimes = _resolveTimes(
+      selectedDate: selectedDate,
+      isAllDay: isAllDay,
+      startTime: startTime,
+      endTime: endTime,
+    );
+    final isDateModified = _isDateModified(
+      selectedDate: selectedDate,
+      isAllDay: isAllDay,
+      startTime: resolvedTimes.startTime,
+      endTime: resolvedTimes.endTime,
+    );
+    emit(
+      state.copyWith(
+        selectedDate: selectedDate,
+        startTime: resolvedTimes.startTime,
+        endTime: resolvedTimes.endTime,
+        isAllDay: isAllDay,
+        isDateModified: isDateModified,
+      ),
+    );
+  }
+
+  _ResolvedTimes _resolveTimes({
+    required DateTime selectedDate,
+    required bool isAllDay,
+    required DateTime? startTime,
+    required DateTime? endTime,
+  }) {
+    if (isAllDay) {
+      return const _ResolvedTimes();
+    }
+    final resolvedStart = _normalizeTime(
+      selectedDate,
+      startTime ?? _combineDateAndTime(selectedDate, _defaultStartTime),
+    );
+    final resolvedEnd = _normalizeTime(
+      selectedDate,
+      endTime ?? _combineDateAndTime(selectedDate, _defaultEndTime),
+    );
+    return _ResolvedTimes(
+      startTime: resolvedStart,
+      endTime: resolvedEnd,
+    );
+  }
+
+  DateTime _withDate(DateTime source, DateTime date) {
+    return DateTime(date.year, date.month, date.day, source.hour, source.minute);
+  }
+
+  DateTime _normalizeTime(DateTime date, DateTime source) {
+    return DateTime(date.year, date.month, date.day, source.hour, source.minute);
+  }
+
+  DateTime _combineDateAndTime(DateTime date, TimeOfDay time) {
+    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+  }
+
   bool _isSameDay(DateTime left, DateTime right) {
     return left.year == right.year &&
         left.month == right.month &&
@@ -364,4 +484,11 @@ class _DateSelectionSnapshot {
       endTime: state.endTime,
     );
   }
+}
+
+class _ResolvedTimes {
+  const _ResolvedTimes({this.startTime, this.endTime});
+
+  final DateTime? startTime;
+  final DateTime? endTime;
 }

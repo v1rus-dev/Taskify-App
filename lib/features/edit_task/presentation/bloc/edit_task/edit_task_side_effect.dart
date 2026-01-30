@@ -20,3 +20,7 @@ class EditTaskInitEditTextControllers extends EditTaskSideEffect {
   @override
   List<Object?> get props => [title, description];
 }
+
+class EditTaskShowConfirmationDialog extends EditTaskSideEffect {
+  const EditTaskShowConfirmationDialog();
+}

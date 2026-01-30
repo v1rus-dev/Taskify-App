@@ -121,3 +121,7 @@ class EditTaskRemoveTag extends EditTaskEvent {
   @override
   List<Object?> get props => [tag];
 }
+
+class TryTaskRemove extends EditTaskEvent {
+  const TryTaskRemove();
+}

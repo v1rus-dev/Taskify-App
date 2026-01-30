@@ -60,11 +60,13 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final scrollController = ScrollController();
+  Timer? _subTasksAutoSaveTimer;
   bool _isEditTaskInitialized = false;
   bool _isSubTasksInitialized = false;
 
   @override
   void dispose() {
+    _subTasksAutoSaveTimer?.cancel();
     titleController.dispose();
     descriptionController.dispose();
     super.dispose();
@@ -128,7 +130,26 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       _isSubTasksInitialized = true;
       return;
     }
-    _onAutoSaveRequested();
+    _scheduleSubTasksAutoSave();
+  }
+
+  void _scheduleSubTasksAutoSave() {
+    if (!_isEditTaskInitialized) {
+      return;
+    }
+    final subTasks = context.read<EditSubTaskBloc>().state.subTasks;
+    final hasEmpty = subTasks.any((item) => item.title.trim().isEmpty);
+    if (hasEmpty) {
+      _subTasksAutoSaveTimer?.cancel();
+      return;
+    }
+    _subTasksAutoSaveTimer?.cancel();
+    _subTasksAutoSaveTimer = Timer(const Duration(milliseconds: 600), () {
+      if (!mounted) {
+        return;
+      }
+      _onAutoSaveRequested();
+    });
   }
 
   void _onSideEffect(EditTaskSideEffect effect) {
@@ -192,10 +213,11 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       ],
       child: BlocSideEffectListener<EditTaskBloc, EditTaskSideEffect>(
         listener: _onSideEffect,
-        child: WillPopScope(
-          onWillPop: () async {
-            await _onClosePressed();
-            return false;
+        child: PopScope(
+          onPopInvokedWithResult: (didPop, result) async {
+            if (didPop) {
+              await _onClosePressed();
+            }
           },
           child: Scaffold(
             resizeToAvoidBottomInset: true,

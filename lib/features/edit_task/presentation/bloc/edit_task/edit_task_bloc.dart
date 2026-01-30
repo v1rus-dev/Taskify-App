@@ -20,11 +20,7 @@ part 'edit_task_event.dart';
 part 'edit_task_state.dart';
 part 'edit_task_side_effect.dart';
 
-enum EditTaskSaveStatus {
-  saving,
-  saved,
-  error,
-}
+enum EditTaskSaveStatus { saving, saved, error }
 
 class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     with BlocSideEffectMixin<EditTaskBloc, EditTaskSideEffect> {
@@ -36,6 +32,8 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
   final SubTaskInteractor subTaskInteractor;
   final TagInteractor tagInteractor;
   DateTime? _createdAt;
+  _TaskSnapshot? _lastSavedTaskSnapshot;
+  List<String> _lastSavedTagKeys = const [];
   late _DateSelectionSnapshot _initialSelection;
 
   final _sideEffectController = StreamController<EditTaskSideEffect>();
@@ -61,6 +59,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     on<EditTaskSaveTask>(_onSaveTask);
     on<EditTaskAutoSaveRequested>(_onAutoSaveRequested);
     on<EditTaskRemoveTag>(_onRemoveTag);
+    on<TryTaskRemove>(_onTryTaskRemove);
   }
 
   Future<void> _onStarted(
@@ -72,7 +71,10 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     }
   }
 
-  void _onTitleChanged(EditTaskTitleChanged event, Emitter<EditTaskState> emit) {
+  void _onTitleChanged(
+    EditTaskTitleChanged event,
+    Emitter<EditTaskState> emit,
+  ) {
     emit(
       state.copyWith(
         title: event.title,
@@ -98,11 +100,16 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     );
   }
 
-  void _onDateSelected(EditTaskDateSelected event, Emitter<EditTaskState> emit) {
-    final updatedStartTime =
-        state.startTime == null ? null : _withDate(state.startTime!, event.date);
-    final updatedEndTime =
-        state.endTime == null ? null : _withDate(state.endTime!, event.date);
+  void _onDateSelected(
+    EditTaskDateSelected event,
+    Emitter<EditTaskState> emit,
+  ) {
+    final updatedStartTime = state.startTime == null
+        ? null
+        : _withDate(state.startTime!, event.date);
+    final updatedEndTime = state.endTime == null
+        ? null
+        : _withDate(state.endTime!, event.date);
     _emitDateSelection(
       emit,
       selectedDate: event.date,
@@ -166,6 +173,13 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
             .toList(),
       ),
     );
+  }
+
+  void _onTryTaskRemove(
+    TryTaskRemove event,
+    Emitter<EditTaskState> emit,
+  ) async {
+    _sideEffectController.add(const EditTaskShowConfirmationDialog());
   }
 
   Future<void> _onSaveTask(
@@ -235,7 +249,8 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     final tagsResult = await tagInteractor.getTaskTags(taskId);
     List<TagEntity> tags = const [];
     tagsResult.fold(
-      ifLeft: (error) => TalkerService.instance.error('syncTag ${error.message}'),
+      ifLeft: (error) =>
+          TalkerService.instance.error('syncTag ${error.message}'),
       ifRight: (items) {
         TalkerService.instance.info('syncTag Tags: ${items.length}');
         tags = items;
@@ -248,6 +263,8 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
       ifRight: (task) {
         TalkerService.instance.info('syncTag Task: ${task.id}');
         _createdAt = task.createdAt;
+        _lastSavedTaskSnapshot = _TaskSnapshot.fromTask(task);
+        _lastSavedTagKeys = _sortedTagKeys(tags);
         _initialSelection = _DateSelectionSnapshot(
           selectedDate: task.date,
           isAllDay: task.isAllDay,
@@ -271,10 +288,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
           ),
         );
         _sideEffectController.add(
-          EditTaskInitEditTextControllers(
-            task.title,
-            task.description ?? '',
-          ),
+          EditTaskInitEditTextControllers(task.title, task.description ?? ''),
         );
       },
     );
@@ -284,6 +298,9 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     required int taskId,
     required List<SubTaskUiModel> subTasks,
   }) async {
+    final normalizedSubTasks = subTasks
+        .where((item) => item.title.trim().isNotEmpty)
+        .toList();
     final existingResult = await subTaskInteractor.getSubTasksByTaskId(taskId);
     Failure? failure;
     List<SubTaskEntity> existing = const [];
@@ -295,24 +312,43 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
       return Left(failure!);
     }
 
-    final existingIds =
-        existing.where((item) => item.id != null).map((e) => e.id!).toSet();
-    final incomingIds =
-        subTasks.where((item) => item.id != null).map((e) => e.id!).toSet();
+    final existingById = <int, SubTaskEntity>{};
+    for (final item in existing) {
+      if (item.id != null) {
+        existingById[item.id!] = item;
+      }
+    }
+    final existingIds = existingById.keys.toSet();
+    final incomingIds = normalizedSubTasks
+        .where((item) => item.id != null)
+        .map((e) => e.id!)
+        .toSet();
 
     final toDeleteIds = existingIds.difference(incomingIds).toList();
-    final toUpdate = subTasks
-        .where((item) => item.id != null && existingIds.contains(item.id))
-        .map(
-          (item) => SubTaskEntity(
-            id: item.id,
-            taskId: taskId,
-            title: item.title,
-            isCompleted: item.isCompleted,
-          ),
-        )
-        .toList();
-    final toInsert = subTasks
+    final toUpdate = <SubTaskEntity>[];
+    for (final item in normalizedSubTasks) {
+      final id = item.id;
+      if (id == null || !existingIds.contains(id)) {
+        continue;
+      }
+      final existingItem = existingById[id];
+      if (existingItem == null) {
+        continue;
+      }
+      if (existingItem.title == item.title &&
+          existingItem.isCompleted == item.isCompleted) {
+        continue;
+      }
+      toUpdate.add(
+        SubTaskEntity(
+          id: id,
+          taskId: taskId,
+          title: item.title,
+          isCompleted: item.isCompleted,
+        ),
+      );
+    }
+    final toInsert = normalizedSubTasks
         .where((item) => item.id == null || !existingIds.contains(item.id))
         .map(
           (item) => SubTaskEntity(
@@ -369,33 +405,47 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     required List<SubTaskUiModel> subTasks,
   }) async {
     final resolvedTaskId = taskId ?? state.taskId;
-    final result = resolvedTaskId == null
-        ? await taskInteractor.createTask(
-            TaskEntity(
-              title: title,
-              description: description,
-              date: state.selectedDate,
-              createdAt: DateTime.now(),
-            ),
-          )
-        : await taskInteractor.updateTask(
-            TaskEntity(
-              id: resolvedTaskId,
-              title: title,
-              description: description,
-              date: state.selectedDate,
-              createdAt: _createdAt ?? DateTime.now(),
-              updatedAt: DateTime.now(),
-            ),
-          );
+    final currentSnapshot = _TaskSnapshot.fromValues(
+      title: title,
+      description: description,
+      isCompleted: state.isCompleted,
+      date: state.selectedDate,
+      startTime: state.startTime,
+      endTime: state.endTime,
+      isAllDay: state.isAllDay,
+    );
+    final shouldUpdateTask =
+        resolvedTaskId == null || _lastSavedTaskSnapshot != currentSnapshot;
+
     Failure? failure;
     TaskEntity? savedTask;
-    result.fold(
-      ifLeft: (error) => failure = error,
-      ifRight: (task) => savedTask = task,
-    );
-    if (failure != null) {
-      return Left(failure!);
+    if (shouldUpdateTask) {
+      final result = resolvedTaskId == null
+          ? await taskInteractor.createTask(
+              TaskEntity(
+                title: title,
+                description: description,
+                date: state.selectedDate,
+                createdAt: DateTime.now(),
+              ),
+            )
+          : await taskInteractor.updateTask(
+              TaskEntity(
+                id: resolvedTaskId,
+                title: title,
+                description: description,
+                date: state.selectedDate,
+                createdAt: _createdAt ?? DateTime.now(),
+                updatedAt: DateTime.now(),
+              ),
+            );
+      result.fold(
+        ifLeft: (error) => failure = error,
+        ifRight: (task) => savedTask = task,
+      );
+      if (failure != null) {
+        return Left(failure!);
+      }
     }
 
     final saved = savedTask;
@@ -404,31 +454,30 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
       return const Left(ValidationFailure('Task id is required'));
     }
     _createdAt = saved?.createdAt ?? _createdAt;
+    _lastSavedTaskSnapshot = currentSnapshot;
 
     final syncResult = await _syncSubTasks(
       taskId: taskIdResolved,
       subTasks: subTasks,
     );
     Failure? syncFailure;
-    syncResult.fold(
-      ifLeft: (error) => syncFailure = error,
-      ifRight: (_) {},
-    );
+    syncResult.fold(ifLeft: (error) => syncFailure = error, ifRight: (_) {});
     if (syncFailure != null) {
       return Left(syncFailure!);
     }
 
-    final tagResult = await tagInteractor.setTaskTags(
-      taskIdResolved,
-      state.selectedTags,
-    );
-    Failure? tagFailure;
-    tagResult.fold(
-      ifLeft: (error) => tagFailure = error,
-      ifRight: (_) {},
-    );
-    if (tagFailure != null) {
-      return Left(tagFailure!);
+    final currentTagKeys = _sortedTagKeys(state.selectedTags);
+    if (!_areTagKeysEqual(_lastSavedTagKeys, currentTagKeys)) {
+      final tagResult = await tagInteractor.setTaskTags(
+        taskIdResolved,
+        state.selectedTags,
+      );
+      Failure? tagFailure;
+      tagResult.fold(ifLeft: (error) => tagFailure = error, ifRight: (_) {});
+      if (tagFailure != null) {
+        return Left(tagFailure!);
+      }
+      _lastSavedTagKeys = currentTagKeys;
     }
 
     if (saved != null) {
@@ -441,7 +490,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
         description: description,
         date: state.selectedDate,
         createdAt: _createdAt ?? DateTime.now(),
-        updatedAt: DateTime.now(),
+        updatedAt: shouldUpdateTask ? DateTime.now() : null,
       ),
     );
   }
@@ -514,18 +563,27 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
       selectedDate,
       endTime ?? _combineDateAndTime(selectedDate, _defaultEndTime),
     );
-    return _ResolvedTimes(
-      startTime: resolvedStart,
-      endTime: resolvedEnd,
-    );
+    return _ResolvedTimes(startTime: resolvedStart, endTime: resolvedEnd);
   }
 
   DateTime _withDate(DateTime source, DateTime date) {
-    return DateTime(date.year, date.month, date.day, source.hour, source.minute);
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+      source.hour,
+      source.minute,
+    );
   }
 
   DateTime _normalizeTime(DateTime date, DateTime source) {
-    return DateTime(date.year, date.month, date.day, source.hour, source.minute);
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+      source.hour,
+      source.minute,
+    );
   }
 
   DateTime _combineDateAndTime(DateTime date, TimeOfDay time) {
@@ -546,6 +604,23 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
       return false;
     }
     return left.hour == right.hour && left.minute == right.minute;
+  }
+
+  List<String> _sortedTagKeys(List<TagEntity> tags) {
+    final keys = tags.map((tag) => tag.key).toList()..sort();
+    return keys;
+  }
+
+  bool _areTagKeysEqual(List<String> left, List<String> right) {
+    if (left.length != right.length) {
+      return false;
+    }
+    for (var i = 0; i < left.length; i += 1) {
+      if (left[i] != right[i]) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 
@@ -577,4 +652,67 @@ class _ResolvedTimes {
 
   final DateTime? startTime;
   final DateTime? endTime;
+}
+
+class _TaskSnapshot extends Equatable {
+  const _TaskSnapshot({
+    required this.title,
+    required this.description,
+    required this.isCompleted,
+    required this.date,
+    required this.startTime,
+    required this.endTime,
+    required this.isAllDay,
+  });
+
+  final String title;
+  final String description;
+  final bool isCompleted;
+  final DateTime date;
+  final DateTime? startTime;
+  final DateTime? endTime;
+  final bool isAllDay;
+
+  factory _TaskSnapshot.fromTask(TaskEntity task) {
+    return _TaskSnapshot(
+      title: task.title,
+      description: task.description ?? '',
+      isCompleted: task.isCompleted,
+      date: task.date,
+      startTime: task.startTime,
+      endTime: task.endTime,
+      isAllDay: task.isAllDay,
+    );
+  }
+
+  factory _TaskSnapshot.fromValues({
+    required String title,
+    required String description,
+    required bool isCompleted,
+    required DateTime date,
+    required DateTime? startTime,
+    required DateTime? endTime,
+    required bool isAllDay,
+  }) {
+    return _TaskSnapshot(
+      title: title,
+      description: description,
+      isCompleted: isCompleted,
+      date: date,
+      startTime: startTime,
+      endTime: endTime,
+      isAllDay: isAllDay,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+    title,
+    description,
+    isCompleted,
+    date,
+    startTime,
+    endTime,
+    isAllDay,
+  ];
 }

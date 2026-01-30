@@ -1,7 +1,6 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:taskify/core/providers/time_format_notifier.dart';
 import 'package:taskify/core/utils/time_format_utils.dart';
@@ -27,8 +26,8 @@ class EditTaskDatePeriodCard extends StatelessWidget {
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
-    if (picked != null) {
-      context.read<EditTaskBloc>().add(EditTaskEvent.dateSelected(picked));
+    if (picked != null && context.mounted) {
+      context.read<EditTaskBloc>().add(EditTaskDateSelected(picked));
     }
   }
 
@@ -43,7 +42,7 @@ class EditTaskDatePeriodCard extends StatelessWidget {
         selectedType: selectedType,
         onSelected: (type) {
           context.read<EditTaskBloc>().add(
-            EditTaskEvent.durationTypeSelected(type),
+            EditTaskDurationTypeSelected(type),
           );
         },
       ),
@@ -63,16 +62,10 @@ class EditTaskDatePeriodCard extends StatelessWidget {
         initialEndTime: initialEndTime ?? _defaultEndTime,
         onTimesSelected: (startTime, endTime) {
           context.read<EditTaskBloc>().add(
-            EditTaskEvent.timeRangeSelected(startTime, endTime),
+            EditTaskTimeRangeSelected(startTime, endTime),
           );
         },
       ),
-    );
-  }
-
-  void _onClearPressed(BuildContext context) {
-    context.read<EditTaskBloc>().add(
-      const EditTaskEvent.dateSelectionCleared(),
     );
   }
 
@@ -125,8 +118,6 @@ class EditTaskDatePeriodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context);
     final use24Hour = context.select<TimeFormatCubit, bool>(
       (cubit) => cubit.state.use24Hour,
     );

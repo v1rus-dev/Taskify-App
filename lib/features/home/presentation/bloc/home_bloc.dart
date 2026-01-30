@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
@@ -10,7 +10,6 @@ import 'package:taskify/domain/tasks/models/tasks_view_type.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
-part 'home_bloc.freezed.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final TaskInteractor taskInteractor;
@@ -27,31 +26,34 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           tasks: [],
         ),
       ) {
-    on<_Started>(_onStarted);
-    on<_TasksUpdated>(_onTasksUpdated);
-    on<_UpdateTaskCompletion>(_onUpdateTaskCompletion);
-    on<_ChangeTasksViewType>(_onChangeTasksViewType);
-    on<_ChangeCalendarVisibility>(_onChangeCalendarVisibility);
-    on<_SelectDate>(_onSelectDate);
+    on<HomeStarted>(_onStarted);
+    on<HomeTasksUpdated>(_onTasksUpdated);
+    on<HomeUpdateTaskCompletion>(_onUpdateTaskCompletion);
+    on<HomeChangeTasksViewType>(_onChangeTasksViewType);
+    on<HomeChangeCalendarVisibility>(_onChangeCalendarVisibility);
+    on<HomeSelectDate>(_onSelectDate);
   }
 
-  void _onStarted(_Started event, Emitter<HomeState> emit) {
+  void _onStarted(HomeStarted event, Emitter<HomeState> emit) {
     _observeTasks();
     syncCoordinator.onForeground();
   }
 
-  void _onTasksUpdated(_TasksUpdated event, Emitter<HomeState> emit) {
+  void _onTasksUpdated(HomeTasksUpdated event, Emitter<HomeState> emit) {
     emit(state.copyWith(tasks: event.tasks));
   }
 
   void _observeTasks() {
     _tasksSubscription = taskInteractor.observeTasks().listen((tasks) {
       _allTasks = tasks.toList();
-      add(HomeEvent.tasksUpdated(_filterTasksByDate(_allTasks, state.selectedDate)));
+      add(HomeTasksUpdated(_filterTasksByDate(_allTasks, state.selectedDate)));
     });
   }
 
-  void _onUpdateTaskCompletion(_UpdateTaskCompletion event, Emitter<HomeState> emit) async {
+  void _onUpdateTaskCompletion(
+    HomeUpdateTaskCompletion event,
+    Emitter<HomeState> emit,
+  ) async {
     final task = event.task.task;
     final shouldComplete = !task.isCompleted;
     final result = await taskInteractor.updateTask(
@@ -65,17 +67,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
   }
 
-  void _onChangeTasksViewType(_ChangeTasksViewType event, Emitter<HomeState> emit) {
+  void _onChangeTasksViewType(
+    HomeChangeTasksViewType event,
+    Emitter<HomeState> emit,
+  ) {
     emit(state.copyWith(tasksViewType: event.tasksViewType));
   }
 
-  void _onChangeCalendarVisibility(_ChangeCalendarVisibility event, Emitter<HomeState> emit) {
+  void _onChangeCalendarVisibility(
+    HomeChangeCalendarVisibility event,
+    Emitter<HomeState> emit,
+  ) {
     emit(state.copyWith(isHeaderExpanded: !state.isHeaderExpanded));
   }
 
-  void _onSelectDate(_SelectDate event, Emitter<HomeState> emit) {
+  void _onSelectDate(HomeSelectDate event, Emitter<HomeState> emit) {
     emit(state.copyWith(selectedDate: event.date));
-    add(HomeEvent.tasksUpdated(_filterTasksByDate(_allTasks, event.date)));
+    add(HomeTasksUpdated(_filterTasksByDate(_allTasks, event.date)));
   }
 
   List<TaskWrapperEntity> _filterTasksByDate(

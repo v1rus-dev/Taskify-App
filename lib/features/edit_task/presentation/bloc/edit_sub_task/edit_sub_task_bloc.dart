@@ -1,34 +1,32 @@
-import 'dart:async';
-
-import 'package:bloc/bloc.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/features/edit_task/presentation/models/sub_task_ui_model.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
-import 'package:uuid/uuid.dart';
 
 part 'edit_sub_task_event.dart';
 part 'edit_sub_task_state.dart';
-part 'edit_sub_task_bloc.freezed.dart';
 
 class EditSubTaskBloc extends Bloc<EditSubTaskEvent, EditSubTaskState> {
   final int? taskId;
   final SubTaskInteractor subTaskInteractor;
   int _nextLocalKey = 0;
-  final Uuid _uuid = const Uuid();
 
   EditSubTaskBloc({required this.taskId, required this.subTaskInteractor})
-    : super(_Initial()) {
-    on<_Started>(_onStarted);
-    on<_SubTaskToggle>(_onSubTaskToggle);
-    on<_SubTaskRemoved>(_onSubTaskRemoved);
-    on<_SubTaskRemovedByLocalKey>(_onSubTaskRemovedByLocalKey);
-    on<_SubTaskTextChanged>(_onSubTaskTextChanged);
-    on<_SubTaskAdded>(_onSubTaskAdded);
-    on<_SubTasksReordered>(_onSubTasksReordered);
+    : super(const EditSubTaskState()) {
+    on<EditSubTaskStarted>(_onStarted);
+    on<EditSubTaskToggle>(_onSubTaskToggle);
+    on<EditSubTaskRemoved>(_onSubTaskRemoved);
+    on<EditSubTaskRemovedByLocalKey>(_onSubTaskRemovedByLocalKey);
+    on<EditSubTaskTextChanged>(_onSubTaskTextChanged);
+    on<EditSubTaskAdded>(_onSubTaskAdded);
+    on<EditSubTaskReordered>(_onSubTasksReordered);
   }
 
-  void _onStarted(_Started event, Emitter<EditSubTaskState> emit) async {
+  void _onStarted(
+    EditSubTaskStarted event,
+    Emitter<EditSubTaskState> emit,
+  ) async {
     if (taskId != null) {
       final result = await subTaskInteractor.getSubTasksByTaskId(taskId!);
       result.fold(
@@ -54,7 +52,10 @@ class EditSubTaskBloc extends Bloc<EditSubTaskEvent, EditSubTaskState> {
     }
   }
 
-  void _onSubTaskToggle(_SubTaskToggle event, Emitter<EditSubTaskState> emit) {
+  void _onSubTaskToggle(
+    EditSubTaskToggle event,
+    Emitter<EditSubTaskState> emit,
+  ) {
     final current = state.subTasks;
     if (event.index >= current.length) {
       return;
@@ -71,7 +72,7 @@ class EditSubTaskBloc extends Bloc<EditSubTaskEvent, EditSubTaskState> {
   }
 
   void _onSubTaskRemoved(
-    _SubTaskRemoved event,
+    EditSubTaskRemoved event,
     Emitter<EditSubTaskState> emit,
   ) {
     final current = state.subTasks;
@@ -83,7 +84,7 @@ class EditSubTaskBloc extends Bloc<EditSubTaskEvent, EditSubTaskState> {
   }
 
   void _onSubTaskRemovedByLocalKey(
-    _SubTaskRemovedByLocalKey event,
+    EditSubTaskRemovedByLocalKey event,
     Emitter<EditSubTaskState> emit,
   ) {
     final index =
@@ -96,7 +97,7 @@ class EditSubTaskBloc extends Bloc<EditSubTaskEvent, EditSubTaskState> {
   }
 
   void _onSubTaskTextChanged(
-    _SubTaskTextChanged event,
+    EditSubTaskTextChanged event,
     Emitter<EditSubTaskState> emit,
   ) {
     final current = state.subTasks;
@@ -129,7 +130,10 @@ class EditSubTaskBloc extends Bloc<EditSubTaskEvent, EditSubTaskState> {
     }
   }
 
-  void _onSubTaskAdded(_SubTaskAdded event, Emitter<EditSubTaskState> emit) {
+  void _onSubTaskAdded(
+    EditSubTaskAdded event,
+    Emitter<EditSubTaskState> emit,
+  ) {
     final hasEmpty = state.subTasks.any((item) => item.title.trim().isEmpty);
     if (hasEmpty) {
       return;
@@ -150,7 +154,7 @@ class EditSubTaskBloc extends Bloc<EditSubTaskEvent, EditSubTaskState> {
   }
 
   void _onSubTasksReordered(
-    _SubTasksReordered event,
+    EditSubTaskReordered event,
     Emitter<EditSubTaskState> emit,
   ) {
     final current = state.subTasks;

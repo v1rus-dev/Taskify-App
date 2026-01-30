@@ -12,20 +12,20 @@ class EditTaskSubTasksSlivers extends StatelessWidget {
 
   void _onReorder(BuildContext context, int oldIndex, int newIndex) {
     context.read<EditSubTaskBloc>().add(
-      EditSubTaskEvent.subTasksReordered(oldIndex, newIndex),
+      EditSubTaskReordered(oldIndex, newIndex),
     );
   }
 
   void _onAddSubTaskPressed(BuildContext context) {
     context
         .read<EditSubTaskBloc>()
-        .add(const EditSubTaskEvent.subTaskAdded());
+        .add(const EditSubTaskAdded());
   }
 
   void _onSubTaskDismissed(BuildContext context, int localKey) {
     context
         .read<EditSubTaskBloc>()
-        .add(EditSubTaskEvent.subTaskRemovedByLocalKey(localKey));
+        .add(EditSubTaskRemovedByLocalKey(localKey));
   }
 
   @override
@@ -60,11 +60,11 @@ class EditTaskSubTasksSlivers extends StatelessWidget {
                         autoFocus: subTask.title.isEmpty,
                         onToggle: () => context
                             .read<EditSubTaskBloc>()
-                            .add(EditSubTaskEvent.subTaskToggle(index)),
+                            .add(EditSubTaskToggle(index)),
                         onTextChanged: (text) => context
                             .read<EditSubTaskBloc>()
                             .add(
-                              EditSubTaskEvent.subTaskTextChanged(
+                              EditSubTaskTextChanged(
                                 index,
                                 text,
                               ),
@@ -211,27 +211,33 @@ class _EditSubTaskItemState extends State<_EditSubTaskItem> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                SubTaskCheckbox(
-                  isChecked: widget.subTask.isCompleted,
-                  onPressed: widget.onToggle,
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: TaskCheckbox(
+                    isChecked: widget.subTask.isCompleted,
+                    onPressed: widget.onToggle,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: TextField(
-                    onChanged: widget.onTextChanged,
-                    controller: _controller,
-                    focusNode: _focusNode,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isCollapsed: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: textColor,
-                      decoration: _resolveDecoration(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: TextField(
+                      onChanged: widget.onTextChanged,
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isCollapsed: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: textColor,
+                        decoration: _resolveDecoration(),
+                      ),
                     ),
                   ),
                 ),

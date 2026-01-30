@@ -1,9 +1,21 @@
 part of 'task_info_bloc.dart';
 
-@freezed
-abstract class TaskInfoState with _$TaskInfoState {
+abstract class TaskInfoState extends Equatable {
+  const TaskInfoState();
 
-  const factory TaskInfoState.initial() = _Initial;
-  const factory TaskInfoState.success({required TaskWrapperEntity task}) =
-      _Success;
+  @override
+  List<Object?> get props => [];
+}
+
+class TaskInfoInitial extends TaskInfoState {
+  const TaskInfoInitial();
+}
+
+class TaskInfoSuccess extends TaskInfoState {
+  const TaskInfoSuccess({required this.task});
+
+  final TaskWrapperEntity task;
+
+  @override
+  List<Object?> get props => [task];
 }

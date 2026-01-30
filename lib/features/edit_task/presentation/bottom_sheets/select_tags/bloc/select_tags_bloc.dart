@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/domain/tags/models/default_tag.dart';
 import 'package:taskify/domain/tags/models/tag.dart';
@@ -9,24 +9,26 @@ import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';
 
 part 'select_tags_event.dart';
 part 'select_tags_state.dart';
-part 'select_tags_bloc.freezed.dart';
 
 class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
   SelectTagsBloc({Set<String>? initialSelectedTagKeys})
     : _initialSelectedTagKeys = Set<String>.from(initialSelectedTagKeys ?? {}),
       _tagInteractor = locator<TagInteractor>(),
-      super(const SelectTagsState.initial()) {
-    on<_Started>(_onStarted);
-    on<_TagToggled>(_onTagToggled);
-    on<_CreateTagPressed>(_onCreateTagPressed);
-    on<_UpdateUserTags>(_onUpdateUserTags);
+      super(const SelectTagsInitial()) {
+    on<SelectTagsStarted>(_onStarted);
+    on<SelectTagsTagToggled>(_onTagToggled);
+    on<SelectTagsCreateTagPressed>(_onCreateTagPressed);
+    on<SelectTagsUpdateUserTags>(_onUpdateUserTags);
   }
 
   final Set<String> _initialSelectedTagKeys;
   final TagInteractor _tagInteractor;
   StreamSubscription<List<TagEntity>>? _customTagsSubscription;
 
-  Future<void> _onStarted(_Started event, Emitter<SelectTagsState> emit) async {
+  Future<void> _onStarted(
+    SelectTagsStarted event,
+    Emitter<SelectTagsState> emit,
+  ) async {
     final customTagsResult = await _tagInteractor.getCustomTags();
     List<TagEntity> customTags = const [];
     customTagsResult.fold(
@@ -34,7 +36,7 @@ class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
       ifRight: (tags) => customTags = tags,
     );
     emit(
-      SelectTagsState.success(
+      SelectTagsSuccess(
         defaultTags: _buildDefaultTags(),
         customTags: customTags,
         selectedTagKeys: _initialSelectedTagKeys,
@@ -44,32 +46,36 @@ class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
     _initSubscription();
   }
 
-  void _onTagToggled(_TagToggled event, Emitter<SelectTagsState> emit) {
-    state.maybeMap(
-      success: (state) {
-        final updated = Set<String>.from(state.selectedTagKeys);
-        if (updated.contains(event.tag.key)) {
-          updated.remove(event.tag.key);
-        } else {
-          updated.add(event.tag.key);
-        }
-        emit(state.copyWith(selectedTagKeys: updated));
-      },
-      orElse: () {},
-    );
+  void _onTagToggled(
+    SelectTagsTagToggled event,
+    Emitter<SelectTagsState> emit,
+  ) {
+    final current = state;
+    if (current is! SelectTagsSuccess) {
+      return;
+    }
+    final updated = Set<String>.from(current.selectedTagKeys);
+    if (updated.contains(event.tag.key)) {
+      updated.remove(event.tag.key);
+    } else {
+      updated.add(event.tag.key);
+    }
+    emit(current.copyWith(selectedTagKeys: updated));
   }
 
-  void _onUpdateUserTags(_UpdateUserTags event, Emitter<SelectTagsState> emit) {
-    state.maybeMap(
-      success: (state) {
-        emit(state.copyWith(customTags: event.tags));
-      },
-      orElse: () {},
-    );
+  void _onUpdateUserTags(
+    SelectTagsUpdateUserTags event,
+    Emitter<SelectTagsState> emit,
+  ) {
+    final current = state;
+    if (current is! SelectTagsSuccess) {
+      return;
+    }
+    emit(current.copyWith(customTags: event.tags));
   }
 
   void _onCreateTagPressed(
-    _CreateTagPressed event,
+    SelectTagsCreateTagPressed event,
     Emitter<SelectTagsState> emit,
   ) {}
 
@@ -82,7 +88,7 @@ class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
   void _initSubscription() async {
     await _customTagsSubscription?.cancel();
     _customTagsSubscription = _tagInteractor.observeCustomTags().listen((tags) {
-      add(SelectTagsEvent.updateUserTags(tags));
+      add(SelectTagsUpdateUserTags(tags));
     });
   }
 

@@ -35,19 +35,19 @@ class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
 
   void _onCreateTagPressed() {
     context.read<CreateUserTagBloc>().add(
-      const CreateUserTagEvent.createPressed(),
+      const CreateUserTagCreatePressed(),
     );
   }
 
   void _onColorSelected(Color color) {
     context.read<CreateUserTagBloc>().add(
-      CreateUserTagEvent.colorChanged(color),
+      CreateUserTagColorChanged(color),
     );
   }
 
   void _onNameChanged(String value) {
     context.read<CreateUserTagBloc>().add(
-      CreateUserTagEvent.nameChanged(value),
+      CreateUserTagNameChanged(value),
     );
   }
 
@@ -57,22 +57,22 @@ class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
     final l10n = AppLocalizations.of(context);
     return BlocConsumer<CreateUserTagBloc, CreateUserTagState>(
       listener: (context, state) {
-        state.mapOrNull(
-          success: (_) => Navigator.of(context).pop(),
-        );
+        if (state is CreateUserTagSuccess) {
+          Navigator.of(context).pop();
+        }
       },
       builder: (context, state) {
-        final selectedColor = state.maybeMap(
-          editing: (state) => state.color,
-          saving: (state) => state.color,
-          error: (state) => state.color,
-          orElse: () => DefaultTagColor.values.first.color,
-        );
-        final isEnabled = state.maybeMap(
-          editing: (state) => state.isValid,
-          error: (state) => state.isValid,
-          orElse: () => false,
-        );
+        Color selectedColor = DefaultTagColor.values.first.color;
+        bool isEnabled = false;
+        if (state is CreateUserTagEditing) {
+          selectedColor = state.color;
+          isEnabled = state.isValid;
+        } else if (state is CreateUserTagSaving) {
+          selectedColor = state.color;
+        } else if (state is CreateUserTagError) {
+          selectedColor = state.color;
+          isEnabled = state.isValid;
+        }
         return MediaQuery.removeViewInsets(
           context: context,
           removeBottom: true,

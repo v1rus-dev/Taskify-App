@@ -29,8 +29,8 @@ class TaskCheckbox extends StatelessWidget {
           customBorder: const CircleBorder(),
           borderRadius: BorderRadius.circular(24),
           child: SizedBox(
-            width: 36,
-            height: 36,
+            width: 32,
+            height: 32,
             child: Center(
               child: AnimatedScale(
                 scale: 1.0,

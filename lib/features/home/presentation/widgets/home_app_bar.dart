@@ -17,7 +17,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   void _onChangeCalendarState(BuildContext context) {
-    context.read<HomeBloc>().add(HomeEvent.changeCalendarVisibility());
+    context.read<HomeBloc>().add(const HomeChangeCalendarVisibility());
   }
 
   String _getDayShort(BuildContext context, DateTime date) {

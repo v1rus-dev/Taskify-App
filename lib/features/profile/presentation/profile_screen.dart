@@ -20,7 +20,7 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) => BlocProvider(
     create: (context) => ProfileBloc(
       appConfigurationInteractor: locator<AppConfigurationInteractor>(),
-    )..add(const ProfileEvent.started()),
+    )..add(const ProfileStarted()),
     child: const ProfileScreen(),
   );
 }
@@ -40,7 +40,7 @@ class ProfileScreen extends StatelessWidget {
     if (context.mounted) {
       if (result != null) {
         context.read<ProfileBloc>().add(
-          ProfileEvent.onTimeFormatChanged(result),
+          ProfileTimeFormatChanged(result),
         );
       }
     }
@@ -63,38 +63,36 @@ class ProfileScreen extends StatelessWidget {
 
     return BlocSideEffectListener<ProfileBloc, ProfileSideEffect>(
       listener: (effect) {
-        effect.when(
-          showLoadingDialog: () {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) {
-                return PopScope(
-                  canPop: false,
-                  child: Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const SizedBox(
-                        width: 28,
-                        height: 28,
-                        child: CircularProgressIndicator.adaptive(
-                          strokeWidth: 2,
-                        ),
+        if (effect is ProfileShowLoadingDialog) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return PopScope(
+                canPop: false,
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const SizedBox(
+                      width: 28,
+                      height: 28,
+                      child: CircularProgressIndicator.adaptive(
+                        strokeWidth: 2,
                       ),
                     ),
                   ),
-                );
-              },
-            );
-          },
-          dismissLoadingDialog: () {
-            Navigator.pop(context);
-          },
-        );
+                ),
+              );
+            },
+          );
+        }
+        if (effect is ProfileDismissLoadingDialog) {
+          Navigator.pop(context);
+        }
       },
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,

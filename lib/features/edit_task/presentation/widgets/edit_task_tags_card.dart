@@ -28,7 +28,7 @@ class EditTaskTagsCard extends StatelessWidget {
 
   void _onTagPressed(BuildContext context, TagEntity tag) {
     final editTaskBloc = context.read<EditTaskBloc>();
-    editTaskBloc.add(EditTaskEvent.removeTag(tag));
+    editTaskBloc.add(EditTaskRemoveTag(tag));
   }
 
   BorderRadius _borderRadiusByHasTags(bool hasTags) {

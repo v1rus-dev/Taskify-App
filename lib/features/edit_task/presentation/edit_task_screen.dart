@@ -34,13 +34,13 @@ class EditTaskPage extends StatelessWidget {
             taskInteractor: locator<TaskInteractor>(),
             subTaskInteractor: locator<SubTaskInteractor>(),
             tagInteractor: locator<TagInteractor>(),
-          )..add(const EditTaskEvent.started()),
+          )..add(const EditTaskStarted()),
         ),
         BlocProvider(
           create: (context) => EditSubTaskBloc(
             taskId: taskId,
             subTaskInteractor: locator<SubTaskInteractor>(),
-          )..add(const EditSubTaskEvent.started()),
+          )..add(const EditSubTaskStarted()),
         ),
       ],
       child: EditTaskScreen(taskId: taskId),
@@ -78,11 +78,11 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   }
 
   void _onTitleChanged(String value) {
-    context.read<EditTaskBloc>().add(EditTaskEvent.titleChanged(value));
+    context.read<EditTaskBloc>().add(EditTaskTitleChanged(value));
   }
 
   void _onDescriptionChanged(String value) {
-    context.read<EditTaskBloc>().add(EditTaskEvent.descriptionChanged(value));
+    context.read<EditTaskBloc>().add(EditTaskDescriptionChanged(value));
   }
 
   Future<void> _onClosePressed() async {
@@ -90,7 +90,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     final editBloc = context.read<EditTaskBloc>();
     final subTasks = context.read<EditSubTaskBloc>().state.subTasks;
     editBloc.add(
-      EditTaskEvent.saveTask(
+      EditTaskSaveTask(
         completer,
         titleController.text,
         descriptionController.text,
@@ -112,7 +112,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     }
     final editBloc = context.read<EditTaskBloc>();
     final subTasks = context.read<EditSubTaskBloc>().state.subTasks;
-    editBloc.add(EditTaskEvent.autoSaveRequested(subTasks));
+    editBloc.add(EditTaskAutoSaveRequested(subTasks));
   }
 
   void _onEditTaskChanged(BuildContext context, EditTaskState state) {
@@ -132,14 +132,11 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   }
 
   void _onSideEffect(EditTaskSideEffect effect) {
-    effect.when(
-      showLoadingDialog: () {},
-      initEditTextControllers: (title, description) {
-        titleController.text = title;
-        descriptionController.text = description;
-        _isEditTaskInitialized = true;
-      },
-    );
+    if (effect is EditTaskInitEditTextControllers) {
+      titleController.text = effect.title;
+      descriptionController.text = effect.description;
+      _isEditTaskInitialized = true;
+    }
   }
 
   bool _shouldAutoSave(EditTaskState previous, EditTaskState current) {

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:dart_either/dart_either.dart';
 import 'package:flutter/material.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
@@ -19,7 +19,6 @@ import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 part 'edit_task_event.dart';
 part 'edit_task_state.dart';
 part 'edit_task_side_effect.dart';
-part 'edit_task_bloc.freezed.dart';
 
 enum EditTaskSaveStatus {
   saving,
@@ -50,27 +49,30 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     required this.tagInteractor,
   }) : super(EditTaskState(selectedDate: DateTime.now())) {
     _initialSelection = _DateSelectionSnapshot.fromState(state);
-    on<_Started>(_onStarted);
-    on<_TitleChanged>(_onTitleChanged);
-    on<_DescriptionChanged>(_onDescriptionChanged);
-    on<_SelectDate>(_onSelectDate);
-    on<_DateSelected>(_onDateSelected);
-    on<_DurationTypeSelected>(_onDurationTypeSelected);
-    on<_TimeRangeSelected>(_onTimeRangeSelected);
-    on<_DateSelectionCleared>(_onDateSelectionCleared);
-    on<_TagsUpdated>(_onTagsUpdated);
-    on<_SaveTask>(_onSaveTask);
-    on<_AutoSaveRequested>(_onAutoSaveRequested);
-    on<_RemoveTag>(_onRemoveTag);
+    on<EditTaskStarted>(_onStarted);
+    on<EditTaskTitleChanged>(_onTitleChanged);
+    on<EditTaskDescriptionChanged>(_onDescriptionChanged);
+    on<EditTaskSelectDate>(_onSelectDate);
+    on<EditTaskDateSelected>(_onDateSelected);
+    on<EditTaskDurationTypeSelected>(_onDurationTypeSelected);
+    on<EditTaskTimeRangeSelected>(_onTimeRangeSelected);
+    on<EditTaskDateSelectionCleared>(_onDateSelectionCleared);
+    on<EditTaskTagsUpdated>(_onTagsUpdated);
+    on<EditTaskSaveTask>(_onSaveTask);
+    on<EditTaskAutoSaveRequested>(_onAutoSaveRequested);
+    on<EditTaskRemoveTag>(_onRemoveTag);
   }
 
-  Future<void> _onStarted(_Started event, Emitter<EditTaskState> emit) async {
+  Future<void> _onStarted(
+    EditTaskStarted event,
+    Emitter<EditTaskState> emit,
+  ) async {
     if (taskId != null) {
       await _getTaskById(taskId: taskId!, emit: emit);
     }
   }
 
-  void _onTitleChanged(_TitleChanged event, Emitter<EditTaskState> emit) {
+  void _onTitleChanged(EditTaskTitleChanged event, Emitter<EditTaskState> emit) {
     emit(
       state.copyWith(
         title: event.title,
@@ -80,13 +82,13 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
   }
 
   void _onDescriptionChanged(
-    _DescriptionChanged event,
+    EditTaskDescriptionChanged event,
     Emitter<EditTaskState> emit,
   ) {
     emit(state.copyWith(description: event.description));
   }
 
-  void _onSelectDate(_SelectDate event, Emitter<EditTaskState> emit) {
+  void _onSelectDate(EditTaskSelectDate event, Emitter<EditTaskState> emit) {
     _emitDateSelection(
       emit,
       selectedDate: event.date,
@@ -96,7 +98,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     );
   }
 
-  void _onDateSelected(_DateSelected event, Emitter<EditTaskState> emit) {
+  void _onDateSelected(EditTaskDateSelected event, Emitter<EditTaskState> emit) {
     final updatedStartTime =
         state.startTime == null ? null : _withDate(state.startTime!, event.date);
     final updatedEndTime =
@@ -111,7 +113,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
   }
 
   void _onDurationTypeSelected(
-    _DurationTypeSelected event,
+    EditTaskDurationTypeSelected event,
     Emitter<EditTaskState> emit,
   ) {
     final isAllDay = event.type == TaskDurationType.allDay;
@@ -125,7 +127,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
   }
 
   void _onTimeRangeSelected(
-    _TimeRangeSelected event,
+    EditTaskTimeRangeSelected event,
     Emitter<EditTaskState> emit,
   ) {
     final startTime = _combineDateAndTime(state.selectedDate, event.startTime);
@@ -140,7 +142,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
   }
 
   void _onDateSelectionCleared(
-    _DateSelectionCleared event,
+    EditTaskDateSelectionCleared event,
     Emitter<EditTaskState> emit,
   ) {
     _emitDateSelection(
@@ -152,11 +154,11 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     );
   }
 
-  void _onTagsUpdated(_TagsUpdated event, Emitter<EditTaskState> emit) {
+  void _onTagsUpdated(EditTaskTagsUpdated event, Emitter<EditTaskState> emit) {
     emit(state.copyWith(selectedTags: event.tags));
   }
 
-  void _onRemoveTag(_RemoveTag event, Emitter<EditTaskState> emit) {
+  void _onRemoveTag(EditTaskRemoveTag event, Emitter<EditTaskState> emit) {
     emit(
       state.copyWith(
         selectedTags: state.selectedTags
@@ -166,7 +168,10 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     );
   }
 
-  Future<void> _onSaveTask(_SaveTask event, Emitter<EditTaskState> emit) async {
+  Future<void> _onSaveTask(
+    EditTaskSaveTask event,
+    Emitter<EditTaskState> emit,
+  ) async {
     emit(state.copyWith(saveStatus: EditTaskSaveStatus.saving));
     final result = await _saveTask(
       title: event.title,
@@ -193,7 +198,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
   }
 
   Future<void> _onAutoSaveRequested(
-    _AutoSaveRequested event,
+    EditTaskAutoSaveRequested event,
     Emitter<EditTaskState> emit,
   ) async {
     if (state.saveStatus == EditTaskSaveStatus.saving) {
@@ -266,7 +271,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
           ),
         );
         _sideEffectController.add(
-          EditTaskSideEffect.initEditTextControllers(
+          EditTaskInitEditTextControllers(
             task.title,
             task.description ?? '',
           ),

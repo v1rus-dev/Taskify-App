@@ -15,7 +15,7 @@ class AccountPart extends StatelessWidget {
   }
 
   void _onRemoveAccountPressed(BuildContext context) {
-    context.read<ProfileBloc>().add(ProfileEvent.onRemoveAccount());
+    context.read<ProfileBloc>().add(const ProfileRemoveAccount());
   }
 
   List<CardAction> _buildActions(BuildContext context) {

@@ -13,7 +13,7 @@ class TaskInfoSubTasksPart extends StatelessWidget {
 
   void _onCheckboxPressed(BuildContext context, SubTaskEntity subTask) {
     context.read<TaskInfoBloc>().add(
-      TaskInfoEvent.subTaskCheckBoxPressed(subTask),
+      TaskInfoSubTaskCheckBoxPressed(subTask),
     );
   }
 

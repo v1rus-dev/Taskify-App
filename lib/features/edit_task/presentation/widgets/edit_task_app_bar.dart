@@ -4,6 +4,7 @@ import 'package:design/constants/app_icons.dart';
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -49,6 +50,7 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
               package: AppIcons.packageName,
               width: 24,
               height: 24,
+              colorFilter: ColorFilter.mode(Color(0xFFDEDEDE), BlendMode.srcIn),
             ),
           ),
         ),
@@ -76,19 +78,22 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _buildIconButton(
-                iconPath: AppIcons.close,
-                onPressed: onClose,
-              ),
-              if (taskId != null)
-                _buildIconButton(
-                  iconPath: AppIcons.trash,
-                  onPressed: () =>
-                      _onDelete(context, context.read<EditTaskBloc>()),
-                ),
-              TaskCheckbox(
-                isChecked: state.isCompleted,
-                onPressed: () => _onTaskCheckBoxPressed(context),
+              _buildIconButton(iconPath: AppIcons.close, onPressed: onClose),
+              Row(
+                children: [
+                  if (taskId != null) ...[
+                    _buildIconButton(
+                      iconPath: AppIcons.trash,
+                      onPressed: () =>
+                          _onDelete(context, context.read<EditTaskBloc>()),
+                    ),
+                  ],
+                  const Gap(4),
+                  TaskCheckbox(
+                    isChecked: state.isCompleted,
+                    onPressed: () => _onTaskCheckBoxPressed(context),
+                  ),
+                ],
               ),
             ],
           ),

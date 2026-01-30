@@ -1,9 +1,34 @@
 part of 'create_user_tag_bloc.dart';
 
-@freezed
-class CreateUserTagEvent with _$CreateUserTagEvent {
-  const factory CreateUserTagEvent.started() = _Started;
-  const factory CreateUserTagEvent.nameChanged(String name) = _NameChanged;
-  const factory CreateUserTagEvent.colorChanged(Color color) = _ColorChanged;
-  const factory CreateUserTagEvent.createPressed() = _CreatePressed;
+abstract class CreateUserTagEvent extends Equatable {
+  const CreateUserTagEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class CreateUserTagStarted extends CreateUserTagEvent {
+  const CreateUserTagStarted();
+}
+
+class CreateUserTagNameChanged extends CreateUserTagEvent {
+  const CreateUserTagNameChanged(this.name);
+
+  final String name;
+
+  @override
+  List<Object?> get props => [name];
+}
+
+class CreateUserTagColorChanged extends CreateUserTagEvent {
+  const CreateUserTagColorChanged(this.color);
+
+  final Color color;
+
+  @override
+  List<Object?> get props => [color];
+}
+
+class CreateUserTagCreatePressed extends CreateUserTagEvent {
+  const CreateUserTagCreatePressed();
 }

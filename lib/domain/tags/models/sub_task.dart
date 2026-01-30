@@ -1,15 +1,47 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 
-part 'sub_task.freezed.dart';
+class SubTaskEntity extends Equatable {
+  const SubTaskEntity({
+    this.id,
+    this.networkId,
+    required this.taskId,
+    required this.title,
+    required this.isCompleted,
+    this.deletedAt,
+  });
 
-@freezed
-abstract class SubTaskEntity with _$SubTaskEntity {
-  const factory SubTaskEntity({
+  final int? id;
+  final int? networkId;
+  final int taskId;
+  final String title;
+  final bool isCompleted;
+  final DateTime? deletedAt;
+
+  SubTaskEntity copyWith({
     int? id,
     int? networkId,
-    required int taskId,
-    required String title,
-    required bool isCompleted,
+    int? taskId,
+    String? title,
+    bool? isCompleted,
     DateTime? deletedAt,
-  }) = _SubTaskEntity;
+  }) {
+    return SubTaskEntity(
+      id: id ?? this.id,
+      networkId: networkId ?? this.networkId,
+      taskId: taskId ?? this.taskId,
+      title: title ?? this.title,
+      isCompleted: isCompleted ?? this.isCompleted,
+      deletedAt: deletedAt ?? this.deletedAt,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        networkId,
+        taskId,
+        title,
+        isCompleted,
+        deletedAt,
+      ];
 }

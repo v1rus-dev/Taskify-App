@@ -9,17 +9,18 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const EditTaskAppBar({super.key, required this.taskId});
+  const EditTaskAppBar({
+    super.key,
+    required this.taskId,
+    required this.onClose,
+  });
 
   final int? taskId;
+  final VoidCallback onClose;
 
   @override
   Size get preferredSize {
     return Size.fromHeight(AppInsets.toolbarHeight);
-  }
-
-  void _onClose(BuildContext context) {
-    context.pop();
   }
 
   void _onDelete(BuildContext context, EditTaskBloc bloc) async {
@@ -77,7 +78,7 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               _buildIconButton(
                 iconPath: AppIcons.close,
-                onPressed: () => _onClose(context),
+                onPressed: onClose,
               ),
               if (taskId != null)
                 _buildIconButton(

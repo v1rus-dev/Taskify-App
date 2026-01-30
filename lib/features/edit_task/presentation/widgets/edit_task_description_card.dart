@@ -5,9 +5,14 @@ import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task
 import 'package:taskify/l10n/app_localizations.dart';
 
 class EditTaskDescriptionCard extends StatelessWidget {
-  EditTaskDescriptionCard({super.key});
+  EditTaskDescriptionCard({
+    super.key,
+    required this.descriptionController,
+    required this.onChanged,
+  });
 
-  final descriptionController = TextEditingController();
+  final TextEditingController descriptionController;
+  final ValueChanged<String> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +33,7 @@ class EditTaskDescriptionCard extends StatelessWidget {
                 controller: descriptionController,
                 maxLines: null,
                 maxLength: 265,
+                onChanged: onChanged,
                 decoration: InputDecoration(
                   hintText: AppLocalizations.of(context)?.description ?? '',
                   border: InputBorder.none,

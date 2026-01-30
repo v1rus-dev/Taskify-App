@@ -15,5 +15,6 @@ abstract class EditTaskState with _$EditTaskState {
     @Default(false) bool titleIsNotEmpty,
     @Default(false) bool isDateModified,
     @Default(<TagEntity>[]) List<TagEntity> selectedTags,
+    @Default(EditTaskSaveStatus.saved) EditTaskSaveStatus saveStatus,
   }) = _EditTaskState;
 }

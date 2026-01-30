@@ -21,6 +21,12 @@ part 'edit_task_state.dart';
 part 'edit_task_side_effect.dart';
 part 'edit_task_bloc.freezed.dart';
 
+enum EditTaskSaveStatus {
+  saving,
+  saved,
+  error,
+}
+
 class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     with BlocSideEffectMixin<EditTaskBloc, EditTaskSideEffect> {
   static const _defaultStartTime = TimeOfDay(hour: 9, minute: 0);
@@ -46,6 +52,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     _initialSelection = _DateSelectionSnapshot.fromState(state);
     on<_Started>(_onStarted);
     on<_TitleChanged>(_onTitleChanged);
+    on<_DescriptionChanged>(_onDescriptionChanged);
     on<_SelectDate>(_onSelectDate);
     on<_DateSelected>(_onDateSelected);
     on<_DurationTypeSelected>(_onDurationTypeSelected);
@@ -53,6 +60,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     on<_DateSelectionCleared>(_onDateSelectionCleared);
     on<_TagsUpdated>(_onTagsUpdated);
     on<_SaveTask>(_onSaveTask);
+    on<_AutoSaveRequested>(_onAutoSaveRequested);
     on<_RemoveTag>(_onRemoveTag);
   }
 
@@ -69,6 +77,13 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
         titleIsNotEmpty: event.title.trim().isNotEmpty,
       ),
     );
+  }
+
+  void _onDescriptionChanged(
+    _DescriptionChanged event,
+    Emitter<EditTaskState> emit,
+  ) {
+    emit(state.copyWith(description: event.description));
   }
 
   void _onSelectDate(_SelectDate event, Emitter<EditTaskState> emit) {
@@ -152,76 +167,59 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
   }
 
   Future<void> _onSaveTask(_SaveTask event, Emitter<EditTaskState> emit) async {
-    final result = taskId == null
-        ? await taskInteractor.createTask(
-            TaskEntity(
-              title: event.title,
-              description: event.description,
-              date: state.selectedDate,
-              createdAt: DateTime.now(),
-            ),
-          )
-        : await taskInteractor.updateTask(
-            TaskEntity(
-              id: taskId,
-              title: event.title,
-              description: event.description,
-              date: state.selectedDate,
-              createdAt: _createdAt ?? DateTime.now(),
-              updatedAt: DateTime.now(),
-            ),
-          );
-    Failure? failure;
-    TaskEntity? savedTask;
-    result.fold(
-      ifLeft: (error) => failure = error,
-      ifRight: (task) => savedTask = task,
-    );
-    if (failure != null) {
-      TalkerService.instance.error('syncTag ${failure!.message}');
-      event.completer.completeError(failure!);
-      return;
-    }
-
-    final resolvedTaskId = savedTask?.id ?? taskId;
-    if (resolvedTaskId == null) {
-      const error = ValidationFailure('Task id is required');
-      TalkerService.instance.error('syncTag ${error.message}');
-      event.completer.completeError(error);
-      return;
-    }
-
-    final syncResult = await _syncSubTasks(
-      taskId: resolvedTaskId,
+    emit(state.copyWith(saveStatus: EditTaskSaveStatus.saving));
+    final result = await _saveTask(
+      title: event.title,
+      description: event.description,
       subTasks: event.subTasks,
     );
-    Failure? syncFailure;
-    syncResult.fold(
-      ifLeft: (error) => syncFailure = error,
-      ifRight: (_) {},
+    result.fold(
+      ifLeft: (failure) {
+        emit(state.copyWith(saveStatus: EditTaskSaveStatus.error));
+        TalkerService.instance.error('syncTag ${failure.message}');
+        event.completer.completeError(failure);
+      },
+      ifRight: (task) {
+        emit(
+          state.copyWith(
+            saveStatus: EditTaskSaveStatus.saved,
+            taskId: task.id ?? state.taskId,
+            networkId: task.networkId ?? state.networkId,
+          ),
+        );
+        event.completer.complete();
+      },
     );
-    if (syncFailure != null) {
-      TalkerService.instance.error('syncTag ${syncFailure!.message}');
-      event.completer.completeError(syncFailure!);
+  }
+
+  Future<void> _onAutoSaveRequested(
+    _AutoSaveRequested event,
+    Emitter<EditTaskState> emit,
+  ) async {
+    if (state.saveStatus == EditTaskSaveStatus.saving) {
       return;
     }
-
-    final tagResult = await tagInteractor.setTaskTags(
-      resolvedTaskId,
-      state.selectedTags,
+    emit(state.copyWith(saveStatus: EditTaskSaveStatus.saving));
+    final result = await _saveTask(
+      title: state.title,
+      description: state.description,
+      subTasks: event.subTasks,
     );
-    Failure? tagFailure;
-    tagResult.fold(
-      ifLeft: (error) => tagFailure = error,
-      ifRight: (_) {},
+    result.fold(
+      ifLeft: (failure) {
+        emit(state.copyWith(saveStatus: EditTaskSaveStatus.error));
+        TalkerService.instance.error('syncTag ${failure.message}');
+      },
+      ifRight: (task) {
+        emit(
+          state.copyWith(
+            saveStatus: EditTaskSaveStatus.saved,
+            taskId: task.id ?? state.taskId,
+            networkId: task.networkId ?? state.networkId,
+          ),
+        );
+      },
     );
-    if (tagFailure != null) {
-      TalkerService.instance.error('syncTag ${tagFailure!.message}');
-      event.completer.completeError(tagFailure!);
-      return;
-    }
-
-    event.completer.complete();
   }
 
   Future<void> _getTaskById({
@@ -358,6 +356,89 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     }
 
     return const Right(null);
+  }
+
+  Future<Either<Failure, TaskEntity>> _saveTask({
+    required String title,
+    required String description,
+    required List<SubTaskUiModel> subTasks,
+  }) async {
+    final resolvedTaskId = taskId ?? state.taskId;
+    final result = resolvedTaskId == null
+        ? await taskInteractor.createTask(
+            TaskEntity(
+              title: title,
+              description: description,
+              date: state.selectedDate,
+              createdAt: DateTime.now(),
+            ),
+          )
+        : await taskInteractor.updateTask(
+            TaskEntity(
+              id: resolvedTaskId,
+              title: title,
+              description: description,
+              date: state.selectedDate,
+              createdAt: _createdAt ?? DateTime.now(),
+              updatedAt: DateTime.now(),
+            ),
+          );
+    Failure? failure;
+    TaskEntity? savedTask;
+    result.fold(
+      ifLeft: (error) => failure = error,
+      ifRight: (task) => savedTask = task,
+    );
+    if (failure != null) {
+      return Left(failure!);
+    }
+
+    final saved = savedTask;
+    final taskIdResolved = saved?.id ?? resolvedTaskId;
+    if (taskIdResolved == null) {
+      return const Left(ValidationFailure('Task id is required'));
+    }
+    _createdAt = saved?.createdAt ?? _createdAt;
+
+    final syncResult = await _syncSubTasks(
+      taskId: taskIdResolved,
+      subTasks: subTasks,
+    );
+    Failure? syncFailure;
+    syncResult.fold(
+      ifLeft: (error) => syncFailure = error,
+      ifRight: (_) {},
+    );
+    if (syncFailure != null) {
+      return Left(syncFailure!);
+    }
+
+    final tagResult = await tagInteractor.setTaskTags(
+      taskIdResolved,
+      state.selectedTags,
+    );
+    Failure? tagFailure;
+    tagResult.fold(
+      ifLeft: (error) => tagFailure = error,
+      ifRight: (_) {},
+    );
+    if (tagFailure != null) {
+      return Left(tagFailure!);
+    }
+
+    if (saved != null) {
+      return Right(saved);
+    }
+    return Right(
+      TaskEntity(
+        id: taskIdResolved,
+        title: title,
+        description: description,
+        date: state.selectedDate,
+        createdAt: _createdAt ?? DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+    );
   }
 
   bool _isDateModified({

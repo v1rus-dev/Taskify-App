@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';
@@ -55,12 +58,98 @@ class EditTaskScreen extends StatefulWidget {
 
 class _EditTaskScreenState extends State<EditTaskScreen> {
   final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
   final scrollController = ScrollController();
+  bool _isEditTaskInitialized = false;
+  bool _isSubTasksInitialized = false;
 
   @override
   void dispose() {
     titleController.dispose();
+    descriptionController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _isEditTaskInitialized = widget.taskId == null;
+    _isSubTasksInitialized = widget.taskId == null;
+  }
+
+  void _onTitleChanged(String value) {
+    context.read<EditTaskBloc>().add(EditTaskEvent.titleChanged(value));
+  }
+
+  void _onDescriptionChanged(String value) {
+    context.read<EditTaskBloc>().add(EditTaskEvent.descriptionChanged(value));
+  }
+
+  Future<void> _onClosePressed() async {
+    final completer = Completer<void>();
+    final editBloc = context.read<EditTaskBloc>();
+    final subTasks = context.read<EditSubTaskBloc>().state.subTasks;
+    editBloc.add(
+      EditTaskEvent.saveTask(
+        completer,
+        titleController.text,
+        descriptionController.text,
+        subTasks,
+      ),
+    );
+    try {
+      await completer.future;
+    } catch (_) {}
+    if (!mounted) {
+      return;
+    }
+    context.pop();
+  }
+
+  void _onAutoSaveRequested() {
+    if (!_isEditTaskInitialized) {
+      return;
+    }
+    final editBloc = context.read<EditTaskBloc>();
+    final subTasks = context.read<EditSubTaskBloc>().state.subTasks;
+    editBloc.add(EditTaskEvent.autoSaveRequested(subTasks));
+  }
+
+  void _onEditTaskChanged(BuildContext context, EditTaskState state) {
+    if (!_isEditTaskInitialized) {
+      _isEditTaskInitialized = true;
+      return;
+    }
+    _onAutoSaveRequested();
+  }
+
+  void _onSubTasksChanged(BuildContext context, EditSubTaskState state) {
+    if (!_isSubTasksInitialized) {
+      _isSubTasksInitialized = true;
+      return;
+    }
+    _onAutoSaveRequested();
+  }
+
+  void _onSideEffect(EditTaskSideEffect effect) {
+    effect.when(
+      showLoadingDialog: () {},
+      initEditTextControllers: (title, description) {
+        titleController.text = title;
+        descriptionController.text = description;
+        _isEditTaskInitialized = true;
+      },
+    );
+  }
+
+  bool _shouldAutoSave(EditTaskState previous, EditTaskState current) {
+    return previous.title != current.title ||
+        previous.description != current.description ||
+        previous.selectedDate != current.selectedDate ||
+        previous.startTime != current.startTime ||
+        previous.endTime != current.endTime ||
+        previous.isAllDay != current.isAllDay ||
+        previous.selectedTags != current.selectedTags;
   }
 
   Widget _buildTitleTextField() {
@@ -70,6 +159,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       maxLines: null,
       maxLength: 155,
       maxLengthEnforcement: MaxLengthEnforcement.enforced,
+      onChanged: _onTitleChanged,
       textAlign: TextAlign.center,
       style: theme.textTheme.titleLarge?.copyWith(
         fontWeight: FontWeight.w500,
@@ -91,38 +181,66 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSideEffectListener<EditTaskBloc, EditTaskSideEffect>(
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        backgroundColor: AppColorExtensions.getBackgroundColor(context),
-        appBar: EditTaskAppBar(taskId: widget.taskId),
-        body: CustomScrollView(
-          controller: scrollController,
-          slivers: [
-            const SliverGap(20),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              sliver: SliverToBoxAdapter(child: _buildTitleTextField()),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<EditTaskBloc, EditTaskState>(
+          listenWhen: _shouldAutoSave,
+          listener: _onEditTaskChanged,
+        ),
+        BlocListener<EditSubTaskBloc, EditSubTaskState>(
+          listenWhen: (previous, current) =>
+              previous.subTasks != current.subTasks,
+          listener: _onSubTasksChanged,
+        ),
+      ],
+      child: BlocSideEffectListener<EditTaskBloc, EditTaskSideEffect>(
+        listener: _onSideEffect,
+        child: WillPopScope(
+          onWillPop: () async {
+            await _onClosePressed();
+            return false;
+          },
+          child: Scaffold(
+            resizeToAvoidBottomInset: true,
+            backgroundColor: AppColorExtensions.getBackgroundColor(context),
+            appBar: EditTaskAppBar(
+              taskId: widget.taskId,
+              onClose: _onClosePressed,
             ),
-            const SliverGap(12),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              sliver: SliverToBoxAdapter(child: EditTaskDescriptionCard()),
+            body: CustomScrollView(
+              controller: scrollController,
+              slivers: [
+                const SliverGap(20),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverToBoxAdapter(child: _buildTitleTextField()),
+                ),
+                const SliverGap(12),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverToBoxAdapter(
+                    child: EditTaskDescriptionCard(
+                      descriptionController: descriptionController,
+                      onChanged: _onDescriptionChanged,
+                    ),
+                  ),
+                ),
+                const SliverGap(12),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverToBoxAdapter(child: EditTaskDatePeriodCard()),
+                ),
+                const SliverGap(12),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverToBoxAdapter(child: EditTaskTagsCard()),
+                ),
+                const SliverGap(12),
+                const EditTaskSubTasksSlivers(),
+                const SliverGap(12),
+              ],
             ),
-            const SliverGap(12),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              sliver: SliverToBoxAdapter(child: EditTaskDatePeriodCard()),
-            ),
-            const SliverGap(12),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              sliver: SliverToBoxAdapter(child: EditTaskTagsCard()),
-            ),
-            const SliverGap(12),
-            const EditTaskSubTasksSlivers(),
-            const SliverGap(12),
-          ],
+          ),
         ),
       ),
     );

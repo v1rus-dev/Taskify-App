@@ -8,6 +8,7 @@ import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_app_bar.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_description_card.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_date_period_card.dart';
+import 'package:taskify/features/edit_task/presentation/widgets/edit_task_sub_tasks_slivers.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_tags_card.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -103,21 +104,24 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               sliver: SliverToBoxAdapter(child: _buildTitleTextField()),
             ),
-            const SliverGap(20),
+            const SliverGap(12),
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               sliver: SliverToBoxAdapter(child: EditTaskDescriptionCard()),
             ),
-            const SliverGap(20),
+            const SliverGap(12),
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               sliver: SliverToBoxAdapter(child: EditTaskDatePeriodCard()),
             ),
-            const SliverGap(20),
+            const SliverGap(12),
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               sliver: SliverToBoxAdapter(child: EditTaskTagsCard()),
             ),
+            const SliverGap(12),
+            const EditTaskSubTasksSlivers(),
+            const SliverGap(12),
           ],
         ),
       ),

@@ -21,4 +21,5 @@ class AppIcons {
   static const String home = 'assets/icons/ic_home.svg';
   static const String profile = 'assets/icons/ic_profile.svg';
   static const String checkFilled = 'assets/icons/ic_check_filled.svg';
+  static const String dragVertical = 'assets/icons/ic_drag_vertical.svg';
 }

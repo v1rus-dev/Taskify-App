@@ -35,7 +35,6 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
           (subTask) => SubTaskEntity(
             id: subTask.id,
             networkId: subTask.networkId,
-            clientId: subTask.clientId ?? _uuid.v4(),
             taskId: subTask.taskId,
             title: subTask.title,
             isCompleted: subTask.isCompleted,
@@ -152,7 +151,6 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
         entity: 'subtask',
         op: 'create',
         id: subTask.networkId,
-        clientId: subTask.clientId,
         data: SyncOpData(
           text: subTask.title,
           isCompleted: subTask.isCompleted,
@@ -166,7 +164,7 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
 
   Future<void> _enqueueSubTaskUpdates(List<SubTaskEntity> subTasks) async {
     for (final subTask in subTasks) {
-      if (subTask.networkId == null && subTask.clientId == null) {
+      if (subTask.networkId == null) {
         TalkerService.instance.warning('syncTag subtask update missing ids');
       }
       final entry = SyncQueueEntry(
@@ -174,7 +172,6 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
         entity: 'subtask',
         op: 'update',
         id: subTask.networkId,
-        clientId: subTask.clientId,
         data: SyncOpData(text: subTask.title, isCompleted: subTask.isCompleted),
       );
       await _enqueue(entry);
@@ -183,7 +180,7 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
 
   Future<void> _enqueueSubTaskDeletes(List<SubTaskEntity> subTasks) async {
     for (final subTask in subTasks) {
-      if (subTask.networkId == null && subTask.clientId == null) {
+      if (subTask.networkId == null) {
         TalkerService.instance.warning('syncTag subtask delete missing ids');
       }
       final entry = SyncQueueEntry(
@@ -191,7 +188,6 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
         entity: 'subtask',
         op: 'delete',
         id: subTask.networkId,
-        clientId: subTask.clientId,
         data: null,
       );
       await _enqueue(entry);

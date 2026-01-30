@@ -7,7 +7,6 @@ extension SubtasksTableDataMapper on SubtasksTableData {
     return SubTaskEntity(
       id: id,
       networkId: networkId,
-      clientId: clientId,
       taskId: taskId,
       title: title,
       isCompleted: isCompleted,
@@ -21,7 +20,6 @@ extension SubTaskEntityCompanionMapper on SubTaskEntity {
     return SubtasksTableCompanion(
       id: id != null ? Value(id!) : const Value.absent(),
       networkId: Value(networkId),
-      clientId: Value(clientId),
       taskId: Value(taskId),
       title: Value(title),
       isCompleted: Value(isCompleted),
@@ -33,7 +31,6 @@ extension SubTaskEntityCompanionMapper on SubTaskEntity {
     return SubtasksTableCompanion(
       id: Value(id!),
       networkId: Value(networkId),
-      clientId: Value(clientId),
       taskId: Value(taskId),
       title: Value(title),
       isCompleted: Value(isCompleted),

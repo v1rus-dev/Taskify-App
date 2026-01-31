@@ -5,6 +5,7 @@ import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reord
 import 'package:implicitly_animated_reorderable_list_2/transitions.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:taskify/domain/tasks/models/task_wrapper.dart';
+import 'package:taskify/app/router/router_paths.dart';
 import 'package:taskify/features/home/bottom_sheets/task_info/presentation/task_info_bottom_sheet.dart';
 import 'package:taskify/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:taskify/features/home/presentation/widgets/home_hided_header.dart';
@@ -14,6 +15,7 @@ import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreenPage extends StatelessWidget {
   const HomeScreenPage({super.key});
@@ -30,12 +32,44 @@ class HomeScreenPage extends StatelessWidget {
   }
 }
 
-class _HomeScreen extends StatelessWidget {
+class _HomeScreen extends StatefulWidget {
   const _HomeScreen();
+
+  @override
+  State<_HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<_HomeScreen> {
+  bool _handledInitialDeeplink = false;
 
   final Duration _animationDuration = const Duration(milliseconds: 360);
   static const double _insertSlideOffset = 0.08;
   static const double _removeSlideOffset = 0.05;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _handleInitialDeeplink();
+    });
+  }
+
+  void _handleInitialDeeplink() {
+    if (_handledInitialDeeplink) {
+      return;
+    }
+    final uri = GoRouterState.of(context).uri;
+    final openEdit = uri.queryParameters['openEdit'] == 'true';
+    if (!openEdit) {
+      return;
+    }
+    _handledInitialDeeplink = true;
+    final taskId = uri.queryParameters['taskId'];
+    final target = taskId == null || taskId.isEmpty
+        ? RouterPaths.editTask
+        : '${RouterPaths.editTask}?taskId=$taskId';
+    context.push(target);
+  }
 
   void _onTaskClicked(BuildContext context, TaskWrapperEntity task) {
     if (task.task.id == null) return;

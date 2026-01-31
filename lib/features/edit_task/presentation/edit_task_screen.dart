@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:taskify/app/router/router_paths.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';
@@ -22,8 +23,13 @@ import 'package:taskify/l10n/app_localizations.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
 
 class EditTaskPage extends StatelessWidget {
-  const EditTaskPage({super.key, required this.taskId});
+  const EditTaskPage({
+    super.key,
+    required this.taskId,
+    required this.fromWidget,
+  });
   final int? taskId;
+  final bool fromWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -44,14 +50,22 @@ class EditTaskPage extends StatelessWidget {
           )..add(const EditSubTaskStarted()),
         ),
       ],
-      child: EditTaskScreen(taskId: taskId),
+      child: EditTaskScreen(
+        taskId: taskId,
+        fromWidget: fromWidget,
+      ),
     );
   }
 }
 
 class EditTaskScreen extends StatefulWidget {
-  const EditTaskScreen({super.key, this.taskId});
+  const EditTaskScreen({
+    super.key,
+    this.taskId,
+    required this.fromWidget,
+  });
   final int? taskId;
+  final bool fromWidget;
 
   @override
   State<EditTaskScreen> createState() => _EditTaskScreenState();
@@ -62,12 +76,14 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   final descriptionController = TextEditingController();
   final scrollController = ScrollController();
   Timer? _subTasksAutoSaveTimer;
+  AppLifecycleListener? _lifecycleListener;
   bool _isEditTaskInitialized = false;
   bool _isSubTasksInitialized = false;
   _EditTaskSnapshot? _snapshotState;
 
   @override
   void dispose() {
+    _lifecycleListener?.dispose();
     _subTasksAutoSaveTimer?.cancel();
     titleController.dispose();
     descriptionController.dispose();
@@ -79,9 +95,17 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     super.initState();
     _isEditTaskInitialized = widget.taskId == null;
     _isSubTasksInitialized = widget.taskId == null;
+    _lifecycleListener = AppLifecycleListener(
+      onPause: _onAppPause,
+      onInactive: _onAppPause,
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _captureSnapshotIfNeeded();
     });
+  }
+
+  void _onAppPause() {
+    _onAutoSaveRequested();
   }
 
   void _onTitleChanged(String value) {
@@ -92,10 +116,18 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     context.read<EditTaskBloc>().add(EditTaskDescriptionChanged(value));
   }
 
+  void _onNavigateBack() {
+    if (widget.fromWidget) {
+      context.go(RouterPaths.home);
+    } else {
+      context.pop();
+    }
+  }
+
   Future<void> _onClosePressed() async {
     if (!_shouldSaveTask()) {
       if (mounted) {
-        context.pop();
+        _onNavigateBack();
       }
       return;
     }
@@ -168,7 +200,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         _captureSnapshotIfNeeded();
         break;
       case EditTaskCloseScreen():
-        context.pop();
+        _onNavigateBack();
         break;
     }
   }

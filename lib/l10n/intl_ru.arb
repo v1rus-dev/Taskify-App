@@ -43,5 +43,7 @@
   "signInWithApple": "Войти через Apple",
   "am": "AM",
   "pm": "PM",
-  "saving": "Сохранение"
+  "saving": "Сохранение",
+  "todayNoTasks": "У тебя сегодня нет задач",
+  "widgetAddTask": "Добавить задачу"
 }

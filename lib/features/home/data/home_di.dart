@@ -8,6 +8,7 @@ import 'package:taskify/domain/repository/task_repository.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 import 'package:taskify/domain/sync/repositories/sync_repository.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
+import 'package:taskify/core/native_widgets/task_widget_sync_service.dart';
 
 void initHomeDependencies() {
   locator.registerLazySingleton<TaskLocalDataSource>(
@@ -21,6 +22,7 @@ void initHomeDependencies() {
       locator<TagLocalDataSource>(),
       locator<SyncRepository>(),
       locator<SyncCoordinator>(),
+      locator<TaskWidgetSyncService>(),
     ),
   );
 

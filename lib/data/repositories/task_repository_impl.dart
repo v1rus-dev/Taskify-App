@@ -20,6 +20,7 @@ import 'package:taskify/domain/repository/task_repository.dart';
 import 'package:taskify/domain/sync/models/sync_op_data.dart';
 import 'package:taskify/domain/sync/models/sync_queue_entry.dart';
 import 'package:taskify/domain/sync/repositories/sync_repository.dart';
+import 'package:taskify/core/native_widgets/task_widget_sync_service.dart';
 import 'package:uuid/uuid.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
@@ -28,6 +29,7 @@ class TaskRepositoryImpl implements TaskRepository {
   final TagLocalDataSource tagLocalDataSource;
   final SyncRepository syncRepository;
   final SyncCoordinator syncCoordinator;
+  final TaskWidgetSyncService widgetSyncService;
   final Uuid _uuid = const Uuid();
   static final Map<int, DefaultTagEntity> _defaultTagsById = {
     for (final tag in DefaultTag.values)
@@ -40,6 +42,7 @@ class TaskRepositoryImpl implements TaskRepository {
     this.tagLocalDataSource,
     this.syncRepository,
     this.syncCoordinator,
+    this.widgetSyncService,
   );
 
   @override
@@ -87,6 +90,7 @@ class TaskRepositoryImpl implements TaskRepository {
     }
     await _enqueueTaskOp(task: created!, op: 'create');
     syncCoordinator.scheduleSync(reason: 'task_create');
+    await widgetSyncService.refreshTodaySnapshot();
     return Right(created!);
   }
 
@@ -105,6 +109,7 @@ class TaskRepositoryImpl implements TaskRepository {
     }
     await _enqueueTaskOp(task: updated!, op: 'update');
     syncCoordinator.scheduleSync(reason: 'task_update');
+    await widgetSyncService.refreshTodaySnapshot();
     return Right(updated!);
   }
 
@@ -122,6 +127,7 @@ class TaskRepositoryImpl implements TaskRepository {
       ifRight: (_) async {
         await _enqueueTaskDelete(task);
         syncCoordinator.scheduleSync(reason: 'task_delete');
+        await widgetSyncService.refreshTodaySnapshot();
       },
     );
     return result;

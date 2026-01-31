@@ -62,6 +62,8 @@ class AppLocalizations {
   String get am => translate('am');
   String get pm => translate('pm');
   String get saving => translate('saving');
+  String get todayNoTasks => translate('todayNoTasks');
+  String get widgetAddTask => translate('widgetAddTask');
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();

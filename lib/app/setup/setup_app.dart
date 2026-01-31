@@ -3,6 +3,7 @@ import 'package:taskify/app/setup/setup_database.dart';
 import 'package:taskify/app/setup/setup_logging.dart';
 import 'package:taskify/app/setup/setup_preferences.dart';
 import 'package:taskify/core/services/locator.dart';
+import 'package:taskify/core/native_widgets/task_widget_sync_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:taskify/firebase_options.dart';
 
@@ -17,4 +18,5 @@ Future<void> setupApp() async {
   await setupPreferences();
   final database = await setupDatabase();
   await initServiceLocator(database);
+  await locator<TaskWidgetSyncService>().initialize();
 }

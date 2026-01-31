@@ -9,6 +9,10 @@ import 'package:taskify/features/home/data/home_di.dart';
 import 'package:taskify/core/services/dio_client.dart';
 import 'package:taskify/core/auth/access_token_provider.dart';
 import 'package:taskify/features/edit_task/data/edit_task_di.dart';
+import 'package:taskify/core/native_widgets/task_widget_bridge.dart';
+import 'package:taskify/core/native_widgets/task_widget_store.dart';
+import 'package:taskify/core/native_widgets/task_widget_sync_service.dart';
+import 'package:taskify/features/home/data/datasources/task_local_datasource.dart';
 
 final locator = GetIt.instance;
 
@@ -18,6 +22,7 @@ Future<void> initServiceLocator(AppDatabase appDatabase) async {
   await initDio();
   initApiDependencies();
   await initRepositories();
+  initWidgetDependencies();
   initInteractors();
 }
 
@@ -30,6 +35,18 @@ Future<void> initRepositories() async {
   initHomeDependencies();
   initAuthDependencies();
   initEditTaskDependencies();
+}
+
+void initWidgetDependencies() {
+  locator.registerLazySingleton(TaskWidgetBridge.new);
+  locator.registerLazySingleton(() => TaskWidgetStore(locator<TaskWidgetBridge>()));
+  locator.registerLazySingleton(
+    () => TaskWidgetSyncService(
+      locator<TaskLocalDataSource>(),
+      locator<TaskWidgetStore>(),
+      locator<TaskWidgetBridge>(),
+    ),
+  );
 }
 
 Future<void> initDio() async {

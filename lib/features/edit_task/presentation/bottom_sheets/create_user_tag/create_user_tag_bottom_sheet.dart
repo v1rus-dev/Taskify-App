@@ -73,11 +73,12 @@ class _CreateUserTagBottomSheetState extends State<CreateUserTagBottomSheet> {
           selectedColor = state.color;
           isEnabled = state.isValid;
         }
-        return MediaQuery.removeViewInsets(
-          context: context,
-          removeBottom: true,
-          child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
+        return SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.viewInsetsOf(context).bottom,
+            ),
             child: SizedBox(
               width: double.infinity,
               child: Column(

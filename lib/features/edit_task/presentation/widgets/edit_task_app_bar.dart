@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:design/constants/app_icons.dart';
+import 'package:animated_visibility/animated_visibility.dart';
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,7 +32,8 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
     context.pop();
   }
 
-  Widget _buildIconButton({
+  Widget _buildIconButton(
+    BuildContext context, {
     required String iconPath,
     required VoidCallback onPressed,
   }) {
@@ -50,7 +51,7 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
               package: AppIcons.packageName,
               width: 24,
               height: 24,
-              colorFilter: ColorFilter.mode(Color(0xFFDEDEDE), BlendMode.srcIn),
+              colorFilter: ColorFilter.mode(context.iconColor, BlendMode.srcIn),
             ),
           ),
         ),
@@ -78,11 +79,25 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _buildIconButton(iconPath: AppIcons.close, onPressed: onClose),
+              _buildIconButton(
+                context,
+                iconPath: AppIcons.close,
+                onPressed: onClose,
+              ),
               Row(
                 children: [
+                  AnimatedVisibility(
+                    visible: state.saveStatus == EditTaskSaveStatus.saving,
+                    child: Row(
+                      children: [
+                        const CircularProgressIndicator.adaptive(),
+                        const Gap(4),
+                      ],
+                    ),
+                  ),
                   if (taskId != null) ...[
                     _buildIconButton(
+                      context,
                       iconPath: AppIcons.trash,
                       onPressed: () =>
                           _onDelete(context, context.read<EditTaskBloc>()),

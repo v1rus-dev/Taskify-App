@@ -48,7 +48,7 @@ class _TaskCardState extends State<TaskCard> {
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 16),
             child: Padding(
-              padding: const EdgeInsets.only(left: 16, right: 0),
+              padding: const EdgeInsets.only(left: 16, right: 4),
               child: Row(
                 children: [
                   Expanded(

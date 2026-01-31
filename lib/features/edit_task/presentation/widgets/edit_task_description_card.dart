@@ -5,7 +5,7 @@ import 'package:taskify/features/edit_task/presentation/bloc/edit_task/edit_task
 import 'package:taskify/l10n/app_localizations.dart';
 
 class EditTaskDescriptionCard extends StatelessWidget {
-  EditTaskDescriptionCard({
+  const EditTaskDescriptionCard({
     super.key,
     required this.descriptionController,
     required this.onChanged,

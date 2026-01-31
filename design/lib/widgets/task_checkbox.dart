@@ -1,5 +1,6 @@
 import 'package:design/constants/animation_durations.dart';
 import 'package:design/constants/app_icons.dart';
+import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -53,6 +54,10 @@ class TaskCheckbox extends StatelessWidget {
                         package: AppIcons.packageName,
                         width: 24,
                         height: 24,
+                        colorFilter: ColorFilter.mode(
+                          context.iconColor,
+                          BlendMode.srcIn,
+                        ),
                       ),
               ),
             ),

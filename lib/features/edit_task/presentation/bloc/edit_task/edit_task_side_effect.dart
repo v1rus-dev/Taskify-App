@@ -24,3 +24,7 @@ class EditTaskInitEditTextControllers extends EditTaskSideEffect {
 class EditTaskShowConfirmationDialog extends EditTaskSideEffect {
   const EditTaskShowConfirmationDialog();
 }
+
+class EditTaskCloseScreen extends EditTaskSideEffect {
+  const EditTaskCloseScreen();
+}

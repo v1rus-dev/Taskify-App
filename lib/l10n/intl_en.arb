@@ -42,5 +42,6 @@
   "signInWithGoogle": "Sign in with Google",
   "signInWithApple": "Sign in with Apple",
   "am": "AM",
-  "pm": "PM"
+  "pm": "PM",
+  "saving": "Saving"
 }

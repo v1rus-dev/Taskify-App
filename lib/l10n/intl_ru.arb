@@ -42,5 +42,6 @@
   "signInWithGoogle": "Войти через Google",
   "signInWithApple": "Войти через Apple",
   "am": "AM",
-  "pm": "PM"
+  "pm": "PM",
+  "saving": "Сохранение"
 }

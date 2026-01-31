@@ -18,6 +18,7 @@ const lightScheme = AppColorScheme(
   success: Color(0xFF2E7D32),
   pending: Color(0xFFFFB300),
   bottomSheetDragHandle: Color(0xFFD9D9D9),
+  iconColor: Color(0xFFDEDEDE),
 );
 
 const darkScheme = AppColorScheme(
@@ -37,4 +38,5 @@ const darkScheme = AppColorScheme(
   success: Color(0xFF81C784),
   pending: Color(0xFFFFB300),
   bottomSheetDragHandle: Color(0xFFFFFFFF),
+  iconColor: Color(0xFFDEDEDE),
 );

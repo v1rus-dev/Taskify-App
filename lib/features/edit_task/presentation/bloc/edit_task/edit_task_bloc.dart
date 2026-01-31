@@ -196,7 +196,6 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
       ifLeft: (failure) {
         emit(state.copyWith(saveStatus: EditTaskSaveStatus.error));
         TalkerService.instance.error('syncTag ${failure.message}');
-        event.completer.completeError(failure);
       },
       ifRight: (task) {
         emit(
@@ -206,7 +205,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
             networkId: task.networkId ?? state.networkId,
           ),
         );
-        event.completer.complete();
+        _sideEffectController.add(const EditTaskCloseScreen());
       },
     );
   }

@@ -61,6 +61,7 @@ class AppLocalizations {
   String get signInWithApple => translate('signInWithApple');
   String get am => translate('am');
   String get pm => translate('pm');
+  String get saving => translate('saving');
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();

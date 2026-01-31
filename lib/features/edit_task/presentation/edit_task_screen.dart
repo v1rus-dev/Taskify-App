@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:design/design.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';
@@ -63,6 +65,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   Timer? _subTasksAutoSaveTimer;
   bool _isEditTaskInitialized = false;
   bool _isSubTasksInitialized = false;
+  _EditTaskSnapshot? _snapshotState;
 
   @override
   void dispose() {
@@ -77,6 +80,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     super.initState();
     _isEditTaskInitialized = widget.taskId == null;
     _isSubTasksInitialized = widget.taskId == null;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _captureSnapshotIfNeeded();
+    });
   }
 
   void _onTitleChanged(String value) {
@@ -88,28 +94,28 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   }
 
   Future<void> _onClosePressed() async {
-    final completer = Completer<void>();
+    if (!_shouldSaveTask()) {
+      if (mounted) {
+        context.pop();
+      }
+      return;
+    }
     final editBloc = context.read<EditTaskBloc>();
     final subTasks = context.read<EditSubTaskBloc>().state.subTasks;
     editBloc.add(
       EditTaskSaveTask(
-        completer,
         titleController.text,
         descriptionController.text,
         subTasks,
       ),
     );
-    try {
-      await completer.future;
-    } catch (_) {}
-    if (!mounted) {
-      return;
-    }
-    context.pop();
   }
 
   void _onAutoSaveRequested() {
     if (!_isEditTaskInitialized) {
+      return;
+    }
+    if (!_shouldSaveTask()) {
       return;
     }
     final editBloc = context.read<EditTaskBloc>();
@@ -120,6 +126,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   void _onEditTaskChanged(BuildContext context, EditTaskState state) {
     if (!_isEditTaskInitialized) {
       _isEditTaskInitialized = true;
+      _captureSnapshotIfNeeded();
       return;
     }
     _onAutoSaveRequested();
@@ -128,6 +135,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   void _onSubTasksChanged(BuildContext context, EditSubTaskState state) {
     if (!_isSubTasksInitialized) {
       _isSubTasksInitialized = true;
+      _captureSnapshotIfNeeded();
       return;
     }
     _scheduleSubTasksAutoSave();
@@ -152,11 +160,23 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     });
   }
 
-  void _onSideEffect(EditTaskSideEffect effect) {
-    if (effect is EditTaskInitEditTextControllers) {
-      titleController.text = effect.title;
-      descriptionController.text = effect.description;
-      _isEditTaskInitialized = true;
+  void _onSideEffect(BuildContext context, EditTaskSideEffect effect) {
+    switch (effect) {
+      case EditTaskInitEditTextControllers():
+        titleController.text = effect.title;
+        descriptionController.text = effect.description;
+        _isEditTaskInitialized = true;
+        _captureSnapshotIfNeeded();
+        break;
+      case EditTaskCloseScreen():
+        context.pop();
+        break;
+    }
+  }
+
+  void _onSaveStatusChanged(BuildContext context, EditTaskState state) {
+    if (state.saveStatus == EditTaskSaveStatus.saved) {
+      _updateSnapshot();
     }
   }
 
@@ -168,6 +188,62 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         previous.endTime != current.endTime ||
         previous.isAllDay != current.isAllDay ||
         previous.selectedTags != current.selectedTags;
+  }
+
+  void _captureSnapshotIfNeeded() {
+    if (_snapshotState != null) {
+      return;
+    }
+    if (!_isEditTaskInitialized || !_isSubTasksInitialized) {
+      return;
+    }
+    _snapshotState = _buildSnapshot();
+  }
+
+  void _updateSnapshot() {
+    if (!_isEditTaskInitialized || !_isSubTasksInitialized) {
+      return;
+    }
+    _snapshotState = _buildSnapshot();
+  }
+
+  bool _shouldSaveTask() {
+    final currentSnapshot = _buildSnapshot();
+    if (currentSnapshot.isEmpty || currentSnapshot.title.trim().isEmpty) {
+      return false;
+    }
+    final existingSnapshot = _snapshotState;
+    if (existingSnapshot == null) {
+      return true;
+    }
+    return existingSnapshot != currentSnapshot;
+  }
+
+  _EditTaskSnapshot _buildSnapshot() {
+    final editState = context.read<EditTaskBloc>().state;
+    final subTasks = context.read<EditSubTaskBloc>().state.subTasks;
+    final tagKeys = editState.selectedTags.map((tag) => tag.key).toList()
+      ..sort();
+    return _EditTaskSnapshot(
+      title: editState.title,
+      description: editState.description,
+      isCompleted: editState.isCompleted,
+      selectedDate: editState.selectedDate,
+      startTime: editState.startTime,
+      endTime: editState.endTime,
+      isAllDay: editState.isAllDay,
+      tagKeys: tagKeys,
+      subTasks: subTasks
+          .map(
+            (item) => _SubTaskSnapshot(
+              id: item.id,
+              localKey: item.localKey,
+              title: item.title,
+              isCompleted: item.isCompleted,
+            ),
+          )
+          .toList(),
+    );
   }
 
   Widget _buildTitleTextField() {
@@ -202,6 +278,11 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     return MultiBlocListener(
       listeners: [
         BlocListener<EditTaskBloc, EditTaskState>(
+          listenWhen: (previous, current) =>
+              previous.saveStatus != current.saveStatus,
+          listener: _onSaveStatusChanged,
+        ),
+        BlocListener<EditTaskBloc, EditTaskState>(
           listenWhen: _shouldAutoSave,
           listener: _onEditTaskChanged,
         ),
@@ -212,12 +293,14 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         ),
       ],
       child: BlocSideEffectListener<EditTaskBloc, EditTaskSideEffect>(
-        listener: _onSideEffect,
+        listener: (effect) => _onSideEffect(context, effect),
         child: PopScope(
+          canPop: false,
           onPopInvokedWithResult: (didPop, result) async {
             if (didPop) {
-              await _onClosePressed();
+              return;
             }
+            await _onClosePressed();
           },
           child: Scaffold(
             resizeToAvoidBottomInset: true,
@@ -264,4 +347,71 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       ),
     );
   }
+}
+
+class _EditTaskSnapshot extends Equatable {
+  const _EditTaskSnapshot({
+    required this.title,
+    required this.description,
+    required this.isCompleted,
+    required this.selectedDate,
+    required this.startTime,
+    required this.endTime,
+    required this.isAllDay,
+    required this.tagKeys,
+    required this.subTasks,
+  });
+
+  final String title;
+  final String description;
+  final bool isCompleted;
+  final DateTime selectedDate;
+  final DateTime? startTime;
+  final DateTime? endTime;
+  final bool isAllDay;
+  final List<String> tagKeys;
+  final List<_SubTaskSnapshot> subTasks;
+
+  bool get isEmpty {
+    if (title.trim().isNotEmpty) {
+      return false;
+    }
+    if (description.trim().isNotEmpty) {
+      return false;
+    }
+    if (tagKeys.isNotEmpty) {
+      return false;
+    }
+    return subTasks.every((item) => item.title.trim().isEmpty);
+  }
+
+  @override
+  List<Object?> get props => [
+        title,
+        description,
+        isCompleted,
+        selectedDate,
+        startTime,
+        endTime,
+        isAllDay,
+        tagKeys,
+        subTasks,
+      ];
+}
+
+class _SubTaskSnapshot extends Equatable {
+  const _SubTaskSnapshot({
+    required this.id,
+    required this.localKey,
+    required this.title,
+    required this.isCompleted,
+  });
+
+  final int? id;
+  final int localKey;
+  final String title;
+  final bool isCompleted;
+
+  @override
+  List<Object?> get props => [id, localKey, title, isCompleted];
 }

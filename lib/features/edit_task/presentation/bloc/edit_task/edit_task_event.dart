@@ -88,14 +88,8 @@ class EditTaskTagsUpdated extends EditTaskEvent {
 }
 
 class EditTaskSaveTask extends EditTaskEvent {
-  const EditTaskSaveTask(
-    this.completer,
-    this.title,
-    this.description,
-    this.subTasks,
-  );
+  const EditTaskSaveTask(this.title, this.description, this.subTasks);
 
-  final Completer completer;
   final String title;
   final String description;
   final List<SubTaskUiModel> subTasks;

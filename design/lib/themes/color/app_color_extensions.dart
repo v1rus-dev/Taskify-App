@@ -161,4 +161,34 @@ class AppColorExtensions {
 
     return lightScheme.bottomSheetDragHandle;
   }
+
+  static Color getIconColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    if (isDark) {
+      return darkScheme.iconColor;
+    }
+
+    return lightScheme.iconColor;
+  }
+}
+
+extension AppColorContextExtensions on BuildContext {
+  Color get backgroundColor => AppColorExtensions.getBackgroundColor(this);
+  Color get cardColor => AppColorExtensions.getCardColor(this);
+  Color get textPrimaryColor => AppColorExtensions.getTextPrimaryColor(this);
+  Color get textSecondaryColor => AppColorExtensions.getTextSecondaryColor(this);
+  Color get dividerColor => AppColorExtensions.getDividerColor(this);
+  Color get primaryAccentColor => AppColorExtensions.getPrimaryAccentColor(this);
+  Color get buttonPrimaryBackgroundColor => AppColorExtensions.getButtonPrimaryBackgroundColor(this);
+  Color get buttonPrimaryTextColor => AppColorExtensions.getButtonPrimaryTextColor(this);
+  Color get buttonDisabledBackgroundColor => AppColorExtensions.getButtonDisabledBackgroundColor(this);
+  Color get buttonDisabledTextColor => AppColorExtensions.getButtonDisabledTextColor(this);
+  Color get shadowColor => AppColorExtensions.getShadowColor(this);
+  Color get bottomSheetOverlayColor => AppColorExtensions.getBottomSheetOverlayColor(this);
+  Color get errorColor => AppColorExtensions.getErrorColor(this);
+  Color get successColor => AppColorExtensions.getSuccessColor(this);
+  Color get pendingColor => AppColorExtensions.getPendingColor(this);
+  Color get bottomSheetDragHandleColor => AppColorExtensions.getBottomSheetDragHandleColor(this);
+  Color get iconColor => AppColorExtensions.getIconColor(this);
 }

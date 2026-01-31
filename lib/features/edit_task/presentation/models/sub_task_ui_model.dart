@@ -1,4 +1,6 @@
-class SubTaskUiModel {
+import 'package:equatable/equatable.dart';
+
+class SubTaskUiModel extends Equatable {
   const SubTaskUiModel({
     required this.id,
     required this.localKey,
@@ -10,4 +12,7 @@ class SubTaskUiModel {
   final int localKey;
   final String title;
   final bool isCompleted;
+
+  @override
+  List<Object?> get props => [id, localKey, title, isCompleted];
 }

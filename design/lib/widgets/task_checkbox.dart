@@ -1,5 +1,3 @@
-import 'package:design/constants/animation_durations.dart';
-import 'package:design/constants/app_icons.dart';
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';

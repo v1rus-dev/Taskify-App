@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';

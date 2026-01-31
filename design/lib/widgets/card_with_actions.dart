@@ -1,3 +1,4 @@
+import 'package:design/constants/app_radius.dart';
 import 'package:design/models/card_action.dart';
 import 'package:design/themes/color/app_color_extensions.dart';
 import 'package:design/constants/app_icons.dart';
@@ -11,11 +12,13 @@ class CardWithActions extends StatefulWidget {
     required this.actions,
     this.animatable = false,
     this.withAnimationExpanded = false,
+    this.showAppShadow = true
   });
 
   final List<CardAction> actions;
   final bool animatable;
   final bool withAnimationExpanded;
+  final bool showAppShadow;
 
   @override
   State<CardWithActions> createState() => _CardWithActionsState();
@@ -25,13 +28,13 @@ class _CardWithActionsState extends State<CardWithActions> {
   BorderRadius _borderRadiusForPosition(_ActionPositionType positionType) {
     switch (positionType) {
       case _ActionPositionType.top:
-        return const BorderRadius.vertical(top: Radius.circular(16));
+        return const BorderRadius.vertical(top: Radius.circular(AppRadius.defaultCardRadius));
       case _ActionPositionType.bottom:
-        return const BorderRadius.vertical(bottom: Radius.circular(16));
+        return const BorderRadius.vertical(bottom: Radius.circular(AppRadius.defaultCardRadius));
       case _ActionPositionType.middle:
         return BorderRadius.zero;
       case _ActionPositionType.single:
-        return BorderRadius.circular(16);
+        return BorderRadius.circular(AppRadius.defaultCardRadius);
     }
   }
 
@@ -122,6 +125,7 @@ class _CardWithActionsState extends State<CardWithActions> {
     final content = Column(children: children);
     return AppShadow(
       borderRadius: BorderRadius.circular(16),
+      enabled: widget.showAppShadow,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),

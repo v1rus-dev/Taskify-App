@@ -1,13 +1,43 @@
 part of 'task_info_bloc.dart';
 
-@freezed
-class TaskInfoEvent with _$TaskInfoEvent {
-  const factory TaskInfoEvent.started() = _Started;
-  const factory TaskInfoEvent.taskUpdated(TaskWrapperEntity task) =
-      _TaskUpdated;
-  const factory TaskInfoEvent.taskCheckBoxPressed() = _TaskCheckBoxPressed;
-  const factory TaskInfoEvent.subTasksUpdated(List<SubTaskEntity> subTasks) =
-      _SubTasksUpdated;
-  const factory TaskInfoEvent.subTaskCheckBoxPressed(SubTaskEntity subTask) =
-      _SubTaskCheckBoxPressed;
+abstract class TaskInfoEvent extends Equatable {
+  const TaskInfoEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class TaskInfoStarted extends TaskInfoEvent {
+  const TaskInfoStarted();
+}
+
+class TaskInfoTaskUpdated extends TaskInfoEvent {
+  const TaskInfoTaskUpdated(this.task);
+
+  final TaskWrapperEntity task;
+
+  @override
+  List<Object?> get props => [task];
+}
+
+class TaskInfoTaskCheckBoxPressed extends TaskInfoEvent {
+  const TaskInfoTaskCheckBoxPressed();
+}
+
+class TaskInfoSubTasksUpdated extends TaskInfoEvent {
+  const TaskInfoSubTasksUpdated(this.subTasks);
+
+  final List<SubTaskEntity> subTasks;
+
+  @override
+  List<Object?> get props => [subTasks];
+}
+
+class TaskInfoSubTaskCheckBoxPressed extends TaskInfoEvent {
+  const TaskInfoSubTaskCheckBoxPressed(this.subTask);
+
+  final SubTaskEntity subTask;
+
+  @override
+  List<Object?> get props => [subTask];
 }

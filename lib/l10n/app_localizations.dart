@@ -42,6 +42,7 @@ class AppLocalizations {
   String get selectTimes => translate('selectTimes');
   String get from => translate('from');
   String get to => translate('to');
+  String get addTags => translate('addTags');
   String get createTag => translate('createTag');
   String get tagName => translate('tagName');
   String get color => translate('color');
@@ -60,6 +61,7 @@ class AppLocalizations {
   String get signInWithApple => translate('signInWithApple');
   String get am => translate('am');
   String get pm => translate('pm');
+  String get saving => translate('saving');
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();

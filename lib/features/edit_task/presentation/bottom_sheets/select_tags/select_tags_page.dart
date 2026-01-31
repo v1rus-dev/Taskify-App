@@ -18,7 +18,7 @@ class SelectTagsPage extends StatelessWidget {
     return BlocProvider(
       create: (_) => SelectTagsBloc(
         initialSelectedTagKeys: selectedTagKeys,
-      )..add(const SelectTagsEvent.started()),
+      )..add(const SelectTagsStarted()),
       child: const SelectTagsBottomSheet(),
     );
   }

@@ -1,13 +1,32 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 import 'package:taskify/domain/auth/models/auth_session.dart';
 
-part 'auth_state.freezed.dart';
+class AuthState extends Equatable {
+  const AuthState({
+    this.session,
+    this.isLoading = false,
+    this.errorMessage,
+  });
 
-@freezed
-abstract class AuthState with _$AuthState {
-  const factory AuthState({
+  final AuthSession? session;
+  final bool isLoading;
+  final String? errorMessage;
+
+  static const _unset = Object();
+
+  AuthState copyWith({
     AuthSession? session,
-    @Default(false) bool isLoading,
-    String? errorMessage,
-  }) = _AuthState;
+    bool? isLoading,
+    Object? errorMessage = _unset,
+  }) {
+    return AuthState(
+      session: session ?? this.session,
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage:
+          errorMessage == _unset ? this.errorMessage : errorMessage as String?,
+    );
+  }
+
+  @override
+  List<Object?> get props => [session, isLoading, errorMessage];
 }

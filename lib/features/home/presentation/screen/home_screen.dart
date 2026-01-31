@@ -1,5 +1,4 @@
 import 'package:design/design.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reorderable_list_2.dart';
@@ -25,7 +24,7 @@ class HomeScreenPage extends StatelessWidget {
       create: (context) => HomeBloc(
         taskInteractor: locator<TaskInteractor>(),
         syncCoordinator: locator<SyncCoordinator>(),
-      )..add(const HomeEvent.started()),
+      )..add(const HomeStarted()),
       child: const _HomeScreen(),
     );
   }
@@ -50,7 +49,7 @@ class _HomeScreen extends StatelessWidget {
   }
 
   void _onTaskCheckboxPressed(BuildContext context, TaskWrapperEntity task) {
-    context.read<HomeBloc>().add(HomeEvent.updateTaskCompletion(task));
+    context.read<HomeBloc>().add(HomeUpdateTaskCompletion(task));
   }
 
   Widget _buildAnimatedTaskItem({

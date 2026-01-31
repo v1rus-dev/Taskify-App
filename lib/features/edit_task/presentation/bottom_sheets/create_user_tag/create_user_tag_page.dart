@@ -10,7 +10,7 @@ class CreateUserTagPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => CreateUserTagBloc()..add(const CreateUserTagEvent.started()),
+      create: (_) => CreateUserTagBloc()..add(const CreateUserTagStarted()),
       child: const CreateUserTagBottomSheet(),
     );
   }

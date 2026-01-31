@@ -1,5 +1,6 @@
 import 'package:design/constants/animation_durations.dart';
 import 'package:design/constants/app_icons.dart';
+import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -29,8 +30,8 @@ class TaskCheckbox extends StatelessWidget {
           customBorder: const CircleBorder(),
           borderRadius: BorderRadius.circular(24),
           child: SizedBox(
-            width: 36,
-            height: 36,
+            width: 32,
+            height: 32,
             child: Center(
               child: AnimatedScale(
                 scale: 1.0,
@@ -53,6 +54,10 @@ class TaskCheckbox extends StatelessWidget {
                         package: AppIcons.packageName,
                         width: 24,
                         height: 24,
+                        colorFilter: ColorFilter.mode(
+                          context.iconColor,
+                          BlendMode.srcIn,
+                        ),
                       ),
               ),
             ),

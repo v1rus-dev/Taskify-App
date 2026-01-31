@@ -1,8 +1,6 @@
 import 'package:design/design.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:design/constants/app_icons.dart';
 
 class AppAddActionButton extends StatelessWidget {
   const AppAddActionButton({super.key, required this.onPressed});

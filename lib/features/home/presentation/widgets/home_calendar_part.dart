@@ -101,7 +101,9 @@ class _HomeCalendarPartState extends State<HomeCalendarPart> {
                               weekDays[i].day == state.selectedDate.day,
                           isDisabled: !_isDateSelectable(weekDays[i]),
                           onTap: _isDateSelectable(weekDays[i])
-                              ? () => context.read<HomeBloc>().add(HomeEvent.selectDate(weekDays[i]))
+                              ? () => context
+                                  .read<HomeBloc>()
+                                  .add(HomeSelectDate(weekDays[i]))
                               : null,
                         ),
                       ),

@@ -1,12 +1,34 @@
 part of 'select_tags_bloc.dart';
 
-@freezed
-class SelectTagsEvent with _$SelectTagsEvent {
-  const factory SelectTagsEvent.started() = _Started;
+abstract class SelectTagsEvent extends Equatable {
+  const SelectTagsEvent();
 
-  const factory SelectTagsEvent.tagToggled(TagEntity tag) = _TagToggled;
+  @override
+  List<Object?> get props => [];
+}
 
-  const factory SelectTagsEvent.createTagPressed() = _CreateTagPressed;
+class SelectTagsStarted extends SelectTagsEvent {
+  const SelectTagsStarted();
+}
 
-  const factory SelectTagsEvent.updateUserTags(List<TagEntity> tags) = _UpdateUserTags;
+class SelectTagsTagToggled extends SelectTagsEvent {
+  const SelectTagsTagToggled(this.tag);
+
+  final TagEntity tag;
+
+  @override
+  List<Object?> get props => [tag];
+}
+
+class SelectTagsCreateTagPressed extends SelectTagsEvent {
+  const SelectTagsCreateTagPressed();
+}
+
+class SelectTagsUpdateUserTags extends SelectTagsEvent {
+  const SelectTagsUpdateUserTags(this.tags);
+
+  final List<TagEntity> tags;
+
+  @override
+  List<Object?> get props => [tags];
 }

@@ -1,11 +1,52 @@
 part of 'home_bloc.dart';
 
-@freezed
-class HomeEvent with _$HomeEvent {
-  const factory HomeEvent.started() = _Started;
-  const factory HomeEvent.tasksUpdated(List<TaskWrapperEntity> tasks) = _TasksUpdated;
-  const factory HomeEvent.updateTaskCompletion(TaskWrapperEntity task) = _UpdateTaskCompletion;
-  const factory HomeEvent.changeTasksViewType(TasksViewType tasksViewType) = _ChangeTasksViewType;
-  const factory HomeEvent.changeCalendarVisibility() = _ChangeCalendarVisibility;
-  const factory HomeEvent.selectDate(DateTime date) = _SelectDate;
+abstract class HomeEvent extends Equatable {
+  const HomeEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class HomeStarted extends HomeEvent {
+  const HomeStarted();
+}
+
+class HomeTasksUpdated extends HomeEvent {
+  const HomeTasksUpdated(this.tasks);
+
+  final List<TaskWrapperEntity> tasks;
+
+  @override
+  List<Object?> get props => [tasks];
+}
+
+class HomeUpdateTaskCompletion extends HomeEvent {
+  const HomeUpdateTaskCompletion(this.task);
+
+  final TaskWrapperEntity task;
+
+  @override
+  List<Object?> get props => [task];
+}
+
+class HomeChangeTasksViewType extends HomeEvent {
+  const HomeChangeTasksViewType(this.tasksViewType);
+
+  final TasksViewType tasksViewType;
+
+  @override
+  List<Object?> get props => [tasksViewType];
+}
+
+class HomeChangeCalendarVisibility extends HomeEvent {
+  const HomeChangeCalendarVisibility();
+}
+
+class HomeSelectDate extends HomeEvent {
+  const HomeSelectDate(this.date);
+
+  final DateTime date;
+
+  @override
+  List<Object?> get props => [date];
 }

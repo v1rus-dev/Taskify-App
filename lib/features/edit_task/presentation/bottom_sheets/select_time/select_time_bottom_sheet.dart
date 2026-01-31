@@ -12,10 +12,12 @@ class SelectTimeBottomSheet extends StatefulWidget {
     super.key,
     this.initialStartTime,
     this.initialEndTime,
+    this.onTimesSelected,
   });
 
   final TimeOfDay? initialStartTime;
   final TimeOfDay? initialEndTime;
+  final void Function(TimeOfDay startTime, TimeOfDay endTime)? onTimesSelected;
 
   @override
   State<SelectTimeBottomSheet> createState() => _SelectTimeBottomSheetState();
@@ -34,7 +36,10 @@ class _SelectTimeBottomSheetState extends State<SelectTimeBottomSheet> {
     _endTime = _coerceEndTime(computedEndTime, _startTime);
   }
 
-  void _onSavePressed(BuildContext context) {}
+  void _onSavePressed(BuildContext context) {
+    widget.onTimesSelected?.call(_startTime, _endTime);
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -153,10 +158,10 @@ class _SelectTimeBottomSheetState extends State<SelectTimeBottomSheet> {
   }
 
   void _onStartTimeChanged(TimeOfDay time) {
-    print(time);
+    widget.onTimesSelected?.call(time, _endTime);
   }
 
   void _onEndTimeChanged(TimeOfDay time) {
-    print(time);
+    widget.onTimesSelected?.call(_startTime, time);
   }
 }

@@ -20,19 +20,23 @@ class TagCheap extends StatelessWidget {
     final theme = Theme.of(context);
     return Material(
       color: _getBackgroundColor(context),
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(4),
-        child: Container(
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          alignment: Alignment.center,
-          child: Text(
-            tag.title,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: _getTextColor(context),
-            ),
-            textAlign: TextAlign.center,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                tag.title,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: _getTextColor(context),
+                ),
+              ),
+            ],
           ),
         ),
       ),

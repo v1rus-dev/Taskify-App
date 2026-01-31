@@ -1,6 +1,6 @@
 {
   "appTitle": "Taskify",
-  "writeANewTask": "Write a new task...",
+  "writeANewTask": "Write a new task",
   "description": "Description",
   "today": "Today",
   "tasks": "Tasks",
@@ -24,6 +24,7 @@
   "selectTimes": "Select times",
   "from": "from",
   "to": "to",
+  "addTags": "Add tags",
   "createTag": "Create tag",
   "tagName": "Tag name",
   "color": "Color",
@@ -41,5 +42,6 @@
   "signInWithGoogle": "Sign in with Google",
   "signInWithApple": "Sign in with Apple",
   "am": "AM",
-  "pm": "PM"
+  "pm": "PM",
+  "saving": "Saving"
 }

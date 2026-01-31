@@ -1,6 +1,4 @@
 import 'package:design/design.dart';
-import 'package:design/themes/themes.dart';
-import 'package:design/widgets/task_checkbox.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/core/providers/time_format_notifier.dart';

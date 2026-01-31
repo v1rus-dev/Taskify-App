@@ -1,6 +1,6 @@
 {
   "appTitle": "Taskify",
-  "writeANewTask": "Новая задача...",
+  "writeANewTask": "Новая задача",
   "description": "Описание",
   "today": "Сегодня",
   "tasks": "Задачи",
@@ -24,6 +24,7 @@
   "selectTimes": "Выберите время",
   "from": "с",
   "to": "до",
+  "addTags": "Добавить теги",
   "createTag": "Создать тег",
   "tagName": "Название тега",
   "color": "Цвет",
@@ -41,5 +42,6 @@
   "signInWithGoogle": "Войти через Google",
   "signInWithApple": "Войти через Apple",
   "am": "AM",
-  "pm": "PM"
+  "pm": "PM",
+  "saving": "Сохранение"
 }

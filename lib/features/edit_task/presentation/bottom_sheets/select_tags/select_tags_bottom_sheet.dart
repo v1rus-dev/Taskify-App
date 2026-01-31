@@ -13,13 +13,14 @@ class SelectTagsBottomSheet extends StatelessWidget {
   const SelectTagsBottomSheet({super.key});
 
   void _onTagPressed(BuildContext context, TagEntity tag) {
-    context.read<SelectTagsBloc>().add(SelectTagsEvent.tagToggled(tag));
+    context.read<SelectTagsBloc>().add(SelectTagsTagToggled(tag));
   }
 
   void _onCreateTagPressed(BuildContext context) {
     showAppBottomSheet(
       context: context,
       type: AppBottomSheetType.standard,
+      isScrollControlled: true,
       child: BlocProvider.value(
         value: context.read<EditTaskBloc>(),
         child: const CreateUserTagPage(),
@@ -29,77 +30,72 @@ class SelectTagsBottomSheet extends StatelessWidget {
 
   void _onSavePressed(BuildContext context) {
     final selectedTags = _collectSelectedTags(context);
-    context.read<EditTaskBloc>().add(EditTaskEvent.tagsUpdated(selectedTags));
+    context.read<EditTaskBloc>().add(EditTaskTagsUpdated(selectedTags));
     Navigator.of(context).pop();
   }
 
   List<TagEntity> _collectSelectedTags(BuildContext context) {
     final state = context.read<SelectTagsBloc>().state;
-    return state.maybeWhen(
-      success: (defaultTags, customTags, selectedTagKeys) {
-        final allTags = [...defaultTags, ...customTags];
-        return allTags
-            .where((tag) => selectedTagKeys.contains(tag.key))
-            .toList(growable: false);
-      },
-      orElse: () => const <TagEntity>[],
-    );
+    if (state is SelectTagsSuccess) {
+      final allTags = [...state.defaultTags, ...state.customTags];
+      return allTags
+          .where((tag) => state.selectedTagKeys.contains(tag.key))
+          .toList(growable: false);
+    }
+    return const <TagEntity>[];
   }
 
   Widget _buildContent(BuildContext context, SelectTagsState state) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
 
-    return state.maybeWhen(
-      success: (defaultTags, customTags, selectedTagKeys) {
-        return Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.only(
-                  bottom: 12,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TagsSection(
-                      title: l10n?.defaults ?? '',
-                      tags: defaultTags,
-                      selectedTagKeys: selectedTagKeys,
-                      onTagPressed: (tag) => _onTagPressed(context, tag),
-                    ),
-                    const Gap(24),
-                    CustomTagsSection(
-                      tags: customTags,
-                      selectedTagKeys: selectedTagKeys,
-                      onTagPressed: (tag) => _onTagPressed(context, tag),
-                      onCreatePressed: () => _onCreateTagPressed(context),
-                    ),
-                  ],
-                ),
-              ),
+    if (state is! SelectTagsSuccess) {
+      return const SizedBox.shrink();
+    }
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.only(
+              bottom: 12,
             ),
-
-            const Gap(12),
-            Center(
-              child: Text(
-                l10n?.tagsHelpText ?? '',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: AppColorExtensions.getTextSecondaryColor(context),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TagsSection(
+                  title: l10n?.defaults ?? '',
+                  tags: state.defaultTags,
+                  selectedTagKeys: state.selectedTagKeys,
+                  onTagPressed: (tag) => _onTagPressed(context, tag),
                 ),
-                textAlign: TextAlign.center,
-              ),
+                const Gap(24),
+                CustomTagsSection(
+                  tags: state.customTags,
+                  selectedTagKeys: state.selectedTagKeys,
+                  onTagPressed: (tag) => _onTagPressed(context, tag),
+                  onCreatePressed: () => _onCreateTagPressed(context),
+                ),
+              ],
             ),
-            const Gap(12),
-            AppTextButton(
-              text: l10n?.save ?? '',
-              onPressed: () => _onSavePressed(context),
+          ),
+        ),
+        const Gap(12),
+        Center(
+          child: Text(
+            l10n?.tagsHelpText ?? '',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: AppColorExtensions.getTextSecondaryColor(context),
             ),
-            const Gap(AppInsets.sheetBottomSmall),
-          ],
-        );
-      },
-      orElse: () => const SizedBox.shrink(),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const Gap(12),
+        AppTextButton(
+          text: l10n?.save ?? '',
+          onPressed: () => _onSavePressed(context),
+        ),
+        const Gap(AppInsets.sheetBottomSmall),
+      ],
     );
   }
 

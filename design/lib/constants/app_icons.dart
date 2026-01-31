@@ -5,6 +5,7 @@ class AppIcons {
   static const String arrowTop = 'assets/icons/ic_arrow_top.svg';
   static const String settings = 'assets/icons/ic_settings.svg';
   static const String add = 'assets/icons/ic_add.svg';
+  static const String addSmall = 'assets/icons/ic_add_small.svg';
   static const String close = 'assets/icons/ic_close.svg';
   static const String trash = 'assets/icons/ic_trash.svg';
   static const String check = 'assets/icons/ic_check.svg';
@@ -20,4 +21,5 @@ class AppIcons {
   static const String home = 'assets/icons/ic_home.svg';
   static const String profile = 'assets/icons/ic_profile.svg';
   static const String checkFilled = 'assets/icons/ic_check_filled.svg';
+  static const String dragVertical = 'assets/icons/ic_drag_vertical.svg';
 }

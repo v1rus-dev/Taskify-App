@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/domain/tags/models/sub_task.dart';
 import 'package:taskify/domain/tasks/models/task_wrapper.dart';
@@ -11,7 +11,6 @@ import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 
 part 'task_info_event.dart';
 part 'task_info_state.dart';
-part 'task_info_bloc.freezed.dart';
 
 class TaskInfoBloc extends Bloc<TaskInfoEvent, TaskInfoState> {
   final int taskId;
@@ -24,34 +23,36 @@ class TaskInfoBloc extends Bloc<TaskInfoEvent, TaskInfoState> {
     required this.taskId,
     required this.taskInteractor,
     required this.subTaskInteractor,
-  }) : super(_Initial()) {
-    on<_Started>(_onStarted);
-    on<_TaskUpdated>(_onTaskUpdated);
-    on<_TaskCheckBoxPressed>(_onTaskCheckBoxPressed);
-    on<_SubTaskCheckBoxPressed>(_onSubTaskCheckBoxPressed);
+  }) : super(const TaskInfoInitial()) {
+    on<TaskInfoStarted>(_onStarted);
+    on<TaskInfoTaskUpdated>(_onTaskUpdated);
+    on<TaskInfoTaskCheckBoxPressed>(_onTaskCheckBoxPressed);
+    on<TaskInfoSubTaskCheckBoxPressed>(_onSubTaskCheckBoxPressed);
   }
 
-  void _onStarted(_Started event, Emitter<TaskInfoState> emit) async {
+  void _onStarted(TaskInfoStarted event, Emitter<TaskInfoState> emit) async {
     _observeTask();
   }
 
-  void _onTaskUpdated(_TaskUpdated event, Emitter<TaskInfoState> emit) {
-    emit(TaskInfoState.success(task: event.task));
+  void _onTaskUpdated(TaskInfoTaskUpdated event, Emitter<TaskInfoState> emit) {
+    emit(TaskInfoSuccess(task: event.task));
   }
 
   void _onTaskCheckBoxPressed(
-    _TaskCheckBoxPressed event,
+    TaskInfoTaskCheckBoxPressed event,
     Emitter<TaskInfoState> emit,
   ) {
-    final task = state.maybeWhen(success: (task) => task, orElse: () => null);
-    if (task == null) return;
+    final current = state;
+    if (current is! TaskInfoSuccess) {
+      return;
+    }
     taskInteractor.updateTask(
-      task.task.copyWith(isCompleted: !task.task.isCompleted),
+      current.task.task.copyWith(isCompleted: !current.task.task.isCompleted),
     );
   }
 
   void _onSubTaskCheckBoxPressed(
-    _SubTaskCheckBoxPressed event,
+    TaskInfoSubTaskCheckBoxPressed event,
     Emitter<TaskInfoState> emit,
   ) {
     final subTask = event.subTask;
@@ -64,7 +65,7 @@ class TaskInfoBloc extends Bloc<TaskInfoEvent, TaskInfoState> {
     _taskSubscription = taskInteractor
         .observeTaskById(taskId)
         .listen(
-          (task) => add(TaskInfoEvent.taskUpdated(task)),
+          (task) => add(TaskInfoTaskUpdated(task)),
           onError: (error, _) {
             TalkerService.instance.error(
               'syncTag observeTaskById error',

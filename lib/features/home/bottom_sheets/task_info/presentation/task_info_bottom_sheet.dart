@@ -24,7 +24,7 @@ class TaskInfoBottomSheet extends StatelessWidget {
         taskId: taskId,
         taskInteractor: locator(),
         subTaskInteractor: locator(),
-      )..add(TaskInfoEvent.started()),
+      )..add(const TaskInfoStarted()),
       child: _TaskInfoBottomSheetContent(taskId: taskId),
     );
   }
@@ -36,7 +36,7 @@ class _TaskInfoBottomSheetContent extends StatelessWidget {
   const _TaskInfoBottomSheetContent({required this.taskId});
 
   void _onTaskCheckBoxPressed(BuildContext context) {
-    context.read<TaskInfoBloc>().add(TaskInfoEvent.taskCheckBoxPressed());
+    context.read<TaskInfoBloc>().add(const TaskInfoTaskCheckBoxPressed());
   }
 
   void _onEditPressed() {
@@ -51,29 +51,30 @@ class _TaskInfoBottomSheetContent extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return BlocBuilder<TaskInfoBloc, TaskInfoState>(
       builder: (context, state) {
-        return state.when(
-          initial: () => const SizedBox.shrink(),
-          success: (task) => Padding(
-            padding: EdgeInsets.only(bottom: AppInsets.sheetVertical),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                TaskInfoHeaderPart(
-                  task: task,
-                  onCheckBoxPressed: () => _onTaskCheckBoxPressed(context),
-                ),
-                TaskInfoTagsPart(tags: task.tags),
-                TaskInfoDescriptionPart(
-                  description: task.task.description ?? '',
-                ),
-                TaskInfoSubTasksPart(subTasks: task.subTasks),
-                const Gap(24),
-                AppSecondaryButton(
-                  title: l10n?.edit ?? '',
-                  onPressed: _onEditPressed,
-                ),
-              ],
-            ),
+        if (state is! TaskInfoSuccess) {
+          return const SizedBox.shrink();
+        }
+        final task = state.task;
+        return Padding(
+          padding: EdgeInsets.only(bottom: AppInsets.sheetVertical),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TaskInfoHeaderPart(
+                task: task,
+                onCheckBoxPressed: () => _onTaskCheckBoxPressed(context),
+              ),
+              TaskInfoTagsPart(tags: task.tags),
+              TaskInfoDescriptionPart(
+                description: task.task.description ?? '',
+              ),
+              TaskInfoSubTasksPart(subTasks: task.subTasks),
+              const Gap(24),
+              AppSecondaryButton(
+                title: l10n?.edit ?? '',
+                onPressed: _onEditPressed,
+              ),
+            ],
           ),
         );
       },

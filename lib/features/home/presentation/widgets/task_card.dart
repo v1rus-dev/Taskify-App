@@ -1,6 +1,7 @@
 import 'package:animated_line_through/animated_line_through.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:taskify/domain/tasks/models/task_wrapper.dart';
 import 'package:design/design.dart';
 import 'package:taskify/features/home/presentation/widgets/sub_task_counter.dart';
@@ -30,7 +31,9 @@ class _TaskCardState extends State<TaskCard> {
 
   Color _getSecondaryTextColor(BuildContext context) {
     return widget.task.task.isCompleted
-        ? AppColorExtensions.getTextSecondaryColor(context).withValues(alpha: 0.4)
+        ? AppColorExtensions.getTextSecondaryColor(
+            context,
+          ).withValues(alpha: 0.4)
         : AppColorExtensions.getTextSecondaryColor(context);
   }
 
@@ -62,14 +65,22 @@ class _TaskCardState extends State<TaskCard> {
                               SubTaskCounter(subTasks: widget.task.subTasks),
                               const Gap(8),
                             ],
-                            AnimatedLineThrough(
-                              duration: const Duration(milliseconds: 260),
-                              isCrossed: widget.task.task.isCompleted,
-                              color: _getTextColor(context),
-                              child: Text(
-                                widget.task.task.title,
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  color: _getTextColor(context),
+                            Expanded(
+                              child: AnimatedLineThrough(
+                                duration: const Duration(milliseconds: 260),
+                                isCrossed: widget.task.task.isCompleted,
+                                color: _getTextColor(context),
+                                child: AutoSizeText(
+                                  widget.task.task.title,
+                                  maxLines: 2,
+                                  minFontSize: 14,
+                                  semanticsLabel: widget.task.task.title,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.left,
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    color: _getTextColor(context),
+                                  ),
+                                  textScaleFactor: 1.0,
                                 ),
                               ),
                             ),
@@ -85,9 +96,7 @@ class _TaskCardState extends State<TaskCard> {
                             child: Text(
                               widget.task.task.description!,
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                color: _getSecondaryTextColor(
-                                  context,
-                                ),
+                                color: _getSecondaryTextColor(context),
                               ),
                             ),
                           ),

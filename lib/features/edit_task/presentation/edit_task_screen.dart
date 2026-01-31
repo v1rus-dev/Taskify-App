@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:design/design.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';
+import 'package:taskify/features/edit_task/domain/usecases/save_edited_task_interactor.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_app_bar.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_description_card.dart';
 import 'package:taskify/features/edit_task/presentation/widgets/edit_task_date_period_card.dart';
@@ -33,8 +32,8 @@ class EditTaskPage extends StatelessWidget {
           create: (context) => EditTaskBloc(
             taskId: taskId,
             taskInteractor: locator<TaskInteractor>(),
-            subTaskInteractor: locator<SubTaskInteractor>(),
             tagInteractor: locator<TagInteractor>(),
+            saveEditedTaskInteractor: locator<SaveEditedTaskInteractor>(),
           )..add(const EditTaskStarted()),
         ),
         BlocProvider(
@@ -61,14 +60,12 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final scrollController = ScrollController();
-  Timer? _subTasksAutoSaveTimer;
   bool _isEditTaskInitialized = false;
   bool _isSubTasksInitialized = false;
   _EditTaskSnapshot? _snapshotState;
 
   @override
   void dispose() {
-    _subTasksAutoSaveTimer?.cancel();
     titleController.dispose();
     descriptionController.dispose();
     super.dispose();
@@ -110,53 +107,16 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     );
   }
 
-  void _onAutoSaveRequested() {
-    if (!_isEditTaskInitialized) {
-      return;
-    }
-    if (!_shouldSaveTask()) {
-      return;
-    }
-    final editBloc = context.read<EditTaskBloc>();
-    final subTasks = context.read<EditSubTaskBloc>().state.subTasks;
-    editBloc.add(EditTaskAutoSaveRequested(subTasks));
-  }
-
-  void _onEditTaskChanged(BuildContext context, EditTaskState state) {
-    if (!_isEditTaskInitialized) {
-      _isEditTaskInitialized = true;
-      _captureSnapshotIfNeeded();
-      return;
-    }
-    _onAutoSaveRequested();
-  }
-
   void _onSubTasksChanged(BuildContext context, EditSubTaskState state) {
     if (!_isSubTasksInitialized) {
       _isSubTasksInitialized = true;
       _captureSnapshotIfNeeded();
+      context.read<EditTaskBloc>().add(
+        EditTaskSubTasksChanged(state.subTasks, shouldSchedule: false),
+      );
       return;
     }
-    _scheduleSubTasksAutoSave();
-  }
-
-  void _scheduleSubTasksAutoSave() {
-    if (!_isEditTaskInitialized) {
-      return;
-    }
-    final subTasks = context.read<EditSubTaskBloc>().state.subTasks;
-    final hasEmpty = subTasks.any((item) => item.title.trim().isEmpty);
-    if (hasEmpty) {
-      _subTasksAutoSaveTimer?.cancel();
-      return;
-    }
-    _subTasksAutoSaveTimer?.cancel();
-    _subTasksAutoSaveTimer = Timer(const Duration(milliseconds: 600), () {
-      if (!mounted) {
-        return;
-      }
-      _onAutoSaveRequested();
-    });
+    context.read<EditTaskBloc>().add(EditTaskSubTasksChanged(state.subTasks));
   }
 
   void _onSideEffect(BuildContext context, EditTaskSideEffect effect) {
@@ -177,16 +137,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     if (state.saveStatus == EditTaskSaveStatus.saved) {
       _updateSnapshot();
     }
-  }
-
-  bool _shouldAutoSave(EditTaskState previous, EditTaskState current) {
-    return previous.title != current.title ||
-        previous.description != current.description ||
-        previous.selectedDate != current.selectedDate ||
-        previous.startTime != current.startTime ||
-        previous.endTime != current.endTime ||
-        previous.isAllDay != current.isAllDay ||
-        previous.selectedTags != current.selectedTags;
   }
 
   void _captureSnapshotIfNeeded() {
@@ -250,7 +200,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     return TextField(
       controller: titleController,
       maxLines: null,
-      maxLength: 155,
+      maxLength: 70,
       maxLengthEnforcement: MaxLengthEnforcement.enforced,
       onChanged: _onTitleChanged,
       textAlign: TextAlign.center,
@@ -280,10 +230,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           listenWhen: (previous, current) =>
               previous.saveStatus != current.saveStatus,
           listener: _onSaveStatusChanged,
-        ),
-        BlocListener<EditTaskBloc, EditTaskState>(
-          listenWhen: _shouldAutoSave,
-          listener: _onEditTaskChanged,
         ),
         BlocListener<EditSubTaskBloc, EditSubTaskState>(
           listenWhen: (previous, current) =>
@@ -386,16 +332,16 @@ class _EditTaskSnapshot extends Equatable {
 
   @override
   List<Object?> get props => [
-        title,
-        description,
-        isCompleted,
-        selectedDate,
-        startTime,
-        endTime,
-        isAllDay,
-        tagKeys,
-        subTasks,
-      ];
+    title,
+    description,
+    isCompleted,
+    selectedDate,
+    startTime,
+    endTime,
+    isAllDay,
+    tagKeys,
+    subTasks,
+  ];
 }
 
 class _SubTaskSnapshot extends Equatable {

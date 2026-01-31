@@ -107,6 +107,19 @@ class EditTaskAutoSaveRequested extends EditTaskEvent {
   List<Object?> get props => [subTasks];
 }
 
+class EditTaskSubTasksChanged extends EditTaskEvent {
+  const EditTaskSubTasksChanged(
+    this.subTasks, {
+    this.shouldSchedule = true,
+  });
+
+  final List<SubTaskUiModel> subTasks;
+  final bool shouldSchedule;
+
+  @override
+  List<Object?> get props => [subTasks, shouldSchedule];
+}
+
 class EditTaskRemoveTag extends EditTaskEvent {
   const EditTaskRemoveTag(this.tag);
 

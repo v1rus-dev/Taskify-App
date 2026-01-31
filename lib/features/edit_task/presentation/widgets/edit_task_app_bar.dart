@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:animated_visibility/animated_visibility.dart';
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -86,15 +85,6 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
               Row(
                 children: [
-                  AnimatedVisibility(
-                    visible: state.saveStatus == EditTaskSaveStatus.saving,
-                    child: Row(
-                      children: [
-                        const CircularProgressIndicator.adaptive(),
-                        const Gap(4),
-                      ],
-                    ),
-                  ),
                   if (taskId != null) ...[
                     _buildIconButton(
                       context,

@@ -8,9 +8,11 @@ import 'package:taskify/features/edit_task/domain/repositories/sub_task_reposito
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/domain/tags/repository/tag_repository.dart';
 import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';
+import 'package:taskify/features/edit_task/domain/usecases/save_edited_task_interactor.dart';
 import 'package:taskify/features/home/data/datasources/task_local_datasource.dart';
 import 'package:taskify/domain/sync/repositories/sync_repository.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
+import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 
 void initEditTaskDependencies() {
   locator.registerLazySingleton<SubTaskLocalDataSource>(
@@ -36,5 +38,13 @@ void initEditTaskDependencies() {
   );
   locator.registerLazySingleton(
     () => TagInteractor(locator<TagRepository>()),
+  );
+
+  locator.registerLazySingleton(
+    () => SaveEditedTaskInteractor(
+      locator<TaskInteractor>(),
+      locator<SubTaskInteractor>(),
+      locator<TagInteractor>(),
+    ),
   );
 }

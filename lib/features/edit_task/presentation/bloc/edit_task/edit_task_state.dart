@@ -1,5 +1,7 @@
 part of 'edit_task_bloc.dart';
 
+enum EditTaskSaveStatus { saving, saved, error }
+
 class EditTaskState extends Equatable {
   const EditTaskState({
     this.title = '',

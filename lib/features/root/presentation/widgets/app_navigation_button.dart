@@ -1,3 +1,4 @@
+import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -18,7 +19,7 @@ class AppNavigationButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   Color _getColor(BuildContext context) =>
-      isSelected ? Color(0xFF002FFF) : Color(0xFF386BF6).withValues(alpha: 0.5);
+      isSelected ? context.primaryAccentColor : context.primarySecondaryColor;
 
   @override
   Widget build(BuildContext context) {

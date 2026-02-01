@@ -44,6 +44,14 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
     _goIfNotCurrent(RouterPaths.profile);
   }
 
+  void _onSpacesPressed() {
+    _goIfNotCurrent(RouterPaths.spaces);
+  }
+
+  void _onActivityPressed() {
+    _goIfNotCurrent(RouterPaths.activity);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -78,7 +86,24 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
                   isSelected: appRouter.state.uri.path == RouterPaths.home,
                   onPressed: _onHomePressed,
                 ),
-                AppAddActionButton(onPressed: _onAddPressed),
+                AppNavigationButton(
+                  title: l10n?.spaces ?? '',
+                  iconPath: AppIcons.saturn,
+                  packageName: AppIcons.packageName,
+                  isSelected: appRouter.state.uri.path == RouterPaths.spaces,
+                  onPressed: _onSpacesPressed,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: AppAddActionButton(onPressed: _onAddPressed),
+                ),
+                AppNavigationButton(
+                  title: l10n?.activity ?? '',
+                  iconPath: AppIcons.chart,
+                  packageName: AppIcons.packageName,
+                  isSelected: appRouter.state.uri.path == RouterPaths.activity,
+                  onPressed: _onActivityPressed,
+                ),
                 AppNavigationButton(
                   title: l10n?.profile ?? '',
                   iconPath: AppIcons.profile,

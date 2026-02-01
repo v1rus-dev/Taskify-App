@@ -22,4 +22,6 @@ class AppIcons {
   static const String profile = 'assets/icons/ic_profile.svg';
   static const String checkFilled = 'assets/icons/ic_check_filled.svg';
   static const String dragVertical = 'assets/icons/ic_drag_vertical.svg';
+  static const String saturn = 'assets/icons/ic_saturn.svg';
+  static const String chart = 'assets/icons/ic_chart.svg';
 }

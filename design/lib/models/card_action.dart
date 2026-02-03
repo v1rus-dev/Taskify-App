@@ -5,10 +5,11 @@ class CardAction {
   final String title;
   final String? description;
   final Color? descriptionColor;
-  final Color? titleColor;  
+  final Color? titleColor;
   final SvgPicture? icon;
   final VoidCallback? onPressed;
   final bool isEnabled;
+  final bool showArrow;
 
   CardAction({
     required this.title,
@@ -18,5 +19,6 @@ class CardAction {
     this.icon,
     this.onPressed,
     this.isEnabled = true,
+    this.showArrow = true,
   });
 }

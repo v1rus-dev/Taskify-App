@@ -17,33 +17,39 @@ class AccountPart extends StatelessWidget {
     context.read<ProfileBloc>().add(const ProfileRemoveAccount());
   }
 
-  List<CardAction> _buildActions(BuildContext context) {
+  List<CardWithActionsEntry> _buildActions(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return [
-      CardAction(
-        title: l10n?.exitFromAccount ?? '',
-        icon: SvgPicture.asset(
-          AppIcons.logout,
-          package: AppIcons.packageName,
-          width: 24,
-          height: 24,
-        ),
-        onPressed: () => _onSignOutPressed(context),
-      ),
-      CardAction(
-        title: l10n?.deleteAccount ?? '',
-        icon: SvgPicture.asset(
-          AppIcons.trash,
-          package: AppIcons.packageName,
-          width: 24,
-          height: 24,
-          colorFilter: ColorFilter.mode(
-            AppColorExtensions.getErrorColor(context),
-            BlendMode.srcIn,
+      CardActionEntry(
+        CardAction(
+          title: l10n?.exitFromAccount ?? '',
+          icon: SvgPicture.asset(
+            AppIcons.logout,
+            package: AppIcons.packageName,
+            width: 24,
+            height: 24,
           ),
+          showArrow: false,
+          onPressed: () => _onSignOutPressed(context),
         ),
-        titleColor: AppColorExtensions.getErrorColor(context),
-        onPressed: () => _onRemoveAccountPressed(context),
+      ),
+      CardActionEntry(
+        CardAction(
+          title: l10n?.deleteAccount ?? '',
+          icon: SvgPicture.asset(
+            AppIcons.trash,
+            package: AppIcons.packageName,
+            width: 24,
+            height: 24,
+            colorFilter: ColorFilter.mode(
+              AppColorExtensions.getErrorColor(context),
+              BlendMode.srcIn,
+            ),
+          ),
+          showArrow: false,
+          titleColor: AppColorExtensions.getErrorColor(context),
+          onPressed: () => _onRemoveAccountPressed(context),
+        ),
       ),
     ];
   }

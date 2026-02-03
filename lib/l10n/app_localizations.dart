@@ -64,8 +64,26 @@ class AppLocalizations {
   String get am => translate('am');
   String get pm => translate('pm');
   String get saving => translate('saving');
-  String get signInToGetMoreFromTaskify => translate('signInToGetMoreFromTaskify');
-  String get signInToGetMoreFromTaskifyDescription => translate('signInToGetMoreFromTaskifyDescription');
+  String get signInToGetMoreFromTaskify =>
+      translate('signInToGetMoreFromTaskify');
+  String get signInToGetMoreFromTaskifyDescription =>
+      translate('signInToGetMoreFromTaskifyDescription');
+  String get theme => translate('theme');
+  String get themeLight => translate('themeLight');
+  String get themeDark => translate('themeDark');
+  String get themeSystem => translate('themeSystem');
+  String get language => translate('language');
+  String get languageEnglish => translate('languageEnglish');
+  String get languageRussian => translate('languageRussian');
+  String get languageSystem => translate('languageSystem');
+  String get signIn => translate('signIn');
+  String get signInDescription => translate('signInDescription');
+  String get signInToYourAccount => translate('signInToYourAccount');
+  String get friendCode => translate('friendCode');
+  String get scanOrCopyToAddFriend => translate('scanOrCopyToAddFriend');
+  String get sharedFriendCode => translate('sharedFriendCode');
+  String get generateNewFriendCode => translate('generateNewFriendCode');
+  String get friendCodeCopied => translate('friendCodeCopied');
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();
@@ -77,10 +95,16 @@ class AppLocalizations {
     GlobalWidgetsLocalizations.delegate,
   ];
 
-  static const List<Locale> supportedLocales = [
-    Locale('en'),
-    Locale('ru'),
-  ];
+  static const List<Locale> supportedLocales = [Locale('en'), Locale('ru')];
+
+  String localeDisplayName(Locale? locale) {
+    if (locale == null) return languageSystem;
+    return switch (locale.languageCode) {
+      'en' => languageEnglish,
+      'ru' => languageRussian,
+      _ => locale.languageCode,
+    };
+  }
 }
 
 class _AppLocalizationsDelegate
@@ -88,16 +112,16 @@ class _AppLocalizationsDelegate
   const _AppLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) =>
-      ['en', 'ru'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => ['en', 'ru'].contains(locale.languageCode);
 
   @override
   Future<AppLocalizations> load(Locale locale) async {
     final String languageCode = locale.languageCode;
-    final String jsonString = await rootBundle
-        .loadString('lib/l10n/intl_$languageCode.arb');
+    final String jsonString = await rootBundle.loadString(
+      'lib/l10n/intl_$languageCode.arb',
+    );
     final Map<String, dynamic> jsonMap = json.decode(jsonString);
-    
+
     final Map<String, String> localizedStrings = jsonMap.map(
       (key, value) => MapEntry(key, value.toString()),
     );

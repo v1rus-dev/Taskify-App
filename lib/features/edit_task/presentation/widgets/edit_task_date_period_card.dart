@@ -81,7 +81,7 @@ class EditTaskDatePeriodCard extends StatelessWidget {
     return TimeOfDay.fromDateTime(dateTime);
   }
 
-  List<CardAction> _buildCardActions(
+  List<CardWithActionsEntry> _buildCardActions(
     BuildContext context,
     EditTaskState state,
     bool use24Hour,
@@ -94,24 +94,30 @@ class EditTaskDatePeriodCard extends StatelessWidget {
     final endTime = _toTimeOfDay(state.endTime);
     final isPeriod = durationType == TaskDurationType.period;
     return [
-      CardAction(
-        title: l10n?.date ?? '',
-        description: _formatDate(context, state.selectedDate),
-        onPressed: () => _onDatePressed(context, state.selectedDate),
+      CardActionEntry(
+        CardAction(
+          title: l10n?.date ?? '',
+          description: _formatDate(context, state.selectedDate),
+          onPressed: () => _onDatePressed(context, state.selectedDate),
+        ),
       ),
-      CardAction(
-        title: l10n?.period ?? '',
-        description: durationType == TaskDurationType.allDay
-            ? l10n?.allDay ?? ''
-            : l10n?.period ?? '',
-        onPressed: () => _onDurationPressed(context, durationType),
+      CardActionEntry(
+        CardAction(
+          title: l10n?.period ?? '',
+          description: durationType == TaskDurationType.allDay
+              ? l10n?.allDay ?? ''
+              : l10n?.period ?? '',
+          onPressed: () => _onDurationPressed(context, durationType),
+        ),
       ),
       if (isPeriod)
-        CardAction(
-          title: l10n?.time ?? '',
-          description:
-              '${formatTimeOfDay(context, startTime, use24Hour)} - ${formatTimeOfDay(context, endTime, use24Hour)}',
-          onPressed: () => _onTimePressed(context, startTime, endTime),
+        CardActionEntry(
+          CardAction(
+            title: l10n?.time ?? '',
+            description:
+                '${formatTimeOfDay(context, startTime, use24Hour)} - ${formatTimeOfDay(context, endTime, use24Hour)}',
+            onPressed: () => _onTimePressed(context, startTime, endTime),
+          ),
         ),
     ];
   }

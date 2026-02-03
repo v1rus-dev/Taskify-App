@@ -9,4 +9,5 @@ export 'task_checkbox.dart';
 export 'app_time_picker.dart';
 export 'utils.dart';
 export 'app_secondary_button.dart';
+export 'rounded_square_avatar.dart';
 export 'screen_app_bar.dart';

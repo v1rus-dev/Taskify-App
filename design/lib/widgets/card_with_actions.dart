@@ -6,16 +6,36 @@ import 'package:design/widgets/app_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+sealed class CardWithActionsEntry {
+  const CardWithActionsEntry();
+}
+
+class CardActionEntry extends CardWithActionsEntry {
+  const CardActionEntry(this.action);
+  final CardAction action;
+}
+
+class CardCustomEntry extends CardWithActionsEntry {
+  const CardCustomEntry({
+    required this.child,
+    this.onPressed,
+    this.showTrailingIcon = true,
+  });
+  final Widget child;
+  final VoidCallback? onPressed;
+  final bool showTrailingIcon;
+}
+
 class CardWithActions extends StatefulWidget {
   const CardWithActions({
     super.key,
     required this.actions,
     this.animatable = false,
     this.withAnimationExpanded = false,
-    this.showAppShadow = true
+    this.showAppShadow = true,
   });
 
-  final List<CardAction> actions;
+  final List<CardWithActionsEntry> actions;
   final bool animatable;
   final bool withAnimationExpanded;
   final bool showAppShadow;
@@ -36,6 +56,53 @@ class _CardWithActionsState extends State<CardWithActions> {
       case _ActionPositionType.single:
         return BorderRadius.circular(AppRadius.defaultCardRadius);
     }
+  }
+
+  Widget _buildEntry(
+    CardWithActionsEntry entry,
+    _ActionPositionType positionType,
+  ) {
+    return switch (entry) {
+      CardActionEntry(:final action) => _buildAction(action, positionType),
+      CardCustomEntry() => _buildCustom(entry, positionType),
+    };
+  }
+
+  Widget _buildCustom(CardCustomEntry entry, _ActionPositionType positionType) {
+    const padding = EdgeInsets.all(16);
+    final radius = _borderRadiusForPosition(positionType);
+    final content = Padding(
+      padding: padding,
+      child: entry.showTrailingIcon
+          ? Row(
+              children: [
+                Expanded(child: entry.child),
+                const SizedBox(width: 4),
+                SvgPicture.asset(
+                  AppIcons.arrowRightSmall,
+                  package: AppIcons.packageName,
+                  width: 24,
+                  height: 24,
+                ),
+              ],
+            )
+          : entry.child,
+    );
+    if (entry.onPressed == null) {
+      return ClipRRect(
+        borderRadius: radius,
+        child: content,
+      );
+    }
+    return Material(
+      color: Colors.transparent,
+      borderRadius: radius,
+      child: InkWell(
+        onTap: entry.onPressed,
+        borderRadius: radius,
+        child: content,
+      ),
+    );
   }
 
   Widget _buildAction(CardAction action, _ActionPositionType positionType) {
@@ -79,13 +146,15 @@ class _CardWithActionsState extends State<CardWithActions> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    SvgPicture.asset(
-                      AppIcons.arrowRightSmall,
-                      package: AppIcons.packageName,
-                      width: 24,
-                      height: 24,
-                    ),
+                    if (action.showArrow) ...[
+                      const SizedBox(width: 4),
+                      SvgPicture.asset(
+                        AppIcons.arrowRightSmall,
+                        package: AppIcons.packageName,
+                        width: 24,
+                        height: 24,
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -109,7 +178,7 @@ class _CardWithActionsState extends State<CardWithActions> {
           : i == widget.actions.length - 1
           ? _ActionPositionType.bottom
           : _ActionPositionType.middle;
-      children.add(_buildAction(widget.actions[i], positionType));
+      children.add(_buildEntry(widget.actions[i], positionType));
       if (i != widget.actions.length - 1) {
         children.add(
           Divider(

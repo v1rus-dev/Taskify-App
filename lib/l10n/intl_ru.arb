@@ -47,5 +47,21 @@
   "pm": "PM",
   "saving": "Сохранение",
   "signInToGetMoreFromTaskify": "Войти в Taskify",
-  "signInToGetMoreFromTaskifyDescription": "Синхронизируйте задачи, добавьте друзей и получите доступ к вашим данным в любом месте"
+  "signInToGetMoreFromTaskifyDescription": "Синхронизируйте задачи, добавьте друзей и получите доступ к вашим данным в любом месте",
+  "signInToYourAccount": "Войти в ваш аккаунт",
+  "theme": "Тема",
+  "themeLight": "Светлая",
+  "themeDark": "Тёмная",
+  "themeSystem": "Системная",
+  "language": "Язык",
+  "languageEnglish": "Английский",
+  "languageRussian": "Русский",
+  "languageSystem": "Системный",
+  "signIn": "Войти",
+  "signInDescription": "Синхронизируйте ваши задачи и подключитесь к друзьям на всех устройствах",
+  "friendCode": "Код друга",
+  "scanOrCopyToAddFriend": "Сканируйте или скопируйте, чтобы добавить в друзья",
+  "sharedFriendCode": "Поделился вашим кодом друга",
+  "generateNewFriendCode": "Сгенерировать новый код друга",
+  "friendCodeCopied": "Код друга скопирован"
 }

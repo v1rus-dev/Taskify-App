@@ -44,23 +44,31 @@ class SelectTaskPeriodBottomSheet extends StatelessWidget {
           const SizedBox(height: 24),
           CardWithActions(
             actions: [
-              CardAction(
-                title: l10n?.allDay ?? '',
-                description: _descriptionFor(context, TaskDurationType.allDay),
-                descriptionColor: _descriptionColorFor(context, TaskDurationType.allDay),
-                onPressed: () {
-                  onSelected(TaskDurationType.allDay);
-                  Navigator.of(context).pop();
-                },
+              CardActionEntry(
+                CardAction(
+                  title: l10n?.allDay ?? '',
+                  description:
+                      _descriptionFor(context, TaskDurationType.allDay),
+                  descriptionColor:
+                      _descriptionColorFor(context, TaskDurationType.allDay),
+                  onPressed: () {
+                    onSelected(TaskDurationType.allDay);
+                    Navigator.of(context).pop();
+                  },
+                ),
               ),
-              CardAction(
-                title: l10n?.period ?? '',
-                description: _descriptionFor(context, TaskDurationType.period),
-                descriptionColor: _descriptionColorFor(context, TaskDurationType.period),
-                onPressed: () {
-                  onSelected(TaskDurationType.period);
-                  Navigator.of(context).pop();
-                },
+              CardActionEntry(
+                CardAction(
+                  title: l10n?.period ?? '',
+                  description:
+                      _descriptionFor(context, TaskDurationType.period),
+                  descriptionColor:
+                      _descriptionColorFor(context, TaskDurationType.period),
+                  onPressed: () {
+                    onSelected(TaskDurationType.period);
+                    Navigator.of(context).pop();
+                  },
+                ),
               ),
             ],
           ),

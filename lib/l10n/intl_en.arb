@@ -47,5 +47,21 @@
   "pm": "PM",
   "saving": "Saving",
   "signInToGetMoreFromTaskify": "Sign in to get more from Taskify",
-  "signInToGetMoreFromTaskifyDescription": "Sync tasks, add friends, and access your data anywhere"
+  "signInToGetMoreFromTaskifyDescription": "Sync tasks, add friends, and access your data anywhere",
+  "signInToYourAccount": "Sign in to your account",
+  "theme": "Theme",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeSystem": "System",
+  "language": "Language",
+  "languageEnglish": "English",
+  "languageRussian": "Russian",
+  "languageSystem": "System",
+  "signIn": "Sign in",
+  "signInDescription": "Sync your tasks and connect with friends across devices",
+  "friendCode": "Friend code",
+  "scanOrCopyToAddFriend": "Scan or copy to add to friends",
+  "sharedFriendCode": "Shared your friend code",
+  "generateNewFriendCode": "Generate new friend code",
+  "friendCodeCopied": "Friend code copied"
 }

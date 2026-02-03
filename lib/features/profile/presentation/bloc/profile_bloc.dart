@@ -6,6 +6,8 @@ import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
 import 'package:taskify/data/database/app_database.dart';
 import 'package:taskify/domain/models/time_format_type.dart';
 import 'package:taskify/data/interactors/app_configuration_interactor.dart';
+import 'package:taskify/data/auth/models/auth_user_model.dart';
+import 'package:taskify/features/profile/data/repository/profile_repository.dart';
 
 part 'profile_event.dart';
 part 'profile_state.dart';
@@ -14,6 +16,7 @@ part 'profile_side_effect.dart';
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
     with BlocSideEffectMixin<ProfileBloc, ProfileSideEffect> {
   final AppConfigurationInteractor appConfigurationInteractor;
+  final ProfileRepository profileRepository;
 
   final _sideEffectController = StreamController<ProfileSideEffect>();
   StreamSubscription<AppConfigurationsTableData?>? _configSubscription;
@@ -21,16 +24,26 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
   @override
   Stream<ProfileSideEffect> get sideEffects => _sideEffectController.stream;
 
-  ProfileBloc({required this.appConfigurationInteractor})
-    : super(const ProfileState()) {
+  ProfileBloc({
+    required this.appConfigurationInteractor,
+    required this.profileRepository,
+  }) : super(const ProfileState()) {
     on<ProfileStarted>(_onStarted);
     on<ProfileTimeFormatChanged>(_onTimeFormatChanged);
     on<ProfileUpdateTimeFormat>(_onUpdateTimeFormat);
     on<ProfileRemoveAccount>(_onRemoveAccount);
   }
 
-  void _onStarted(ProfileStarted event, Emitter<ProfileState> emit) {
+  Future<void> _onStarted(
+    ProfileStarted event,
+    Emitter<ProfileState> emit,
+  ) async {
     _observeTimeFormat();
+    final result = await profileRepository.getProfile();
+    result.fold(
+      ifLeft: (_) => emit(state.copyWith(clearProfileUser: true)),
+      ifRight: (user) => emit(state.copyWith(profileUser: user)),
+    );
   }
 
   void _onTimeFormatChanged(

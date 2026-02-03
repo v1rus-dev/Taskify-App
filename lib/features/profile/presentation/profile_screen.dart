@@ -4,13 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
 import 'package:design/widgets/screen_app_bar.dart';
-import 'package:taskify/domain/models/time_format_type.dart';
-import 'package:taskify/features/profile/presentation/select_time_format_bottom_sheet.dart';
-import 'package:taskify/features/profile/presentation/widgets/account_part.dart';
-import 'package:taskify/features/profile/presentation/widgets/sign_in_part.dart';
-import 'package:taskify/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/data/interactors/app_configuration_interactor.dart';
+import 'package:taskify/features/profile/data/repository/profile_repository.dart';
+import 'package:taskify/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:taskify/features/profile/presentation/widgets/account_part.dart';
+import 'package:taskify/features/profile/presentation/widgets/app_configuration_part.dart';
+import 'package:taskify/features/profile/presentation/widgets/profile_part.dart';
+import 'package:taskify/features/profile/presentation/widgets/sign_in_part.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -20,6 +21,7 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) => BlocProvider(
     create: (context) => ProfileBloc(
       appConfigurationInteractor: locator<AppConfigurationInteractor>(),
+      profileRepository: locator<ProfileRepository>(),
     )..add(const ProfileStarted()),
     child: const ProfileScreen(),
   );
@@ -27,34 +29,6 @@ class ProfilePage extends StatelessWidget {
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
-
-  Future<void> _openTimeFormatSheet(
-    BuildContext context,
-    TimeFormatType selectedType,
-  ) async {
-    final result = await showAppBottomSheet<TimeFormatType>(
-      context: context,
-      type: AppBottomSheetType.floating,
-      child: SelectTimeFormatBottomSheet(selectedType: selectedType),
-    );
-    if (context.mounted) {
-      if (result != null) {
-        context.read<ProfileBloc>().add(
-          ProfileTimeFormatChanged(result),
-        );
-      }
-    }
-  }
-
-  String _timeFormatLabel(BuildContext context, TimeFormatType type) {
-    final l10n = AppLocalizations.of(context);
-    switch (type) {
-      case TimeFormatType.hour24:
-        return l10n?.timeFormat24 ?? '';
-      case TimeFormatType.hour12:
-        return l10n?.timeFormat12 ?? '';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,40 +71,26 @@ class ProfileScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: ScreenAppBar(title: l10n?.profile ?? ''),
-        body: BlocBuilder<ProfileBloc, ProfileState>(
-          builder: (context, state) {
-            return Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
-                        const Gap(20),
-                        const SignInPart(),
-                        const Gap(12),
-                        CardWithActions(
-                          actions: [
-                            CardAction(
-                              title: l10n?.timeFormat ?? '',
-                              description:
-                                  _timeFormatLabel(context, state.timeFormat),
-                              onPressed: () => _openTimeFormatSheet(
-                                context,
-                                state.timeFormat,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Gap(24),
-                        AccountPart(),
-                      ],
-                    ),
-                  ),
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    const Gap(20),
+                    const SignInPart(),
+                    const Gap(12),
+                    const ProfilePart(),
+                    const Gap(12),
+                    const AppConfigurationPart(),
+                    const Gap(12),
+                    AccountPart(),
+                  ],
                 ),
-              ],
-            );
-          },
+              ),
+            ),
+          ],
         ),
       ),
     );

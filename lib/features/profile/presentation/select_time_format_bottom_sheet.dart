@@ -41,19 +41,25 @@ class SelectTimeFormatBottomSheet extends StatelessWidget {
           const SizedBox(height: AppInsets.sheetTitleBottom),
           CardWithActions(
             actions: [
-              CardAction(
-                title: l10n?.timeFormat24 ?? '',
-                description: descriptionFor(TimeFormatType.hour24),
-                descriptionColor:
-                    descriptionColorFor(context, TimeFormatType.hour24),
-                onPressed: () => _onTimeFormatPressed(context, TimeFormatType.hour24),
+              CardActionEntry(
+                CardAction(
+                  title: l10n?.timeFormat24 ?? '',
+                  description: descriptionFor(TimeFormatType.hour24),
+                  descriptionColor:
+                      descriptionColorFor(context, TimeFormatType.hour24),
+                  onPressed: () =>
+                      _onTimeFormatPressed(context, TimeFormatType.hour24),
+                ),
               ),
-              CardAction(
-                title: l10n?.timeFormat12 ?? '',
-                description: descriptionFor(TimeFormatType.hour12),
-                descriptionColor:
-                    descriptionColorFor(context, TimeFormatType.hour12),
-                onPressed: () => _onTimeFormatPressed(context, TimeFormatType.hour12),
+              CardActionEntry(
+                CardAction(
+                  title: l10n?.timeFormat12 ?? '',
+                  description: descriptionFor(TimeFormatType.hour12),
+                  descriptionColor:
+                      descriptionColorFor(context, TimeFormatType.hour12),
+                  onPressed: () =>
+                      _onTimeFormatPressed(context, TimeFormatType.hour12),
+                ),
               ),
             ],
           ),

@@ -3,12 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/core/auth/auth_cubit.dart';
+import 'package:taskify/features/profile/presentation/bottom_sheets/sign_in/sign_in_bottom_sheet.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
 class SignInPart extends StatelessWidget {
   const SignInPart({super.key});
 
-  _showSignInBottomSheet(BuildContext context) {}
+  _showSignInBottomSheet(BuildContext context) {
+    showAppBottomSheet(
+      context: context,
+      type: AppBottomSheetType.floating,
+      child: SignInBottomSheet(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +53,11 @@ class SignInPart extends StatelessWidget {
         const Gap(20),
         CardWithActions(
           actions: [
-            CardAction(
-              title: 'Sign in to your account',
-              onPressed: () => _showSignInBottomSheet(context),
+            CardActionEntry(
+              CardAction(
+                title: AppLocalizations.of(context)?.signInToYourAccount ?? '',
+                onPressed: () => _showSignInBottomSheet(context),
+              ),
             ),
           ],
         ),

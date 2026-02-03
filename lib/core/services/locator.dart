@@ -6,13 +6,18 @@ import 'package:taskify/data/api/api_di.dart';
 import 'package:taskify/data/interactors/interactors_di.dart';
 import 'package:taskify/data/sync/sync_di.dart';
 import 'package:taskify/features/home/data/home_di.dart';
+import 'package:taskify/core/config/server_env.dart';
 import 'package:taskify/core/services/dio_client.dart';
 import 'package:taskify/core/auth/access_token_provider.dart';
 import 'package:taskify/features/edit_task/data/edit_task_di.dart';
 
 final locator = GetIt.instance;
 
-Future<void> initServiceLocator(AppDatabase appDatabase) async {
+Future<void> initServiceLocator(
+  AppDatabase appDatabase, {
+  required ServerEnv serverEnv,
+}) async {
+  locator.registerSingleton<ServerEnv>(serverEnv);
   await initDatabase(appDatabase);
   initAuthStorageDependencies();
   await initDio();
@@ -33,8 +38,11 @@ Future<void> initRepositories() async {
 }
 
 Future<void> initDio() async {
+  final serverEnv = locator<ServerEnv>();
   final tokenHandler = locator.isRegistered<AuthTokenHandler>()
       ? locator<AuthTokenHandler>()
       : null;
-  locator.registerSingleton(DioClient(authTokenHandler: tokenHandler));
+  locator.registerSingleton(
+    DioClient(serverEnv: serverEnv, authTokenHandler: tokenHandler),
+  );
 }

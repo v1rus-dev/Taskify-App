@@ -1,54 +1,54 @@
-import 'dart:io';
-
+import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/features/profile/presentation/widgets/google_sign_in_button.dart';
-import 'package:taskify/features/profile/presentation/widgets/apple_sign_in_button.dart';
 import 'package:taskify/core/auth/auth_cubit.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 
 class SignInPart extends StatelessWidget {
   const SignInPart({super.key});
 
-  void _signInWithGoogle(BuildContext context) {
-    context.read<AuthCubit>().signInWithGoogle();
-  }
-
-  void _signInWithApple(BuildContext context) {
-    context.read<AuthCubit>().signInWithApple();
-  }
+  _showSignInBottomSheet(BuildContext context) {}
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final session = context.select((AuthCubit c) => c.state.session);
 
     if (session != null) {
       return const SizedBox.shrink();
     }
 
-    if (Platform.isAndroid) {
-      return GoogleSignInButton(
-        onPressed: () => _signInWithGoogle(context),
-      );
-    }
-
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        const Gap(24),
-        Row(
-          children: [
-            Expanded(
-              child: GoogleSignInButton(
-                showText: Platform.isAndroid,
-                onPressed: () => _signInWithGoogle(context),
-              ),
+        Flexible(
+          child: Text(
+            AppLocalizations.of(context)?.signInToGetMoreFromTaskify ?? '',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w500,
             ),
-            const Gap(16),
-            Expanded(
-              child: AppleSignInButton(
-                showText: Platform.isAndroid,
-                onPressed: () => _signInWithApple(context),
-              ),
+          ),
+        ),
+        const Gap(4),
+        Flexible(
+          child: Text(
+            AppLocalizations.of(
+                  context,
+                )?.signInToGetMoreFromTaskifyDescription ??
+                '',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: Color(0xFFA6A6A6),
+            ),
+          ),
+        ),
+        const Gap(20),
+        CardWithActions(
+          actions: [
+            CardAction(
+              title: 'Sign in to your account',
+              onPressed: () => _showSignInBottomSheet(context),
             ),
           ],
         ),

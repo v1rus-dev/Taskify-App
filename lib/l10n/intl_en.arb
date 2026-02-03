@@ -45,5 +45,7 @@
   "signInWithApple": "Sign in with Apple",
   "am": "AM",
   "pm": "PM",
-  "saving": "Saving"
+  "saving": "Saving",
+  "signInToGetMoreFromTaskify": "Sign in to get more from Taskify",
+  "signInToGetMoreFromTaskifyDescription": "Sync tasks, add friends, and access your data anywhere"
 }

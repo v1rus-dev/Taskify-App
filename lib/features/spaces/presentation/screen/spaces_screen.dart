@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/features/spaces/presentation/bloc/spaces_bloc.dart';
-import 'package:taskify/core/widgets/screen_app_bar.dart';
+import 'package:design/widgets/screen_app_bar.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
 class SpacesScreenPage extends StatelessWidget {

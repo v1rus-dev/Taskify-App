@@ -45,5 +45,7 @@
   "signInWithApple": "Войти через Apple",
   "am": "AM",
   "pm": "PM",
-  "saving": "Сохранение"
+  "saving": "Сохранение",
+  "signInToGetMoreFromTaskify": "Войти в Taskify",
+  "signInToGetMoreFromTaskifyDescription": "Синхронизируйте задачи, добавьте друзей и получите доступ к вашим данным в любом месте"
 }

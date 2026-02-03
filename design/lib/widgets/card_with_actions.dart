@@ -62,7 +62,7 @@ class _CardWithActionsState extends State<CardWithActions> {
         onTap: action.isEnabled ? action.onPressed : null,
         borderRadius: radius,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Row(
             children: [
               Expanded(

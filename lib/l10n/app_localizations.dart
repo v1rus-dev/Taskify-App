@@ -64,6 +64,8 @@ class AppLocalizations {
   String get am => translate('am');
   String get pm => translate('pm');
   String get saving => translate('saving');
+  String get signInToGetMoreFromTaskify => translate('signInToGetMoreFromTaskify');
+  String get signInToGetMoreFromTaskifyDescription => translate('signInToGetMoreFromTaskifyDescription');
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();

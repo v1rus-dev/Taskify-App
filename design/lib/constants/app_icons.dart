@@ -25,4 +25,11 @@ class AppIcons {
   static const String saturn = 'assets/icons/ic_saturn.svg';
   static const String chart = 'assets/icons/ic_chart.svg';
   static const String copy = 'assets/icons/ic_copy.svg';
+  static const String redo = 'assets/icons/ic_redo.svg';
+  static const String shareAndroid = 'assets/icons/ic_share_android.svg';
+  static const String shareIOS = 'assets/icons/ic_share_ios.svg';
+  static const String users = 'assets/icons/ic_users.svg';
+  static const String arrowBackIos = 'assets/icons/ic_arrow_back_ios.svg';
+  static const String arrowBackAndroid = 'assets/icons/ic_arrow_back_android.svg';
+  static const String addUser = 'assets/icons/ic_add_user.svg';
 }

@@ -39,10 +39,19 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
     Emitter<ProfileState> emit,
   ) async {
     _observeTimeFormat();
-    final result = await profileRepository.getProfile();
-    result.fold(
-      ifLeft: (_) => emit(state.copyWith(clearProfileUser: true)),
+    final initial = await profileRepository.getProfile();
+    initial.fold(
+      ifLeft: (_) => null,
       ifRight: (user) => emit(state.copyWith(profileUser: user)),
+    );
+    await emit.forEach(
+      profileRepository.observeProfile(),
+      onData: (result) => result.fold(
+        ifLeft: (_) => state.copyWith(clearProfileUser: true),
+        ifRight: (user) => user == null
+            ? state.copyWith(clearProfileUser: true)
+            : state.copyWith(profileUser: user),
+      ),
     );
   }
 
@@ -63,7 +72,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
   void _onRemoveAccount(
     ProfileRemoveAccount event,
     Emitter<ProfileState> emit,
-  ) {}
+  ) async {
+    await profileRepository.clearProfile();
+    emit(state.copyWith(clearProfileUser: true));
+  }
 
   void _observeTimeFormat() {
     _configSubscription = appConfigurationInteractor

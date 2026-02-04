@@ -18,6 +18,6 @@ Future<void> setupApp() async {
   setupLogging();
   await setupPreferences();
   final database = await setupDatabase();
-  final serverEnv = kDebugMode ? ServerEnv.dev : ServerEnv.prod;
+  final serverEnv = kDebugMode ? ServerEnv.localhostDev : ServerEnv.prod;
   await initServiceLocator(database, serverEnv: serverEnv);
 }

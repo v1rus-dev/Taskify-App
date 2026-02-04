@@ -9,6 +9,7 @@ abstract class AuthLocalDataSource {
   Future<Either<Failure, AuthUser?>> getUser();
   Future<Either<Failure, void>> saveUser(AuthUser user);
   Future<Either<Failure, void>> clearUser();
+  Stream<Either<Failure, AuthUser?>> observeUser();
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
@@ -59,6 +60,19 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       return const Right(null);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
+    }
+  }
+
+  @override
+  Stream<Either<Failure, AuthUser?>> observeUser() async* {
+    try {
+      final stream =
+          _database.select(_database.usersTable).watchSingleOrNull();
+      await for (final driftUser in stream) {
+        yield Right(driftUser?.toDomain());
+      }
+    } catch (e) {
+      yield Left(DatabaseFailure(e.toString()));
     }
   }
 }

@@ -1,4 +1,4 @@
-{
+﻿{
   "appTitle": "Taskify",
   "writeANewTask": "Write a new task",
   "description": "Description",
@@ -63,5 +63,11 @@
   "scanOrCopyToAddFriend": "Scan or copy to add to friends",
   "sharedFriendCode": "Shared your friend code",
   "generateNewFriendCode": "Generate new friend code",
-  "friendCodeCopied": "Friend code copied"
+  "friendCodeCopied": "Friend code copied",
+  "shareFriendCodeMessage": "Add me in Taskify - use this code to connect and share tasks together.",
+  "friends": "Friends",
+  "addAndManageFriends": "Add and manage friends",
+  "noFriendsTitle": "Here is empty",
+  "noFriendsDescription": "Add friends to collaborate on shared spaces and projects.",
+  "addFriends": "Add friends"
 }

@@ -53,7 +53,11 @@ class _TaskifyAppState extends State<TaskifyApp> {
             syncCoordinator: locator<SyncCoordinator>(),
           ),
         ),
-        BlocProvider<TimeFormatCubit>(create: (_) => TimeFormatCubit(interactor: locator<AppConfigurationInteractor>()))
+        BlocProvider<TimeFormatCubit>(
+          create: (_) => TimeFormatCubit(
+            interactor: locator<AppConfigurationInteractor>(),
+          ),
+        ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, themeState) {

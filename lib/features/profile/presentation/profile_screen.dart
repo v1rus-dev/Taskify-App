@@ -1,9 +1,9 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
 import 'package:design/widgets/screen_app_bar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/data/interactors/app_configuration_interactor.dart';
 import 'package:taskify/features/profile/data/repository/profile_repository.dart';
@@ -11,7 +11,6 @@ import 'package:taskify/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:taskify/features/profile/presentation/widgets/account_part.dart';
 import 'package:taskify/features/profile/presentation/widgets/app_configuration_part.dart';
 import 'package:taskify/features/profile/presentation/widgets/profile_part.dart';
-import 'package:taskify/features/profile/presentation/widgets/sign_in_part.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -78,9 +77,6 @@ class ProfileScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    const Gap(20),
-                    const SignInPart(),
-                    const Gap(12),
                     const ProfilePart(),
                     const Gap(12),
                     const AppConfigurationPart(),

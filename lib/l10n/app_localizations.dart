@@ -84,6 +84,12 @@ class AppLocalizations {
   String get sharedFriendCode => translate('sharedFriendCode');
   String get generateNewFriendCode => translate('generateNewFriendCode');
   String get friendCodeCopied => translate('friendCodeCopied');
+  String get shareFriendCodeMessage => translate('shareFriendCodeMessage');
+  String get friends => translate('friends');
+  String get addAndManageFriends => translate('addAndManageFriends');
+  String get noFriendsTitle => translate('noFriendsTitle');
+  String get noFriendsDescription => translate('noFriendsDescription');
+  String get addFriends => translate('addFriends');
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();

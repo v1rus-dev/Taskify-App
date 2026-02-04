@@ -1,4 +1,4 @@
-{
+﻿{
   "appTitle": "Taskify",
   "writeANewTask": "Новая задача",
   "description": "Описание",
@@ -63,5 +63,11 @@
   "scanOrCopyToAddFriend": "Сканируйте или скопируйте, чтобы добавить в друзья",
   "sharedFriendCode": "Поделился вашим кодом друга",
   "generateNewFriendCode": "Сгенерировать новый код друга",
-  "friendCodeCopied": "Код друга скопирован"
+  "friendCodeCopied": "Код друга скопирован",
+  "shareFriendCodeMessage": "Добавь меня в Taskify — используй этот код, чтобы подключиться и делиться задачами вместе.",
+  "friends": "Друзья",
+  "addAndManageFriends": "Добавляйте и управляйте друзьями",
+  "noFriendsTitle": "Здесь пока пусто",
+  "noFriendsDescription": "Добавьте друзей, чтобы работать вместе в общих пространствах и проектах.",
+  "addFriends": "Добавить друзей"
 }

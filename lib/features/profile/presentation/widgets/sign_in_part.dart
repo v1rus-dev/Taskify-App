@@ -9,7 +9,7 @@ import 'package:taskify/l10n/app_localizations.dart';
 class SignInPart extends StatelessWidget {
   const SignInPart({super.key});
 
-  _showSignInBottomSheet(BuildContext context) {
+  void _showSignInBottomSheet(BuildContext context) {
     showAppBottomSheet(
       context: context,
       type: AppBottomSheetType.floating,

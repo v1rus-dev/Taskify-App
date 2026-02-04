@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:design/widgets/screen_app_bar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/features/activity/presentation/bloc/activity_bloc.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 

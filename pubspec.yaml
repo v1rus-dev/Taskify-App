@@ -108,6 +108,8 @@ dependencies:
   implicitly_animated_reorderable_list_2: ^0.6.0
   animated_line_through: ^1.0.5
   auto_size_text: ^3.0.0
+  qr_flutter: ^4.1.0
+  share_plus: ^10.0.2
 
 dev_dependencies:
   flutter_test:

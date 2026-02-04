@@ -11,6 +11,7 @@ import 'package:taskify/core/services/dio_client.dart';
 import 'package:taskify/core/auth/access_token_provider.dart';
 import 'package:taskify/features/edit_task/data/edit_task_di.dart';
 import 'package:taskify/features/profile/data/profile_di.dart';
+import 'package:taskify/features/friends_list/data/friends_list_di.dart';
 
 final locator = GetIt.instance;
 
@@ -37,6 +38,7 @@ Future<void> initRepositories() async {
   initAuthDependencies();
   initProfileDependencies();
   initEditTaskDependencies();
+  initFriendsListDependencies();
 }
 
 Future<void> initDio() async {

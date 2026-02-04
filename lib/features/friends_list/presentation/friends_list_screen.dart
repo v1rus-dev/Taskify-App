@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:taskify/features/friends_list/presentation/bloc/friends_list_bloc.dart';
+import 'package:taskify/features/friends_list/presentation/widgets/friends_list_empty_part.dart';
+import 'package:taskify/features/friends_list/presentation/widgets/friends_list_success_part.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 import 'package:taskify/app/router/app_router.dart';
 
@@ -14,7 +16,7 @@ class FriendsListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => FriendsListBloc(),
+      create: (context) => FriendsListBloc()..add(const FriendsListStarted()),
       child: const FriendsListScreen(),
     );
   }
@@ -53,7 +55,15 @@ class FriendsListScreen extends StatelessWidget {
       ),
       body: BlocBuilder<FriendsListBloc, FriendsListState>(
         builder: (context, state) {
-          return CustomScrollView(slivers: []);
+          if (state.friends.isEmpty) {
+            return FriendsListEmptyPart(
+              onAddFriendPressed: () => _onAddFriendPressed(context),
+            );
+          } else {
+            return FriendsListSuccessPart(
+              friends: state.friends,
+            );
+          }
         },
       ),
     );

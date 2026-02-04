@@ -1,0 +1,48 @@
+import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:taskify/l10n/app_localizations.dart';
+import 'package:design/design.dart';
+
+class FriendsListEmptyPart extends StatelessWidget {
+  const FriendsListEmptyPart({super.key, required this.onAddFriendPressed});
+
+  final VoidCallback onAddFriendPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 70),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            AppLocalizations.of(context)?.noFriendsTitle ?? '',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const Gap(4),
+          Text(
+            AppLocalizations.of(context)?.noFriendsDescription ?? '',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: AppColorExtensions.getTextSecondaryColor(context),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const Gap(12),
+          SizedBox(
+            height: 50,
+            width: 170,
+            child: AppTextButton(
+              text: AppLocalizations.of(context)?.addFriends ?? '',
+              onPressed: onAddFriendPressed,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

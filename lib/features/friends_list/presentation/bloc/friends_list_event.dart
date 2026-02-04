@@ -6,3 +6,7 @@ sealed class FriendsListEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+final class FriendsListStarted extends FriendsListEvent {
+  const FriendsListStarted();
+}

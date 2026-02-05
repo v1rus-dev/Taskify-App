@@ -90,6 +90,8 @@ class AppLocalizations {
   String get noFriendsTitle => translate('noFriendsTitle');
   String get noFriendsDescription => translate('noFriendsDescription');
   String get addFriends => translate('addFriends');
+  String get addFriend => translate('addFriend');
+  String get addFriendDescription => translate('addFriendDescription');
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();

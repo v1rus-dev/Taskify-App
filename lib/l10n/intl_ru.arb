@@ -69,5 +69,7 @@
   "addAndManageFriends": "Добавляйте и управляйте друзьями",
   "noFriendsTitle": "Здесь пока пусто",
   "noFriendsDescription": "Добавьте друзей, чтобы работать вместе\nв общих пространствах и проектах.",
-  "addFriends": "Добавить друзей"
+  "addFriends": "Добавить друзей",
+  "addFriend": "Добавить друга",
+  "addFriendDescription": "Введите код друга или отсканируйте QR-код"
 }

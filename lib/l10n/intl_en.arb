@@ -69,5 +69,7 @@
   "addAndManageFriends": "Add and manage friends",
   "noFriendsTitle": "Here is empty",
   "noFriendsDescription": "Add friends to collaborate on shared\nspaces and projects.",
-  "addFriends": "Add friends"
+  "addFriends": "Add friends",
+  "addFriend": "Add friend",
+  "addFriendDescription": "Enter a friend code or scan a QR code"
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:taskify/features/friends_list/presentation/bloc/friends_list_bloc.dart';
+import 'package:taskify/features/friends_list/presentation/bottom_sheets/add_friend/add_friend_bottom_sheet.dart';
 import 'package:taskify/features/friends_list/presentation/widgets/friends_list_empty_part.dart';
 import 'package:taskify/features/friends_list/presentation/widgets/friends_list_success_part.dart';
 import 'package:taskify/l10n/app_localizations.dart';
@@ -30,7 +31,9 @@ class FriendsListScreen extends StatelessWidget {
   }
 
   void _onAddFriendPressed(BuildContext context) {
-    // TODO: Implement add friend logic
+    unfocusAndThen(context, () async {
+      showAppBottomSheet(context: context, type: AppBottomSheetType.floating, child: AddFriendBottomSheetPage());
+    });
   }
 
   @override

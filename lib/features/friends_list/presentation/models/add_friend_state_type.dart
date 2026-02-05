@@ -1,0 +1,4 @@
+enum AddFriendStateType {
+  textField,
+  qrCode
+}

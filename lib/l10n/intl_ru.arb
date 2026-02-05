@@ -71,5 +71,8 @@
   "noFriendsDescription": "Добавьте друзей, чтобы работать вместе\nв общих пространствах и проектах.",
   "addFriends": "Добавить друзей",
   "addFriend": "Добавить друга",
-  "addFriendDescription": "Введите код друга или отсканируйте QR-код"
+  "addFriendDescription": "Введите код друга или отсканируйте QR-код",
+  "enterCode": "Введите код",
+  "cameraAccessRequired": "Для сканирования нужен доступ к камере",
+  "openSettings": "Открыть настройки"
 }

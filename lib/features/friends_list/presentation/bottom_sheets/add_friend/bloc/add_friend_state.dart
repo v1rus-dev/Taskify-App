@@ -11,12 +11,14 @@ class AddFriendState extends Equatable {
 
   AddFriendState copyWith({
     String? friendCode,
+    AddFriendStateType? stateType,
   }) {
     return AddFriendState(
       friendCode: friendCode ?? this.friendCode,
+      stateType: stateType ?? this.stateType,
     );
   }
 
   @override
-  List<Object?> get props => [friendCode];
+  List<Object?> get props => [friendCode, stateType];
 }

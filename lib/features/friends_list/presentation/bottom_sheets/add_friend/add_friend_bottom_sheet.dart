@@ -37,26 +37,16 @@ class AddFriendBottomSheet extends StatelessWidget {
         const Gap(16),
         BlocBuilder<AddFriendBloc, AddFriendState>(
           builder: (context, state) {
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              switchInCurve: Curves.easeIn,
-              switchOutCurve: Curves.easeOut,
-              transitionBuilder: (child, animation) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: child,
-                );
-              },
-              child: switch (state.stateType) {
+            return switch (state.stateType) {
                 AddFriendStateType.textField => AddFriendTextField(
                     key: const ValueKey('textField'),
                     controller: friendCodeController,
                   ),
-                AddFriendStateType.qrCode => const AddFriendQrCodeScanner(
-                    key: ValueKey('qrCode'),
+                AddFriendStateType.qrCode => AddFriendQrCodeScanner(
+                    key: const ValueKey('qrCode'),
+                    controller: friendCodeController,
                   ),
-              },
-            );
+              };
           },
         ),
         const Gap(20),

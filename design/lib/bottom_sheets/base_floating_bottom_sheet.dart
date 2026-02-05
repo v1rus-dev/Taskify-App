@@ -9,11 +9,18 @@ class BaseFloatingBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+
     return SafeArea(
-      child: Padding(
-        padding: EdgeInsetsGeometry.symmetric(
-          horizontal: AppInsets.floatingBottomSheetHorizontalPadding,
-          vertical: AppInsets.floatingBottomSheetVerticalPadding,
+      child: AnimatedPadding(
+        duration: kThemeAnimationDuration,
+        curve: Curves.easeOut,
+        padding: EdgeInsets.only(
+          left: AppInsets.floatingBottomSheetHorizontalPadding,
+          top: AppInsets.floatingBottomSheetVerticalPadding,
+          right: AppInsets.floatingBottomSheetHorizontalPadding,
+          bottom:
+              AppInsets.floatingBottomSheetVerticalPadding + keyboardInset,
         ),
         child: Container(
           decoration: BoxDecoration(

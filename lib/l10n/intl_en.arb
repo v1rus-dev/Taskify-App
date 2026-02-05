@@ -71,5 +71,8 @@
   "noFriendsDescription": "Add friends to collaborate on shared\nspaces and projects.",
   "addFriends": "Add friends",
   "addFriend": "Add friend",
-  "addFriendDescription": "Enter a friend code or scan a QR code"
+  "addFriendDescription": "Enter a friend code or scan a QR code",
+  "enterCode": "Enter code",
+  "cameraAccessRequired": "Camera access is required to scan QR codes",
+  "openSettings": "Open settings"
 }

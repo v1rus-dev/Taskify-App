@@ -7,8 +7,13 @@ part 'add_friend_state.dart';
 
 class AddFriendBloc extends Bloc<AddFriendEvent, AddFriendState> {
   AddFriendBloc() : super(const AddFriendState()) {
-    on<AddFriendEvent>((event, emit) {
-      // TODO: implement event handler
-    });
+    on<AddFriendSwitchMode>(_onSwitchMode);
+  }
+
+  void _onSwitchMode(
+    AddFriendSwitchMode event,
+    Emitter<AddFriendState> emit,
+  ) {
+    emit(state.copyWith(stateType: event.stateType));
   }
 }

@@ -92,6 +92,9 @@ class AppLocalizations {
   String get addFriends => translate('addFriends');
   String get addFriend => translate('addFriend');
   String get addFriendDescription => translate('addFriendDescription');
+  String get enterCode => translate('enterCode');
+  String get cameraAccessRequired => translate('cameraAccessRequired');
+  String get openSettings => translate('openSettings');
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();

@@ -107,10 +107,14 @@ class SignInBottomSheet extends StatelessWidget {
                       package: AppIcons.packageName,
                       width: 24,
                       height: 24,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black,
+                        BlendMode.srcIn,
+                      ),
                     ),
                     const Gap(8),
                     Text(
-                      'Sign in with Test',
+                      'Sign in to Test Account',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: Colors.black,
                       ),

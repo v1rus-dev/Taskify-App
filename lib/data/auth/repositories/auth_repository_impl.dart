@@ -97,9 +97,47 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(const ValidationFailure('Unsupported auth provider'));
       }
 
+      if (provider == AuthProviders.test) {
+        final authResult = await authApi.authenticateTest<AuthResponseModel>(
+          parser: (data) => AuthResponseModel.fromJson(
+            data as Map<String, dynamic>,
+          ),
+        );
+
+        Failure? failure;
+        AuthResponseModel? response;
+        authResult.fold(
+          ifLeft: (left) => failure = left,
+          ifRight: (right) => response = right,
+        );
+        if (failure != null) {
+          return Left(failure!);
+        }
+
+        final saveResult = await _saveAuthResponse(response!);
+        Failure? saveFailure;
+        saveResult.fold(
+          ifLeft: (left) => saveFailure = left,
+          ifRight: (_) {},
+        );
+        if (saveFailure != null) {
+          return Left(saveFailure!);
+        }
+
+        return Right(
+          AuthSessionEntity(
+            provider: AuthProviders.test,
+            uid: response!.user.id,
+            email: response!.user.email,
+            displayName: response!.user.name,
+          ),
+        );
+      }
+
       final AuthSessionEntity session = switch (provider) {
         AuthProviders.google => await _signInWithGoogle(),
         AuthProviders.apple => await _signInWithApple(),
+        AuthProviders.test => throw StateError('Unreachable'),
         AuthProviders.unknown => throw StateError('Unreachable'),
       };
 
@@ -126,29 +164,14 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(failure!);
       }
 
-      final tokenResult =
-          await authTokenHandler.saveTokens(
-            accessToken: response!.accessToken,
-            refreshToken: response!.refreshToken,
-          );
-      Failure? tokenFailure;
-      tokenResult.fold(
-        ifLeft: (left) => tokenFailure = left,
+      final saveResult = await _saveAuthResponse(response!);
+      Failure? saveFailure;
+      saveResult.fold(
+        ifLeft: (left) => saveFailure = left,
         ifRight: (_) {},
       );
-      if (tokenFailure != null) {
-        return Left(tokenFailure!);
-      }
-
-      final saveUserResult =
-          await authLocalDataSource.saveUser(response!.user.toEntity());
-      Failure? saveUserFailure;
-      saveUserResult.fold(
-        ifLeft: (left) => saveUserFailure = left,
-        ifRight: (_) {},
-      );
-      if (saveUserFailure != null) {
-        return Left(saveUserFailure!);
+      if (saveFailure != null) {
+        return Left(saveFailure!);
       }
 
       return Right(session);
@@ -156,6 +179,37 @@ class AuthRepositoryImpl implements AuthRepository {
       TalkerService.instance.error('syncTag Sign-in failed', e);
       return Left(ServerFailure(e.toString()));
     }
+  }
+
+  Future<Either<Failure, void>> _saveAuthResponse(
+    AuthResponseModel response,
+  ) async {
+    final tokenResult =
+        await authTokenHandler.saveTokens(
+          accessToken: response.accessToken,
+          refreshToken: response.refreshToken,
+        );
+    Failure? tokenFailure;
+    tokenResult.fold(
+      ifLeft: (left) => tokenFailure = left,
+      ifRight: (_) {},
+    );
+    if (tokenFailure != null) {
+      return Left(tokenFailure!);
+    }
+
+    final saveUserResult =
+        await authLocalDataSource.saveUser(response.user.toEntity());
+    Failure? saveUserFailure;
+    saveUserResult.fold(
+      ifLeft: (left) => saveUserFailure = left,
+      ifRight: (_) {},
+    );
+    if (saveUserFailure != null) {
+      return Left(saveUserFailure!);
+    }
+
+    return Right(null);
   }
 
   Future<AuthSessionEntity> _signInWithGoogle() async {

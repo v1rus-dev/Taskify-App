@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:design/design.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +20,11 @@ class SignInBottomSheet extends StatelessWidget {
 
   void _onSignInWithApplePressed(BuildContext context) {
     context.read<AuthCubit>().signInWithApple();
+    context.pop();
+  }
+
+  void _onSignInWithTestPressed(BuildContext context) {
+    context.read<AuthCubit>().signInWithTest();
     context.pop();
   }
 
@@ -91,6 +97,27 @@ class SignInBottomSheet extends StatelessWidget {
                   ],
                 ),
                 onPressed: () => _onSignInWithApplePressed(context),
+              ),
+            if (kDebugMode)
+              CardCustomEntry(
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      AppIcons.profile,
+                      package: AppIcons.packageName,
+                      width: 24,
+                      height: 24,
+                    ),
+                    const Gap(8),
+                    Text(
+                      'Sign in with Test',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+                onPressed: () => _onSignInWithTestPressed(context),
               ),
           ],
         ),

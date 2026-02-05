@@ -12,7 +12,7 @@ class FriendsListEmptyPart extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 70),
+      padding: const EdgeInsets.symmetric(horizontal: 40),
       child: SizedBox(
         width: double.infinity,
         child: Column(
@@ -34,15 +34,11 @@ class FriendsListEmptyPart extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            const Gap(12),
-            SizedBox(
-              height: 50,
-              width: 170,
-              child: AppTextButton(
+            const Gap(16),
+            AppTextButton(
                 text: AppLocalizations.of(context)?.addFriends ?? '',
                 onPressed: onAddFriendPressed,
               ),
-            ),
           ],
         ),
       ),

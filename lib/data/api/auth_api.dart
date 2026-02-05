@@ -23,6 +23,15 @@ class AuthApi {
     );
   }
 
+  Future<Either<Failure, T>> authenticateTest<T>({
+    T Function(dynamic data)? parser,
+  }) {
+    return _client.post(
+      path: 'auth/test',
+      parser: parser,
+    );
+  }
+
   Future<Either<Failure, AuthTokensResponseModel>> refresh({
     required String refreshToken,
   }) {

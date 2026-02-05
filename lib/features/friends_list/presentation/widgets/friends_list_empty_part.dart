@@ -13,35 +13,38 @@ class FriendsListEmptyPart extends StatelessWidget {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 70),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            AppLocalizations.of(context)?.noFriendsTitle ?? '',
-            style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w600,
+      child: SizedBox(
+        width: double.infinity,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              AppLocalizations.of(context)?.noFriendsTitle ?? '',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
-          const Gap(4),
-          Text(
-            AppLocalizations.of(context)?.noFriendsDescription ?? '',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: AppColorExtensions.getTextSecondaryColor(context),
+            const Gap(4),
+            Text(
+              AppLocalizations.of(context)?.noFriendsDescription ?? '',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: AppColorExtensions.getTextSecondaryColor(context),
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
-          const Gap(12),
-          SizedBox(
-            height: 50,
-            width: 170,
-            child: AppTextButton(
-              text: AppLocalizations.of(context)?.addFriends ?? '',
-              onPressed: onAddFriendPressed,
+            const Gap(12),
+            SizedBox(
+              height: 50,
+              width: 170,
+              child: AppTextButton(
+                text: AppLocalizations.of(context)?.addFriends ?? '',
+                onPressed: onAddFriendPressed,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

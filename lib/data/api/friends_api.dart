@@ -1,16 +1,16 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/dio_client.dart';
-import 'package:taskify/features/friends_list/data/models/friend_response_model.dart';
-import 'package:taskify/features/profile/data/models/friend_tag_response_model.dart';
-import 'package:dio/dio.dart';
+import 'package:taskify/data/friends/models/friend_request_item_response_model.dart';
+import 'package:taskify/data/friends/models/friend_response_model.dart';
+import 'package:taskify/data/friends/models/friend_tag_response_model.dart';
 
 class FriendsApi {
   FriendsApi(this._client);
 
   final DioClient _client;
 
-  Future<Either<Failure, FriendTagResponseModel>> generateFriendTag() {
+  Future<Either<Failure, FriendTagResponseModel>> regenerateFriendTag() {
     return _client.put(
       path: 'friends/tag',
       parser: (data) => FriendTagResponseModel.fromJson(
@@ -19,14 +19,9 @@ class FriendsApi {
     );
   }
 
-  Future<Either<Failure, List<FriendResponseModel>>> getFriends({
-    required String token,
-  }) {
+  Future<Either<Failure, List<FriendResponseModel>>> getFriends() {
     return _client.get(
       path: 'friends',
-      options: Options(
-        headers: {'Authorization': 'Bearer $token'},
-      ),
       parser: (data) => (data as List<dynamic>)
           .map(
             (item) => FriendResponseModel.fromJson(
@@ -34,6 +29,95 @@ class FriendsApi {
             ),
           )
           .toList(),
+    );
+  }
+
+  Future<Either<Failure, FriendRequestItemResponseModel>> sendFriendRequest({
+    required String friendTag,
+  }) {
+    return _client.post(
+      path: 'friends/requests',
+      data: {
+        'friend_tag': friendTag,
+      },
+      parser: (data) => FriendRequestItemResponseModel.fromJson(
+        data as Map<String, dynamic>,
+      ),
+    );
+  }
+
+  Future<Either<Failure, List<FriendRequestItemResponseModel>>>
+      getIncomingRequests() {
+    return _client.get(
+      path: 'friends/requests/incoming',
+      parser: (data) => (data as List<dynamic>)
+          .map(
+            (item) => FriendRequestItemResponseModel.fromJson(
+              item as Map<String, dynamic>,
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  Future<Either<Failure, List<FriendRequestItemResponseModel>>>
+      getOutgoingRequests() {
+    return _client.get(
+      path: 'friends/requests/outgoing',
+      parser: (data) => (data as List<dynamic>)
+          .map(
+            (item) => FriendRequestItemResponseModel.fromJson(
+              item as Map<String, dynamic>,
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  Future<Either<Failure, FriendResponseModel>> acceptRequest({
+    required String requestId,
+  }) {
+    return _client.post(
+      path: 'friends/requests/accept',
+      data: {
+        'request_id': requestId,
+      },
+      parser: (data) => FriendResponseModel.fromJson(
+        data as Map<String, dynamic>,
+      ),
+    );
+  }
+
+  Future<Either<Failure, void>> declineRequest({
+    required String requestId,
+  }) {
+    return _client.post(
+      path: 'friends/requests/decline',
+      data: {
+        'request_id': requestId,
+      },
+      parser: (_) => null,
+    );
+  }
+
+  Future<Either<Failure, void>> cancelRequest({
+    required String requestId,
+  }) {
+    return _client.post(
+      path: 'friends/requests/cancel',
+      data: {
+        'request_id': requestId,
+      },
+      parser: (_) => null,
+    );
+  }
+
+  Future<Either<Failure, void>> removeFriend({
+    required String friendId,
+  }) {
+    return _client.delete(
+      path: 'friends/$friendId',
+      parser: (_) => null,
     );
   }
 }

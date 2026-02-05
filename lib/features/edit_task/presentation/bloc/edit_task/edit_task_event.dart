@@ -92,7 +92,7 @@ class EditTaskSaveTask extends EditTaskEvent {
 
   final String title;
   final String description;
-  final List<SubTaskUiModel> subTasks;
+  final List<SubTaskModelUi> subTasks;
 
   @override
   List<Object?> get props => [title, description, subTasks];
@@ -101,7 +101,7 @@ class EditTaskSaveTask extends EditTaskEvent {
 class EditTaskAutoSaveRequested extends EditTaskEvent {
   const EditTaskAutoSaveRequested(this.subTasks);
 
-  final List<SubTaskUiModel> subTasks;
+  final List<SubTaskModelUi> subTasks;
 
   @override
   List<Object?> get props => [subTasks];
@@ -113,7 +113,7 @@ class EditTaskSubTasksChanged extends EditTaskEvent {
     this.shouldSchedule = true,
   });
 
-  final List<SubTaskUiModel> subTasks;
+  final List<SubTaskModelUi> subTasks;
   final bool shouldSchedule;
 
   @override

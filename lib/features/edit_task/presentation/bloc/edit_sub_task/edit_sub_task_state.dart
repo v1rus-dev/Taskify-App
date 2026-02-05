@@ -2,13 +2,13 @@ part of 'edit_sub_task_bloc.dart';
 
 class EditSubTaskState extends Equatable {
   const EditSubTaskState({
-    this.subTasks = const <SubTaskUiModel>[],
+    this.subTasks = const <SubTaskModelUi>[],
   });
 
-  final List<SubTaskUiModel> subTasks;
+  final List<SubTaskModelUi> subTasks;
 
   EditSubTaskState copyWith({
-    List<SubTaskUiModel>? subTasks,
+    List<SubTaskModelUi>? subTasks,
   }) {
     return EditSubTaskState(subTasks: subTasks ?? this.subTasks);
   }

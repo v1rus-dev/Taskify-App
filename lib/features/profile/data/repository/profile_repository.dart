@@ -1,16 +1,16 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
-import 'package:taskify/data/auth/models/auth_user_model.dart';
+import 'package:taskify/data/auth/models/auth_user_response_model.dart';
 import 'package:taskify/data/auth/sources/auth_local_data_source.dart';
 import 'package:taskify/data/mappers/auth_mapper.dart';
 import 'package:taskify/data/api/friends_api.dart';
 
 abstract class ProfileRepository {
-  Future<Either<Failure, AuthUserModel>> getProfile();
-  Future<Either<Failure, void>> updateProfile(AuthUserModel user);
+  Future<Either<Failure, AuthUserResponseModel>> getProfile();
+  Future<Either<Failure, void>> updateProfile(AuthUserResponseModel user);
   Future<Either<Failure, void>> clearProfile();
-  Stream<Either<Failure, AuthUserModel?>> observeProfile();
-  Future<Either<Failure, AuthUserModel>> generateNewFriendCode();
+  Stream<Either<Failure, AuthUserResponseModel?>> observeProfile();
+  Future<Either<Failure, AuthUserResponseModel>> generateNewFriendCode();
 }
 
 class ProfileRepositoryImpl implements ProfileRepository {
@@ -23,7 +23,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   });
 
   @override
-  Future<Either<Failure, AuthUserModel>> getProfile() {
+  Future<Either<Failure, AuthUserResponseModel>> getProfile() {
     return authLocalDataSource.getUser().then(
       (value) => value.fold(
         ifLeft: (failure) => Left(failure),
@@ -35,7 +35,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateProfile(AuthUserModel user) {
+  Future<Either<Failure, void>> updateProfile(AuthUserResponseModel user) {
     return authLocalDataSource
         .saveUser(user.toEntity())
         .then(
@@ -57,7 +57,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Stream<Either<Failure, AuthUserModel?>> observeProfile() {
+  Stream<Either<Failure, AuthUserResponseModel?>> observeProfile() {
     return authLocalDataSource.observeUser().map(
           (result) => result.fold(
             ifLeft: (failure) => Left(failure),
@@ -67,8 +67,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<Either<Failure, AuthUserModel>> generateNewFriendCode() async {
-    final tagResult = await friendsApi.generateFriendTag();
+  Future<Either<Failure, AuthUserResponseModel>> generateNewFriendCode() async {
+    final tagResult = await friendsApi.regenerateFriendTag();
     Failure? tagFailure;
     String? friendTag;
     tagResult.fold(
@@ -81,7 +81,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
     final userResult = await authLocalDataSource.getUser();
     Failure? userFailure;
-    AuthUserModel? userModel;
+    AuthUserResponseModel? userModel;
     userResult.fold(
       ifLeft: (left) => userFailure = left,
       ifRight: (user) => userModel = user?.toModel(),
@@ -93,7 +93,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(const CacheFailure('User not found'));
     }
 
-    final updatedUser = AuthUserModel(
+    final updatedUser = AuthUserResponseModel(
       id: userModel!.id,
       provider: userModel!.provider,
       providerUserId: userModel!.providerUserId,

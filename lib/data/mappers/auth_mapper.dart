@@ -1,9 +1,9 @@
-import 'package:taskify/data/auth/models/auth_user_model.dart';
-import 'package:taskify/domain/auth/models/auth_user.dart';
+import 'package:taskify/data/auth/models/auth_user_response_model.dart';
+import 'package:taskify/domain/auth/models/auth_user_entity.dart';
 
-extension AuthUserModelMapper on AuthUserModel {
-  AuthUser toEntity() {
-    return AuthUser(
+extension AuthUserResponseModelMapper on AuthUserResponseModel {
+  AuthUserEntity toEntity() {
+    return AuthUserEntity(
       id: id,
       provider: provider,
       providerUserId: providerUserId,
@@ -18,9 +18,9 @@ extension AuthUserModelMapper on AuthUserModel {
 }
 
 
-extension AuthUserMapper on AuthUser {
-  AuthUserModel toModel() {
-    return AuthUserModel(
+extension AuthUserMapper on AuthUserEntity {
+  AuthUserResponseModel toModel() {
+    return AuthUserResponseModel(
       id: id,
       provider: provider,
       providerUserId: providerUserId,

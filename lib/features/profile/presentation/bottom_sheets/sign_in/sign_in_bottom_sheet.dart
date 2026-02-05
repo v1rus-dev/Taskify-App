@@ -25,84 +25,76 @@ class SignInBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: EdgeInsetsGeometry.symmetric(
-        horizontal: AppInsets.sheetHorizontal,
-        vertical: AppInsets.sheetVertical,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            AppLocalizations.of(context)?.signIn ?? '',
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+    return FloatingBottomSheetLayout(
+      children: [
+        Text(
+          AppLocalizations.of(context)?.signIn ?? '',
+          style: theme.textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
           ),
-          const Gap(8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              AppLocalizations.of(context)?.signInDescription ?? '',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: Color(0xFFA6A6A6),
+        ),
+        const Gap(8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Text(
+            AppLocalizations.of(context)?.signInDescription ?? '',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: Color(0xFFA6A6A6),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const Gap(16),
+        CardWithActions(
+          actions: [
+            CardCustomEntry(
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    AppIcons.google,
+                    package: AppIcons.packageName,
+                    width: 24,
+                    height: 24,
+                  ),
+                  const Gap(8),
+                  Text(
+                    AppLocalizations.of(context)?.signInWithGoogle ?? '',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
               ),
-              textAlign: TextAlign.center,
+              onPressed: () => _onSignInWithGooglePressed(context),
             ),
-          ),
-          const Gap(16),
-          CardWithActions(
-            actions: [
+            if (Platform.isIOS)
               CardCustomEntry(
                 child: Row(
                   children: [
                     SvgPicture.asset(
-                      AppIcons.google,
+                      AppIcons.apple,
                       package: AppIcons.packageName,
                       width: 24,
                       height: 24,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black,
+                        BlendMode.srcIn,
+                      ),
                     ),
                     const Gap(8),
                     Text(
-                      AppLocalizations.of(context)?.signInWithGoogle ?? '',
+                      AppLocalizations.of(context)?.signInWithApple ?? '',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: Colors.black,
                       ),
                     ),
                   ],
                 ),
-                onPressed: () => _onSignInWithGooglePressed(context),
+                onPressed: () => _onSignInWithApplePressed(context),
               ),
-              if (Platform.isIOS)
-                CardCustomEntry(
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        AppIcons.apple,
-                        package: AppIcons.packageName,
-                        width: 24,
-                        height: 24,
-                        colorFilter: ColorFilter.mode(
-                          Colors.black,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                      const Gap(8),
-                      Text(
-                        AppLocalizations.of(context)?.signInWithApple ?? '',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                  onPressed: () => _onSignInWithApplePressed(context),
-                ),
-            ],
-          ),
-        ],
-      ),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -2,13 +2,13 @@ part of 'friends_list_bloc.dart';
 
 class FriendsListState extends Equatable {
   const FriendsListState({
-    this.friends = const <FriendUiModel>[],
+    this.friends = const <FriendModelUi>[],
   });
 
-  final List<FriendUiModel> friends;
+  final List<FriendModelUi> friends;
 
   FriendsListState copyWith({
-    List<FriendUiModel>? friends,
+    List<FriendModelUi>? friends,
   }) {
     return FriendsListState(
       friends: friends ?? this.friends,

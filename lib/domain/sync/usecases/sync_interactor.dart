@@ -1,9 +1,9 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/talker_service.dart';
-import 'package:taskify/domain/sync/models/sync_op.dart';
-import 'package:taskify/domain/sync/models/sync_queue_entry.dart';
-import 'package:taskify/domain/sync/models/sync_state.dart';
+import 'package:taskify/domain/sync/models/sync_op_entity.dart';
+import 'package:taskify/domain/sync/models/sync_queue_entry_entity.dart';
+import 'package:taskify/domain/sync/models/sync_state_entity.dart';
 import 'package:taskify/domain/sync/repositories/sync_repository.dart';
 
 class SyncInteractor {
@@ -15,7 +15,7 @@ class SyncInteractor {
     TalkerService.instance.info('syncTag sync start');
     final stateResult = await _repository.getState();
     Failure? failure;
-    SyncState? state;
+    SyncStateEntity? state;
     stateResult.fold(
       ifLeft: (left) => failure = left,
       ifRight: (right) => state = right,
@@ -26,7 +26,7 @@ class SyncInteractor {
     }
 
     final queueResult = await _repository.getQueuedOps();
-    List<SyncQueueEntry> queued = const [];
+    List<SyncQueueEntryEntity> queued = const [];
     queueResult.fold(
       ifLeft: (left) => failure = left,
       ifRight: (right) => queued = right,
@@ -102,8 +102,8 @@ class SyncInteractor {
     return const Right(null);
   }
 
-  SyncOp _mapQueueToOp(SyncQueueEntry entry) {
-    return SyncOp(
+  SyncOpEntity _mapQueueToOp(SyncQueueEntryEntity entry) {
+    return SyncOpEntity(
       opId: entry.opId,
       entity: entry.entity,
       op: entry.op,

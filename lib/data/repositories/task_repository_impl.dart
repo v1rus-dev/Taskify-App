@@ -17,8 +17,8 @@ import 'package:taskify/features/edit_task/data/datasources/tag_local_datasource
 import 'package:taskify/features/edit_task/data/mappers/sub_task_mapper.dart';
 import 'package:taskify/domain/tasks/models/task.dart';
 import 'package:taskify/domain/repository/task_repository.dart';
-import 'package:taskify/domain/sync/models/sync_op_data.dart';
-import 'package:taskify/domain/sync/models/sync_queue_entry.dart';
+import 'package:taskify/domain/sync/models/sync_op_data_entity.dart';
+import 'package:taskify/domain/sync/models/sync_queue_entry_entity.dart';
 import 'package:taskify/domain/sync/repositories/sync_repository.dart';
 import 'package:uuid/uuid.dart';
 
@@ -359,13 +359,13 @@ class TaskRepositoryImpl implements TaskRepository {
       );
     }
     final opId = _uuid.v4();
-    final entry = SyncQueueEntry(
+    final entry = SyncQueueEntryEntity(
       opId: opId,
       entity: 'task',
       op: op,
       id: task.networkId,
       clientId: task.clientId,
-      data: SyncOpData(
+      data: SyncOpDataEntity(
         title: task.title,
         description: task.description,
         isCompleted: task.isCompleted,
@@ -387,7 +387,7 @@ class TaskRepositoryImpl implements TaskRepository {
         'syncTag enqueue task delete missing ids',
       );
     }
-    final entry = SyncQueueEntry(
+    final entry = SyncQueueEntryEntity(
       opId: _uuid.v4(),
       entity: 'task',
       op: 'delete',

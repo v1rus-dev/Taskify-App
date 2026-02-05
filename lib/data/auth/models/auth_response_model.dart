@@ -1,4 +1,4 @@
-import 'package:taskify/data/auth/models/auth_user_model.dart';
+import 'package:taskify/data/auth/models/auth_user_response_model.dart';
 
 class AuthResponseModel {
   const AuthResponseModel({
@@ -11,14 +11,14 @@ class AuthResponseModel {
   final String accessToken;
   final String refreshToken;
   final String tokenType;
-  final AuthUserModel user;
+  final AuthUserResponseModel user;
 
   factory AuthResponseModel.fromJson(Map<String, dynamic> json) {
     return AuthResponseModel(
       accessToken: json['access_token'] as String,
       refreshToken: json['refresh_token'] as String,
       tokenType: json['token_type'] as String,
-      user: AuthUserModel.fromJson(json['user'] as Map<String, dynamic>),
+      user: AuthUserResponseModel.fromJson(json['user'] as Map<String, dynamic>),
     );
   }
 }

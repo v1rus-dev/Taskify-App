@@ -10,7 +10,7 @@ import 'package:taskify/data/api/auth_api.dart';
 import 'package:taskify/data/auth/models/auth_response_model.dart';
 import 'package:taskify/data/auth/sources/auth_local_data_source.dart';
 import 'package:taskify/domain/auth/models/auth_providers.dart';
-import 'package:taskify/domain/auth/models/auth_session.dart';
+import 'package:taskify/domain/auth/models/auth_session_entity.dart';
 import 'package:taskify/domain/auth/repository/auth_repository.dart';
 import 'package:taskify/core/auth/access_token_provider.dart';
 
@@ -57,7 +57,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, AuthSession?>> getSession() async {
+  Future<Either<Failure, AuthSessionEntity?>> getSession() async {
     try {
       final user = _auth.currentUser;
       if (user == null) {
@@ -74,7 +74,7 @@ class AuthRepositoryImpl implements AuthRepository {
           : AuthProviders.unknown;
 
       return Right(
-        AuthSession(
+        AuthSessionEntity(
           provider: provider,
           uid: user.uid,
           idToken: idToken,
@@ -89,7 +89,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, AuthSession>> signIn({
+  Future<Either<Failure, AuthSessionEntity>> signIn({
     required AuthProviders provider,
   }) async {
     try {
@@ -97,7 +97,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(const ValidationFailure('Unsupported auth provider'));
       }
 
-      final AuthSession session = switch (provider) {
+      final AuthSessionEntity session = switch (provider) {
         AuthProviders.google => await _signInWithGoogle(),
         AuthProviders.apple => await _signInWithApple(),
         AuthProviders.unknown => throw StateError('Unreachable'),
@@ -158,7 +158,7 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-  Future<AuthSession> _signInWithGoogle() async {
+  Future<AuthSessionEntity> _signInWithGoogle() async {
     await _ensureGoogleSignInInitialized();
 
     final GoogleSignInAccount account = await _googleSignIn.authenticate(
@@ -177,7 +177,7 @@ class AuthRepositoryImpl implements AuthRepository {
     final idToken = await user.getIdToken();
     TalkerService.instance.info('syncTag Google sign-in successful');
 
-    return AuthSession(
+    return AuthSessionEntity(
       provider: AuthProviders.google,
       uid: user.uid,
       idToken: idToken,
@@ -186,7 +186,7 @@ class AuthRepositoryImpl implements AuthRepository {
     );
   }
 
-  Future<AuthSession> _signInWithApple() async {
+  Future<AuthSessionEntity> _signInWithApple() async {
     final appleCredential = await SignInWithApple.getAppleIDCredential(
       scopes: [
         AppleIDAuthorizationScopes.email,
@@ -213,7 +213,7 @@ class AuthRepositoryImpl implements AuthRepository {
     final idToken = await user.getIdToken();
     debugPrint('Firebase idToken: $idToken');
 
-    return AuthSession(
+    return AuthSessionEntity(
       provider: AuthProviders.apple,
       uid: user.uid,
       idToken: idToken,

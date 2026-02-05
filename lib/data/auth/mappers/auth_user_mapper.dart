@@ -1,10 +1,10 @@
 import 'package:drift/drift.dart';
 import 'package:taskify/data/database/app_database.dart';
-import 'package:taskify/domain/auth/models/auth_user.dart';
+import 'package:taskify/domain/auth/models/auth_user_entity.dart';
 
 extension UsersTableDataMapper on UsersTableData {
-  AuthUser toDomain() {
-    return AuthUser(
+  AuthUserEntity toDomain() {
+    return AuthUserEntity(
       id: id,
       provider: provider,
       providerUserId: providerUserId,
@@ -18,7 +18,7 @@ extension UsersTableDataMapper on UsersTableData {
   }
 }
 
-extension AuthUserCompanionMapper on AuthUser {
+extension AuthUserCompanionMapper on AuthUserEntity {
   UsersTableCompanion toCompanion() {
     return UsersTableCompanion(
       id: Value(id),

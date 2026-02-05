@@ -2,23 +2,23 @@ import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/data/sync/datasources/sync_local_datasource.dart';
 import 'package:taskify/data/sync/datasources/sync_remote_datasource.dart';
-import 'package:taskify/data/sync/models/sync_changes_model.dart';
-import 'package:taskify/data/sync/models/sync_event_model.dart';
-import 'package:taskify/data/sync/models/sync_id_map_model.dart';
-import 'package:taskify/data/sync/models/sync_op_data_model.dart';
-import 'package:taskify/data/sync/models/sync_op_input_model.dart';
+import 'package:taskify/data/sync/models/sync_changes_response_model.dart';
+import 'package:taskify/data/sync/models/sync_event_item_response_model.dart';
+import 'package:taskify/data/sync/models/sync_id_map_item_response_model.dart';
+import 'package:taskify/data/sync/models/sync_op_data_request_model.dart';
+import 'package:taskify/data/sync/models/sync_op_input_request_model.dart';
 import 'package:taskify/data/sync/models/sync_push_response_model.dart';
 import 'package:taskify/data/sync/models/sync_queue_entry_model.dart';
 import 'package:taskify/data/sync/models/sync_state_model.dart';
-import 'package:taskify/domain/sync/models/sync_change.dart';
-import 'package:taskify/domain/sync/models/sync_changes.dart';
-import 'package:taskify/domain/sync/models/sync_id_map.dart';
-import 'package:taskify/domain/sync/models/sync_op.dart';
-import 'package:taskify/domain/sync/models/sync_op_data.dart';
-import 'package:taskify/domain/sync/models/sync_op_error.dart';
-import 'package:taskify/domain/sync/models/sync_push_result.dart';
-import 'package:taskify/domain/sync/models/sync_queue_entry.dart';
-import 'package:taskify/domain/sync/models/sync_state.dart';
+import 'package:taskify/domain/sync/models/sync_change_entity.dart';
+import 'package:taskify/domain/sync/models/sync_changes_entity.dart';
+import 'package:taskify/domain/sync/models/sync_id_map_entity.dart';
+import 'package:taskify/domain/sync/models/sync_op_entity.dart';
+import 'package:taskify/domain/sync/models/sync_op_data_entity.dart';
+import 'package:taskify/domain/sync/models/sync_op_error_entity.dart';
+import 'package:taskify/domain/sync/models/sync_push_result_entity.dart';
+import 'package:taskify/domain/sync/models/sync_queue_entry_entity.dart';
+import 'package:taskify/domain/sync/models/sync_state_entity.dart';
 import 'package:taskify/domain/sync/repositories/sync_repository.dart';
 
 class SyncRepositoryImpl implements SyncRepository {
@@ -28,7 +28,7 @@ class SyncRepositoryImpl implements SyncRepository {
   final SyncRemoteDataSource _remote;
 
   @override
-  Future<Either<Failure, List<SyncQueueEntry>>> getQueuedOps({
+  Future<Either<Failure, List<SyncQueueEntryEntity>>> getQueuedOps({
     int limit = 200,
   }) async {
     final result = await _local.getQueuedOps(limit: limit);
@@ -39,7 +39,7 @@ class SyncRepositoryImpl implements SyncRepository {
   }
 
   @override
-  Future<Either<Failure, void>> enqueueOp(SyncQueueEntry entry) {
+  Future<Either<Failure, void>> enqueueOp(SyncQueueEntryEntity entry) {
     return _local.enqueueOp(_mapQueueEntityToModel(entry));
   }
 
@@ -49,9 +49,9 @@ class SyncRepositoryImpl implements SyncRepository {
   }
 
   @override
-  Future<Either<Failure, SyncPushResult>> pushChanges({
+  Future<Either<Failure, SyncPushResultEntity>> pushChanges({
     required String deviceId,
-    required List<SyncOp> ops,
+    required List<SyncOpEntity> ops,
   }) async {
     final result = await _remote.pushChanges(
       deviceId: deviceId,
@@ -64,7 +64,7 @@ class SyncRepositoryImpl implements SyncRepository {
   }
 
   @override
-  Future<Either<Failure, SyncChanges>> pullChanges({
+  Future<Either<Failure, SyncChangesEntity>> pullChanges({
     required int cursor,
     int limit = 200,
     bool compact = true,
@@ -82,7 +82,7 @@ class SyncRepositoryImpl implements SyncRepository {
 
   @override
   Future<Either<Failure, void>> applyIdMap(
-    Map<String, List<SyncIdMap>> idMap,
+    Map<String, List<SyncIdMapEntity>> idMap,
   ) {
     final mapped = idMap.map(
       (key, value) =>
@@ -92,13 +92,13 @@ class SyncRepositoryImpl implements SyncRepository {
   }
 
   @override
-  Future<Either<Failure, void>> applyChanges(List<SyncChange> changes) {
+  Future<Either<Failure, void>> applyChanges(List<SyncChangeEntity> changes) {
     final mapped = changes.map(_mapChangeEntityToModel).toList();
     return _local.applyChanges(mapped);
   }
 
   @override
-  Future<Either<Failure, SyncState>> getState() async {
+  Future<Either<Failure, SyncStateEntity>> getState() async {
     final result = await _local.getState();
     return result.fold(
       ifLeft: (failure) => Left(failure),
@@ -107,12 +107,12 @@ class SyncRepositoryImpl implements SyncRepository {
   }
 
   @override
-  Future<Either<Failure, void>> saveState(SyncState state) {
+  Future<Either<Failure, void>> saveState(SyncStateEntity state) {
     return _local.saveState(_mapStateEntityToModel(state));
   }
 
-  SyncQueueEntry _mapQueueModelToEntity(SyncQueueEntryModel model) {
-    return SyncQueueEntry(
+  SyncQueueEntryEntity _mapQueueModelToEntity(SyncQueueEntryModel model) {
+    return SyncQueueEntryEntity(
       opId: model.opId,
       entity: model.entity,
       op: model.op,
@@ -122,7 +122,7 @@ class SyncRepositoryImpl implements SyncRepository {
     );
   }
 
-  SyncQueueEntryModel _mapQueueEntityToModel(SyncQueueEntry entity) {
+  SyncQueueEntryModel _mapQueueEntityToModel(SyncQueueEntryEntity entity) {
     return SyncQueueEntryModel(
       opId: entity.opId,
       entity: entity.entity,
@@ -133,8 +133,8 @@ class SyncRepositoryImpl implements SyncRepository {
     );
   }
 
-  SyncOpInputModel _mapOpEntityToModel(SyncOp entity) {
-    return SyncOpInputModel(
+  SyncOpInputRequestModel _mapOpEntityToModel(SyncOpEntity entity) {
+    return SyncOpInputRequestModel(
       opId: entity.opId,
       entity: entity.entity,
       op: entity.op,
@@ -144,8 +144,8 @@ class SyncRepositoryImpl implements SyncRepository {
     );
   }
 
-  SyncPushResult _mapPushResponseToEntity(SyncPushResponseModel model) {
-    return SyncPushResult(
+  SyncPushResultEntity _mapPushResponseToEntity(SyncPushResponseModel model) {
+    return SyncPushResultEntity(
       ack: model.ack,
       idMap: model.idMap.map(
         (key, value) => MapEntry(
@@ -155,7 +155,7 @@ class SyncRepositoryImpl implements SyncRepository {
       ),
       errors: model.errors
           .map(
-            (error) => SyncOpError(
+            (error) => SyncOpErrorEntity(
               opId: error.opId,
               code: error.code,
               message: error.message,
@@ -165,15 +165,15 @@ class SyncRepositoryImpl implements SyncRepository {
     );
   }
 
-  SyncChanges _mapChangesToEntity(SyncChangesModel model) {
-    return SyncChanges(
+  SyncChangesEntity _mapChangesToEntity(SyncChangesResponseModel model) {
+    return SyncChangesEntity(
       nextCursor: model.nextCursor,
       changes: model.changes.map(_mapChangeModelToEntity).toList(),
     );
   }
 
-  SyncChange _mapChangeModelToEntity(SyncEventModel model) {
-    return SyncChange(
+  SyncChangeEntity _mapChangeModelToEntity(SyncEventItemResponseModel model) {
+    return SyncChangeEntity(
       id: model.id,
       entity: model.entity,
       entityId: model.entityId,
@@ -183,8 +183,8 @@ class SyncRepositoryImpl implements SyncRepository {
     );
   }
 
-  SyncEventModel _mapChangeEntityToModel(SyncChange entity) {
-    return SyncEventModel(
+  SyncEventItemResponseModel _mapChangeEntityToModel(SyncChangeEntity entity) {
+    return SyncEventItemResponseModel(
       id: entity.id,
       entity: entity.entity,
       entityId: entity.entityId,
@@ -194,8 +194,8 @@ class SyncRepositoryImpl implements SyncRepository {
     );
   }
 
-  SyncOpData _mapOpDataModelToEntity(SyncOpDataModel model) {
-    return SyncOpData(
+  SyncOpDataEntity _mapOpDataModelToEntity(SyncOpDataRequestModel model) {
+    return SyncOpDataEntity(
       title: model.title,
       description: model.description,
       isCompleted: model.isCompleted,
@@ -208,8 +208,8 @@ class SyncRepositoryImpl implements SyncRepository {
     );
   }
 
-  SyncOpDataModel _mapOpDataEntityToModel(SyncOpData entity) {
-    return SyncOpDataModel(
+  SyncOpDataRequestModel _mapOpDataEntityToModel(SyncOpDataEntity entity) {
+    return SyncOpDataRequestModel(
       title: entity.title,
       description: entity.description,
       isCompleted: entity.isCompleted,
@@ -222,23 +222,23 @@ class SyncRepositoryImpl implements SyncRepository {
     );
   }
 
-  SyncIdMap _mapIdMapModelToEntity(SyncIdMapModel model) {
-    return SyncIdMap(clientId: model.clientId, id: model.id);
+  SyncIdMapEntity _mapIdMapModelToEntity(SyncIdMapItemResponseModel model) {
+    return SyncIdMapEntity(clientId: model.clientId, id: model.id);
   }
 
-  SyncIdMapModel _mapIdMapEntityToModel(SyncIdMap entity) {
-    return SyncIdMapModel(clientId: entity.clientId, id: entity.id);
+  SyncIdMapItemResponseModel _mapIdMapEntityToModel(SyncIdMapEntity entity) {
+    return SyncIdMapItemResponseModel(clientId: entity.clientId, id: entity.id);
   }
 
-  SyncState _mapStateModelToEntity(SyncStateModel model) {
-    return SyncState(
+  SyncStateEntity _mapStateModelToEntity(SyncStateModel model) {
+    return SyncStateEntity(
       deviceId: model.deviceId,
       lastCursor: model.lastCursor,
       lastSyncedAt: model.lastSyncedAt,
     );
   }
 
-  SyncStateModel _mapStateEntityToModel(SyncState entity) {
+  SyncStateModel _mapStateEntityToModel(SyncStateEntity entity) {
     return SyncStateModel(
       deviceId: entity.deviceId,
       lastCursor: entity.lastCursor,

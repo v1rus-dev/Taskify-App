@@ -6,9 +6,9 @@ import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/data/database/app_database.dart';
 import 'package:taskify/data/database/tables/sync_state_table.dart';
-import 'package:taskify/data/sync/models/sync_event_model.dart';
-import 'package:taskify/data/sync/models/sync_id_map_model.dart';
-import 'package:taskify/data/sync/models/sync_op_data_model.dart';
+import 'package:taskify/data/sync/models/sync_event_item_response_model.dart';
+import 'package:taskify/data/sync/models/sync_id_map_item_response_model.dart';
+import 'package:taskify/data/sync/models/sync_op_data_request_model.dart';
 import 'package:taskify/data/sync/models/sync_queue_entry_model.dart';
 import 'package:taskify/data/sync/models/sync_state_model.dart';
 
@@ -21,10 +21,10 @@ abstract class SyncLocalDataSource {
   Future<Either<Failure, SyncStateModel>> getState();
   Future<Either<Failure, void>> saveState(SyncStateModel state);
   Future<Either<Failure, void>> applyIdMap(
-    Map<String, List<SyncIdMapModel>> idMap,
+    Map<String, List<SyncIdMapItemResponseModel>> idMap,
   );
   Future<Either<Failure, void>> applyChanges(
-    List<SyncEventModel> changes,
+    List<SyncEventItemResponseModel> changes,
   );
 }
 
@@ -59,7 +59,7 @@ class SyncLocalDataSourceImpl implements SyncLocalDataSource {
           op: row.op,
           clientId: row.clientId,
           networkId: row.networkId,
-          data: payload == null ? null : SyncOpDataModel.fromJson(payload),
+          data: payload == null ? null : SyncOpDataRequestModel.fromJson(payload),
         );
       }).toList();
       TalkerService.instance.info('syncTag getQueuedOps result: ${ops.length}');
@@ -168,7 +168,7 @@ class SyncLocalDataSourceImpl implements SyncLocalDataSource {
 
   @override
   Future<Either<Failure, void>> applyIdMap(
-    Map<String, List<SyncIdMapModel>> idMap,
+    Map<String, List<SyncIdMapItemResponseModel>> idMap,
   ) async {
     try {
       TalkerService.instance.info('syncTag applyIdMap start');
@@ -201,7 +201,7 @@ class SyncLocalDataSourceImpl implements SyncLocalDataSource {
 
   @override
   Future<Either<Failure, void>> applyChanges(
-    List<SyncEventModel> changes,
+    List<SyncEventItemResponseModel> changes,
   ) async {
     try {
       TalkerService.instance.info(
@@ -231,7 +231,7 @@ class SyncLocalDataSourceImpl implements SyncLocalDataSource {
     }
   }
 
-  Future<void> _applyTaskChange(SyncEventModel change) async {
+  Future<void> _applyTaskChange(SyncEventItemResponseModel change) async {
     final data = change.data ?? {};
     final clientId = data['client_id'] as String?;
     final deletedAtRaw = data['deleted_at'] as String?;
@@ -305,7 +305,7 @@ class SyncLocalDataSourceImpl implements SyncLocalDataSource {
     );
   }
 
-  Future<void> _applySubTaskChange(SyncEventModel change) async {
+  Future<void> _applySubTaskChange(SyncEventItemResponseModel change) async {
     final data = change.data ?? {};
     final clientId = data['client_id'] as String?;
     final deletedAtRaw = data['deleted_at'] as String?;

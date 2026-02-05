@@ -14,7 +14,7 @@ import 'package:taskify/features/edit_task/domain/services/edit_task_auto_save_c
 import 'package:taskify/features/edit_task/domain/services/edit_task_change_tracker.dart';
 import 'package:taskify/features/edit_task/domain/services/edit_task_date_calculator.dart';
 import 'package:taskify/features/edit_task/domain/services/edit_task_snapshots.dart';
-import 'package:taskify/features/edit_task/presentation/models/sub_task_ui_model.dart';
+import 'package:taskify/features/edit_task/presentation/models/sub_task_model_ui.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 
 part 'edit_task_event.dart';
@@ -30,7 +30,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
   final EditTaskDateCalculator dateCalculator = const EditTaskDateCalculator();
   late final EditTaskChangeTracker _changeTracker;
   late final EditTaskAutoSaveController _autoSaveController;
-  List<SubTaskUiModel> _pendingSubTasks = const [];
+  List<SubTaskModelUi> _pendingSubTasks = const [];
   bool _hasSubTasksSnapshot = false;
   bool _hasPendingAutoSave = false;
 
@@ -331,7 +331,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     );
   }
 
-  List<SubTaskSnapshot> _buildSubTaskSnapshots(List<SubTaskUiModel> subTasks) {
+  List<SubTaskSnapshot> _buildSubTaskSnapshots(List<SubTaskModelUi> subTasks) {
     return subTasks
         .map(
           (item) => SubTaskSnapshot(
@@ -344,7 +344,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
         .toList();
   }
 
-  List<SubTaskDraft> _buildSubTaskDrafts(List<SubTaskUiModel> subTasks) {
+  List<SubTaskDraft> _buildSubTaskDrafts(List<SubTaskModelUi> subTasks) {
     return subTasks
         .map(
           (item) => SubTaskDraft(
@@ -383,7 +383,7 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
 
   Future<void> _performSave({
     required Emitter<EditTaskState> emit,
-    required List<SubTaskUiModel> subTasks,
+    required List<SubTaskModelUi> subTasks,
     required bool shouldClose,
   }) async {
     final snapshot = _buildSnapshotFromState();

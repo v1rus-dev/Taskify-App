@@ -1,5 +1,5 @@
-import 'package:taskify/data/sync/models/sync_id_map_model.dart';
-import 'package:taskify/data/sync/models/sync_op_error_model.dart';
+import 'package:taskify/data/sync/models/sync_id_map_item_response_model.dart';
+import 'package:taskify/data/sync/models/sync_op_error_item_response_model.dart';
 
 class SyncPushResponseModel {
   const SyncPushResponseModel({
@@ -9,15 +9,15 @@ class SyncPushResponseModel {
   });
 
   final List<String> ack;
-  final Map<String, List<SyncIdMapModel>> idMap;
-  final List<SyncOpErrorModel> errors;
+  final Map<String, List<SyncIdMapItemResponseModel>> idMap;
+  final List<SyncOpErrorItemResponseModel> errors;
 
   factory SyncPushResponseModel.fromJson(Map<String, dynamic> json) {
     final idMapRaw = json['id_map'] as Map<String, dynamic>? ?? {};
-    final mappedIdMap = <String, List<SyncIdMapModel>>{};
+    final mappedIdMap = <String, List<SyncIdMapItemResponseModel>>{};
     for (final entry in idMapRaw.entries) {
       mappedIdMap[entry.key] = (entry.value as List<dynamic>)
-          .map((item) => SyncIdMapModel.fromJson(item as Map<String, dynamic>))
+          .map((item) => SyncIdMapItemResponseModel.fromJson(item as Map<String, dynamic>))
           .toList();
     }
 
@@ -27,7 +27,7 @@ class SyncPushResponseModel {
           .toList(),
       idMap: mappedIdMap,
       errors: (json['errors'] as List<dynamic>? ?? [])
-          .map((item) => SyncOpErrorModel.fromJson(
+          .map((item) => SyncOpErrorItemResponseModel.fromJson(
                 item as Map<String, dynamic>,
               ))
           .toList(),

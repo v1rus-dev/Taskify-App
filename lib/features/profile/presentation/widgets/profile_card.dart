@@ -1,14 +1,14 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/data/auth/models/auth_user_model.dart';
+import 'package:taskify/data/auth/models/auth_user_response_model.dart';
 import 'package:taskify/features/profile/presentation/bottom_sheets/friend_code/friend_code_bottom_sheet.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
 class ProfileCard extends StatelessWidget {
   const ProfileCard({super.key, required this.user});
 
-  final AuthUserModel user;
+  final AuthUserResponseModel user;
 
   void _onCardPressed(BuildContext context) {
     showAppBottomSheet(

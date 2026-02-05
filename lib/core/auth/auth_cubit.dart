@@ -4,18 +4,25 @@ import 'package:taskify/core/auth/auth_state.dart';
 import 'package:taskify/domain/auth/models/auth_providers.dart';
 import 'package:taskify/domain/auth/repository/auth_repository.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
+import 'package:taskify/core/app_startup/app_startup_coordinator.dart';
 
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit(this._authRepository, {SyncCoordinator? syncCoordinator})
-      : _syncCoordinator = syncCoordinator,
+  AuthCubit(
+    this._authRepository, {
+    SyncCoordinator? syncCoordinator,
+    AppStartupCoordinator? startupCoordinator,
+  })  : _syncCoordinator = syncCoordinator,
+        _startupCoordinator = startupCoordinator,
         super(const AuthState()) {
     _syncCoordinator?.onAppStart();
+    _startupCoordinator?.onAppStart();
     _loadSession();
   }
 
   final AuthRepository _authRepository;
   final SyncCoordinator? _syncCoordinator;
+  final AppStartupCoordinator? _startupCoordinator;
 
   Future<void> signInWithGoogle() => _signIn(AuthProviders.google);
   Future<void> signInWithApple() => _signIn(AuthProviders.apple);
@@ -30,6 +37,7 @@ class AuthCubit extends Cubit<AuthState> {
         ifRight: (_) {
           emit(const AuthState());
           _syncCoordinator?.setAuthenticated(false);
+          _startupCoordinator?.setAuthenticated(false);
           TalkerService.instance.info('syncTag Sign out successful');
         },
       );
@@ -56,6 +64,7 @@ class AuthCubit extends Cubit<AuthState> {
           TalkerService.instance.info('syncTag Sign in successful');
           emit(state.copyWith(isLoading: false, session: session));
           _syncCoordinator?.setAuthenticated(true);
+          _startupCoordinator?.setAuthenticated(true);
         },
       );
     } catch (e) {
@@ -79,8 +88,10 @@ class AuthCubit extends Cubit<AuthState> {
           if (session != null) {
             emit(state.copyWith(session: session));
             _syncCoordinator?.setAuthenticated(true);
+            _startupCoordinator?.setAuthenticated(true);
           } else {
             _syncCoordinator?.setAuthenticated(false);
+            _startupCoordinator?.setAuthenticated(false);
           }
         },
       );

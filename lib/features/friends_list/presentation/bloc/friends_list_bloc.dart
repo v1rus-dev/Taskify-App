@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:taskify/core/services/locator.dart';
-import 'package:taskify/features/friends_list/domain/usecases/friends_interactor.dart';
-import 'package:taskify/features/friends_list/presentation/models/friend_ui_model.dart';
+import 'package:taskify/domain/friends/usecases/friends_interactor.dart';
+import 'package:taskify/features/friends_list/presentation/models/friend_model_ui.dart';
 
 part 'friends_list_event.dart';
 part 'friends_list_state.dart';

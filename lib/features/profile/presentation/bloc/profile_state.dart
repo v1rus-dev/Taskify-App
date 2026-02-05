@@ -7,11 +7,11 @@ class ProfileState extends Equatable {
   });
 
   final TimeFormatType timeFormat;
-  final AuthUserModel? profileUser;
+  final AuthUserResponseModel? profileUser;
 
   ProfileState copyWith({
     TimeFormatType? timeFormat,
-    AuthUserModel? profileUser,
+    AuthUserResponseModel? profileUser,
     bool clearProfileUser = false,
   }) {
     return ProfileState(

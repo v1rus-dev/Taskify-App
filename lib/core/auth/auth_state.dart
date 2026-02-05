@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:taskify/domain/auth/models/auth_session.dart';
+import 'package:taskify/domain/auth/models/auth_session_entity.dart';
 
 class AuthState extends Equatable {
   const AuthState({
@@ -8,14 +8,14 @@ class AuthState extends Equatable {
     this.errorMessage,
   });
 
-  final AuthSession? session;
+  final AuthSessionEntity? session;
   final bool isLoading;
   final String? errorMessage;
 
   static const _unset = Object();
 
   AuthState copyWith({
-    AuthSession? session,
+    AuthSessionEntity? session,
     bool? isLoading,
     Object? errorMessage = _unset,
   }) {

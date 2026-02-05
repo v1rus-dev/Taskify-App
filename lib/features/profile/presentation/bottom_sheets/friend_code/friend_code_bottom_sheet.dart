@@ -34,54 +34,46 @@ class FriendCodeBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsetsGeometry.symmetric(
-        horizontal: AppInsets.sheetHorizontal,
-        vertical: AppInsets.sheetVertical,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const FriendCodeTitle(),
-          const Gap(24),
-          BlocBuilder<FriendCodeBloc, FriendCodeState>(
-            builder: (context, state) {
-              final isLoading = state is FriendCodeLoading;
-              final friendCode = state.friendCode;
-              return Column(
-                children: [
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    switchInCurve: Curves.easeIn,
-                    switchOutCurve: Curves.easeOut,
-                    transitionBuilder: (child, animation) =>
-                        FadeTransition(opacity: animation, child: child),
-                    child: isLoading
-                        ? const FriendCodeLoader(key: ValueKey('loader'))
-                        : Column(
-                            key: const ValueKey('content'),
-                            children: [
-                              FriendCodeValueCard(friendCode: friendCode),
-                              const Gap(16),
-                              FriendCodeQrCard(friendCode: friendCode),
-                              const Gap(12),
-                              const FriendCodeCaption(),
-                            ],
-                          ),
-                  ),
-                  const Gap(24),
-                  FriendCodeActions(
-                    friendCode: friendCode,
-                    isLoading: isLoading,
-                    onGeneratePressed: () => _onGeneratePressed(context),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
+    return FloatingBottomSheetLayout(
+      children: [
+        const FriendCodeTitle(),
+        const Gap(24),
+        BlocBuilder<FriendCodeBloc, FriendCodeState>(
+          builder: (context, state) {
+            final isLoading = state is FriendCodeLoading;
+            final friendCode = state.friendCode;
+            return Column(
+              children: [
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  switchInCurve: Curves.easeIn,
+                  switchOutCurve: Curves.easeOut,
+                  transitionBuilder: (child, animation) =>
+                      FadeTransition(opacity: animation, child: child),
+                  child: isLoading
+                      ? const FriendCodeLoader(key: ValueKey('loader'))
+                      : Column(
+                          key: const ValueKey('content'),
+                          children: [
+                            FriendCodeValueCard(friendCode: friendCode),
+                            const Gap(16),
+                            FriendCodeQrCard(friendCode: friendCode),
+                            const Gap(12),
+                            const FriendCodeCaption(),
+                          ],
+                        ),
+                ),
+                const Gap(24),
+                FriendCodeActions(
+                  friendCode: friendCode,
+                  isLoading: isLoading,
+                  onGeneratePressed: () => _onGeneratePressed(context),
+                ),
+              ],
+            );
+          },
+        ),
+      ],
     );
   }
 }

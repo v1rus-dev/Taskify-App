@@ -1,4 +1,4 @@
-import 'package:taskify/data/sync/models/sync_op_data_model.dart';
+import 'package:taskify/data/sync/models/sync_op_data_request_model.dart';
 
 class SyncQueueEntryModel {
   const SyncQueueEntryModel({
@@ -17,5 +17,5 @@ class SyncQueueEntryModel {
   final String op;
   final String? clientId;
   final int? networkId;
-  final SyncOpDataModel? data;
+  final SyncOpDataRequestModel? data;
 }

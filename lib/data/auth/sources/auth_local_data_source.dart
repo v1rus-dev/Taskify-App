@@ -3,13 +3,13 @@ import 'package:drift/drift.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/data/auth/mappers/auth_user_mapper.dart';
 import 'package:taskify/data/database/app_database.dart';
-import 'package:taskify/domain/auth/models/auth_user.dart';
+import 'package:taskify/domain/auth/models/auth_user_entity.dart';
 
 abstract class AuthLocalDataSource {
-  Future<Either<Failure, AuthUser?>> getUser();
-  Future<Either<Failure, void>> saveUser(AuthUser user);
+  Future<Either<Failure, AuthUserEntity?>> getUser();
+  Future<Either<Failure, void>> saveUser(AuthUserEntity user);
   Future<Either<Failure, void>> clearUser();
-  Stream<Either<Failure, AuthUser?>> observeUser();
+  Stream<Either<Failure, AuthUserEntity?>> observeUser();
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
@@ -18,7 +18,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   final AppDatabase _database;
 
   @override
-  Future<Either<Failure, AuthUser?>> getUser() async {
+  Future<Either<Failure, AuthUserEntity?>> getUser() async {
     try {
       final driftUser =
           await _database.select(_database.usersTable).getSingleOrNull();
@@ -29,7 +29,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   }
 
   @override
-  Future<Either<Failure, void>> saveUser(AuthUser user) async {
+  Future<Either<Failure, void>> saveUser(AuthUserEntity user) async {
     try {
       await _database.transaction(() async {
         await _database.delete(_database.usersTable).go();
@@ -64,7 +64,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   }
 
   @override
-  Stream<Either<Failure, AuthUser?>> observeUser() async* {
+  Stream<Either<Failure, AuthUserEntity?>> observeUser() async* {
     try {
       final stream =
           _database.select(_database.usersTable).watchSingleOrNull();

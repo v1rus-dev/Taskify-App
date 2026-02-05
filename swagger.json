@@ -1,2376 +1,3240 @@
 {
     "openapi": "3.1.0",
     "info": {
-        "title": "Taskify - Mini Todo API",
-        "version": "0.1.0"
+      "title": "Taskify - Mini Todo API",
+      "version": "0.1.0"
     },
     "paths": {
-        "/health": {
-            "get": {
-                "tags": [
-                    "Health"
-                ],
-                "summary": "Health Check",
-                "operationId": "health_check_health_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
+      "/health": {
+        "get": {
+          "tags": [
+            "Health"
+          ],
+          "summary": "Health check",
+          "description": "Returns service health status.",
+          "operationId": "health_check_health_get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
                 }
+              }
             }
-        },
-        "/tasks/create": {
-            "post": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Create Task",
-                "operationId": "create_task_tasks_create_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/TaskCreate"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TaskRead"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/tasks/": {
-            "get": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Get Tasks",
-                "operationId": "get_tasks_tasks__get",
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "include_deleted",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "boolean",
-                            "default": false,
-                            "title": "Include Deleted"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/TaskRead"
-                                    },
-                                    "title": "Response Get Tasks Tasks  Get"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tasks/{task_id}": {
-            "patch": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Update Task",
-                "operationId": "update_task_tasks__task_id__patch",
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "task_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "title": "Task Id"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/TaskUpdate"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TaskRead"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Delete Task",
-                "operationId": "delete_task_tasks__task_id__delete",
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "task_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "title": "Task Id"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TaskRead"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/users/{user_id}": {
-            "get": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Get User",
-                "description": "Получает пользователя по UUID.",
-                "operationId": "get_user_users__user_id__get",
-                "parameters": [
-                    {
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid",
-                            "title": "User Id"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/UserRead"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Auth Firebase",
-                "operationId": "auth_firebase_auth_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/AuthRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/password/link": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Link Password",
-                "operationId": "link_password_auth_password_link_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/PasswordLinkRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/auth/password/login": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Login Password",
-                "operationId": "login_password_auth_password_login_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/PasswordLoginRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/refresh": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Refresh Token",
-                "description": "Обновляет access токен используя refresh токен.",
-                "operationId": "refresh_token_auth_refresh_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RefreshTokenRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/RefreshTokenResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tasks/{task_id}/subtasks": {
-            "post": {
-                "tags": [
-                    "SubTasks"
-                ],
-                "summary": "Create Subtasks",
-                "operationId": "create_subtasks_tasks__task_id__subtasks_post",
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "task_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "title": "Task Id"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/SubTaskCreateList"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/SubTaskRead"
-                                    },
-                                    "title": "Response Create Subtasks Tasks  Task Id  Subtasks Post"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "get": {
-                "tags": [
-                    "SubTasks"
-                ],
-                "summary": "Get Subtasks",
-                "operationId": "get_subtasks_tasks__task_id__subtasks_get",
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "task_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "title": "Task Id"
-                        }
-                    },
-                    {
-                        "name": "include_deleted",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "boolean",
-                            "default": false,
-                            "title": "Include Deleted"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/SubTaskRead"
-                                    },
-                                    "title": "Response Get Subtasks Tasks  Task Id  Subtasks Get"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "tags": [
-                    "SubTasks"
-                ],
-                "summary": "Update Subtasks",
-                "operationId": "update_subtasks_tasks__task_id__subtasks_patch",
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "task_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "title": "Task Id"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/SubTaskUpdateList"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/SubTaskRead"
-                                    },
-                                    "title": "Response Update Subtasks Tasks  Task Id  Subtasks Patch"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tasks/{task_id}/subtasks/{subtask_id}": {
-            "delete": {
-                "tags": [
-                    "SubTasks"
-                ],
-                "summary": "Delete Subtask",
-                "operationId": "delete_subtask_tasks__task_id__subtasks__subtask_id__delete",
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "task_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "title": "Task Id"
-                        }
-                    },
-                    {
-                        "name": "subtask_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "title": "Subtask Id"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tags/user": {
-            "get": {
-                "tags": [
-                    "Tags"
-                ],
-                "summary": "Get User Tags",
-                "operationId": "get_user_tags_tags_user_get",
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "include_deleted",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "boolean",
-                            "default": false,
-                            "title": "Include Deleted"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/TagRead"
-                                    },
-                                    "title": "Response Get User Tags Tags User Get"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/friends/tag": {
-            "put": {
-                "tags": [
-                    "Friends"
-                ],
-                "summary": "Update Friend Tag",
-                "operationId": "update_friend_tag_friends_tag_put",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/FriendTagUpdate"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/friends/requests": {
-            "post": {
-                "tags": [
-                    "Friends"
-                ],
-                "summary": "Send Friend Request",
-                "operationId": "send_friend_request_friends_requests_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/FriendRequestCreate"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/FriendRequestRead"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/friends/requests/incoming": {
-            "get": {
-                "tags": [
-                    "Friends"
-                ],
-                "summary": "List Incoming Requests",
-                "operationId": "list_incoming_requests_friends_requests_incoming_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "items": {
-                                        "$ref": "#/components/schemas/FriendRequestRead"
-                                    },
-                                    "type": "array",
-                                    "title": "Response List Incoming Requests Friends Requests Incoming Get"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/friends/requests/outgoing": {
-            "get": {
-                "tags": [
-                    "Friends"
-                ],
-                "summary": "List Outgoing Requests",
-                "operationId": "list_outgoing_requests_friends_requests_outgoing_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "items": {
-                                        "$ref": "#/components/schemas/FriendRequestRead"
-                                    },
-                                    "type": "array",
-                                    "title": "Response List Outgoing Requests Friends Requests Outgoing Get"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/friends/requests/accept": {
-            "post": {
-                "tags": [
-                    "Friends"
-                ],
-                "summary": "Accept Request",
-                "operationId": "accept_request_friends_requests_accept_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/FriendAction"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/friends/requests/decline": {
-            "post": {
-                "tags": [
-                    "Friends"
-                ],
-                "summary": "Decline Request",
-                "operationId": "decline_request_friends_requests_decline_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/FriendAction"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/friends/requests/cancel": {
-            "post": {
-                "tags": [
-                    "Friends"
-                ],
-                "summary": "Cancel Request",
-                "operationId": "cancel_request_friends_requests_cancel_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/FriendAction"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/friends/{friend_id}": {
-            "delete": {
-                "tags": [
-                    "Friends"
-                ],
-                "summary": "Remove Friend",
-                "operationId": "remove_friend_friends__friend_id__delete",
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "friend_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid",
-                            "title": "Friend Id"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/friends": {
-            "get": {
-                "tags": [
-                    "Friends"
-                ],
-                "summary": "List Friends",
-                "operationId": "list_friends_friends_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "items": {
-                                        "$ref": "#/components/schemas/FriendRead"
-                                    },
-                                    "type": "array",
-                                    "title": "Response List Friends Friends Get"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/friends/resolve": {
-            "get": {
-                "tags": [
-                    "Friends"
-                ],
-                "summary": "Resolve Friend Tag",
-                "operationId": "resolve_friend_tag_friends_resolve_get",
-                "parameters": [
-                    {
-                        "name": "friend_tag",
-                        "in": "query",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 64,
-                            "title": "Friend Tag"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/sync/changes": {
-            "get": {
-                "tags": [
-                    "Sync"
-                ],
-                "summary": "Get Changes",
-                "operationId": "get_changes_sync_changes_get",
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "cursor",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 0,
-                            "default": 0,
-                            "title": "Cursor"
-                        }
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "maximum": 500,
-                            "minimum": 1,
-                            "default": 200,
-                            "title": "Limit"
-                        }
-                    },
-                    {
-                        "name": "compact",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "boolean",
-                            "default": false,
-                            "title": "Compact"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SyncChangesRead"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/sync/push": {
-            "post": {
-                "tags": [
-                    "Sync"
-                ],
-                "summary": "Push Changes",
-                "operationId": "push_changes_sync_push_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/SyncPushRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SyncPushResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
+          }
         }
+      },
+      "/tasks/create": {
+        "post": {
+          "tags": [
+            "Tasks"
+          ],
+          "summary": "Create task",
+          "description": "Creates a new task for the current user.",
+          "operationId": "create_task_tasks_create_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/TaskRead"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "User not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "USER_NOT_FOUND",
+                      "message": "User not found"
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid request payload.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/tasks/": {
+        "get": {
+          "tags": [
+            "Tasks"
+          ],
+          "summary": "List tasks",
+          "description": "Returns tasks for the current user.",
+          "operationId": "get_tasks_tasks__get",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "include_deleted",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "boolean",
+                "default": false,
+                "title": "Include Deleted"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/TaskRead"
+                    },
+                    "title": "Response Get Tasks Tasks  Get"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "User not found.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "USER_NOT_FOUND",
+                      "message": "User not found"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/tasks/{task_id}": {
+        "patch": {
+          "tags": [
+            "Tasks"
+          ],
+          "summary": "Update task",
+          "description": "Updates an existing task.",
+          "operationId": "update_task_tasks__task_id__patch",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "task_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Task Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskUpdate"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/TaskRead"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Task not found.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "TASK_NOT_FOUND",
+                      "message": "Task not found"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid request payload.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "Tasks"
+          ],
+          "summary": "Delete task",
+          "description": "Soft-deletes a task.",
+          "operationId": "delete_task_tasks__task_id__delete",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "task_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Task Id"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/TaskRead"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Task not found.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "TASK_NOT_FOUND",
+                      "message": "Task not found"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/users/{user_id}": {
+        "get": {
+          "tags": [
+            "Users"
+          ],
+          "summary": "Get user",
+          "description": "Returns user profile by UUID.",
+          "operationId": "get_user_users__user_id__get",
+          "parameters": [
+            {
+              "name": "user_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "uuid",
+                "title": "User Id"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UserRead"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "User not found.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "USER_NOT_FOUND",
+                      "message": "User not found"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid UUID format.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/auth": {
+        "post": {
+          "tags": [
+            "Auth"
+          ],
+          "summary": "Authenticate with provider",
+          "description": "Authenticates user with OAuth provider token and returns access/refresh tokens.",
+          "operationId": "auth_firebase_auth_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/AuthResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Invalid provider token. Possible codes: INVALID_TOKEN, TOKEN_EXPIRED, INVALID_TOKEN_AUDIENCE, INVALID_TOKEN_ISSUER, TOKEN_VERIFICATION_FAILED.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "INVALID_TOKEN",
+                      "message": "Invalid token"
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid request payload.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server configuration error.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "FIREBASE_CONFIG_MISSING",
+                      "message": "Firebase configuration missing. Please set FIREBASE_PROJECT_ID environment variable in your .env file."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/auth/password/link": {
+        "post": {
+          "tags": [
+            "Auth"
+          ],
+          "summary": "Link password",
+          "description": "Links email/password to the current user.",
+          "operationId": "link_password_auth_password_link_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PasswordLinkRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/AuthResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  }
+                }
+              }
+            },
+            "409": {
+              "description": "Email is already linked to another user.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "EMAIL_ALREADY_IN_USE",
+                      "message": "Email already in use"
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid request payload.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/auth/password/login": {
+        "post": {
+          "tags": [
+            "Auth"
+          ],
+          "summary": "Login with password",
+          "description": "Authenticates user with email/password.",
+          "operationId": "login_password_auth_password_login_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PasswordLoginRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/AuthResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Invalid email or password.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "INVALID_CREDENTIALS",
+                      "message": "Invalid credentials"
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid request payload.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/auth/refresh": {
+        "post": {
+          "tags": [
+            "Auth"
+          ],
+          "summary": "Refresh token",
+          "description": "Creates a new access token using a refresh token.",
+          "operationId": "refresh_token_auth_refresh_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/RefreshTokenResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Invalid or expired refresh token. Possible codes: INVALID_REFRESH_TOKEN, TOKEN_MISSING_SUB, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "INVALID_REFRESH_TOKEN",
+                      "message": "Invalid refresh token"
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid request payload.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/tasks/{task_id}/subtasks": {
+        "post": {
+          "tags": [
+            "SubTasks"
+          ],
+          "summary": "Create subtasks",
+          "description": "Creates multiple subtasks for a task.",
+          "operationId": "create_subtasks_tasks__task_id__subtasks_post",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "task_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Task Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubTaskCreateList"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/SubTaskRead"
+                    },
+                    "title": "Response Create Subtasks Tasks  Task Id  Subtasks Post"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Task not found.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "TASK_NOT_FOUND",
+                      "message": "Task not found"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid request payload.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "get": {
+          "tags": [
+            "SubTasks"
+          ],
+          "summary": "List subtasks",
+          "description": "Returns subtasks for a task.",
+          "operationId": "get_subtasks_tasks__task_id__subtasks_get",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "task_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Task Id"
+              }
+            },
+            {
+              "name": "include_deleted",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "boolean",
+                "default": false,
+                "title": "Include Deleted"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/SubTaskRead"
+                    },
+                    "title": "Response Get Subtasks Tasks  Task Id  Subtasks Get"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Task not found.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "TASK_NOT_FOUND",
+                      "message": "Task not found"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "patch": {
+          "tags": [
+            "SubTasks"
+          ],
+          "summary": "Update subtasks",
+          "description": "Updates multiple subtasks for a task.",
+          "operationId": "update_subtasks_tasks__task_id__subtasks_patch",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "task_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Task Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubTaskUpdateList"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/SubTaskRead"
+                    },
+                    "title": "Response Update Subtasks Tasks  Task Id  Subtasks Patch"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Subtask or task not found.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "SUBTASK_NOT_FOUND",
+                      "message": "SubTask not found"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid request payload.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/tasks/{task_id}/subtasks/{subtask_id}": {
+        "delete": {
+          "tags": [
+            "SubTasks"
+          ],
+          "summary": "Delete subtask",
+          "description": "Deletes a subtask.",
+          "operationId": "delete_subtask_tasks__task_id__subtasks__subtask_id__delete",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "task_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Task Id"
+              }
+            },
+            {
+              "name": "subtask_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Subtask Id"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Subtask or task not found.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "SUBTASK_NOT_FOUND",
+                      "message": "SubTask not found"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/tags/user": {
+        "get": {
+          "tags": [
+            "Tags"
+          ],
+          "summary": "List user tags",
+          "description": "Returns tags for the current user.",
+          "operationId": "get_user_tags_tags_user_get",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "include_deleted",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "boolean",
+                "default": false,
+                "title": "Include Deleted"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/TagRead"
+                    },
+                    "title": "Response Get User Tags Tags User Get"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/friends/tag": {
+        "put": {
+          "tags": [
+            "Friends"
+          ],
+          "summary": "Regenerate friend tag",
+          "description": "Generates a new unique friend tag for the current user.",
+          "operationId": "update_friend_tag_friends_tag_put",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "User not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "USER_NOT_FOUND",
+                      "message": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/friends/requests": {
+        "post": {
+          "tags": [
+            "Friends"
+          ],
+          "summary": "Send friend request",
+          "description": "Sends a friend request by friend tag.",
+          "operationId": "send_friend_request_friends_requests_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FriendRequestCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/FriendRequestListItem"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Cannot send request to yourself.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "CANNOT_ADD_SELF",
+                      "message": "Cannot add yourself"
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Target user not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "USER_NOT_FOUND",
+                      "message": "User not found"
+                    }
+                  }
+                }
+              }
+            },
+            "409": {
+              "description": "Conflict. Possible codes: ALREADY_FRIENDS, REQUEST_ALREADY_EXISTS.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "ALREADY_FRIENDS",
+                      "message": "Already friends"
+                    }
+                  }
+                }
+              }
+            },
+            "410": {
+              "description": "Incoming request auto-accepted.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "AUTO_ACCEPTED",
+                      "message": "Auto-accepted friend request",
+                      "details": {
+                        "userId": "00000000-0000-0000-0000-000000000000"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid request payload.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/friends/requests/incoming": {
+        "get": {
+          "tags": [
+            "Friends"
+          ],
+          "summary": "List incoming requests",
+          "description": "Returns incoming friend requests for the current user.",
+          "operationId": "list_incoming_requests_friends_requests_incoming_get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "items": {
+                      "$ref": "#/components/schemas/FriendRequestListItem"
+                    },
+                    "type": "array",
+                    "title": "Response List Incoming Requests Friends Requests Incoming Get"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/friends/requests/outgoing": {
+        "get": {
+          "tags": [
+            "Friends"
+          ],
+          "summary": "List outgoing requests",
+          "description": "Returns outgoing friend requests for the current user.",
+          "operationId": "list_outgoing_requests_friends_requests_outgoing_get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "items": {
+                      "$ref": "#/components/schemas/FriendRequestListItem"
+                    },
+                    "type": "array",
+                    "title": "Response List Outgoing Requests Friends Requests Outgoing Get"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/friends/requests/accept": {
+        "post": {
+          "tags": [
+            "Friends"
+          ],
+          "summary": "Accept friend request",
+          "description": "Accepts an incoming friend request by requestId.",
+          "operationId": "accept_request_friends_requests_accept_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FriendAction"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/FriendRead"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Request not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "REQUEST_NOT_FOUND",
+                      "message": "Request not found"
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid request payload.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/friends/requests/decline": {
+        "post": {
+          "tags": [
+            "Friends"
+          ],
+          "summary": "Decline friend request",
+          "description": "Declines an incoming friend request by requestId.",
+          "operationId": "decline_request_friends_requests_decline_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FriendAction"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Request not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "REQUEST_NOT_FOUND",
+                      "message": "Request not found"
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid request payload.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/friends/requests/cancel": {
+        "post": {
+          "tags": [
+            "Friends"
+          ],
+          "summary": "Cancel outgoing request",
+          "description": "Cancels an outgoing friend request by requestId.",
+          "operationId": "cancel_request_friends_requests_cancel_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FriendAction"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Request not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "REQUEST_NOT_FOUND",
+                      "message": "Request not found"
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid request payload.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/friends/{friend_id}": {
+        "delete": {
+          "tags": [
+            "Friends"
+          ],
+          "summary": "Remove friend",
+          "description": "Removes a friend by user ID.",
+          "operationId": "remove_friend_friends__friend_id__delete",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "friend_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "uuid",
+                "title": "Friend Id"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Friend not found.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "FRIEND_NOT_FOUND",
+                      "message": "Friend not found"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid friend ID.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/friends": {
+        "get": {
+          "tags": [
+            "Friends"
+          ],
+          "summary": "List friends",
+          "description": "Returns the current user's friends.",
+          "operationId": "list_friends_friends_get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "items": {
+                      "$ref": "#/components/schemas/FriendRead"
+                    },
+                    "type": "array",
+                    "title": "Response List Friends Friends Get"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/sync/changes": {
+        "get": {
+          "tags": [
+            "Sync"
+          ],
+          "summary": "Get sync changes",
+          "description": "Returns server-side changes for the current user since cursor.",
+          "operationId": "get_changes_sync_changes_get",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "cursor",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0,
+                "title": "Cursor"
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "maximum": 500,
+                "minimum": 1,
+                "default": 200,
+                "title": "Limit"
+              }
+            },
+            {
+              "name": "compact",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "boolean",
+                "default": false,
+                "title": "Compact"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SyncChangesRead"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid query parameters.",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/sync/push": {
+        "post": {
+          "tags": [
+            "Sync"
+          ],
+          "summary": "Push sync changes",
+          "description": "Applies client changes and returns conflicts and mappings.",
+          "operationId": "push_changes_sync_push_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPushRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SyncPushResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing or invalid auth. Possible codes: AUTH_HEADER_MISSING_OR_INVALID, TOKEN_VALIDATION_FAILED, TOKEN_MISSING_SUB, INVALID_TOKEN_SUBJECT, USER_NOT_FOUND.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "AUTH_HEADER_MISSING_OR_INVALID",
+                      "message": "Authorization header missing or invalid"
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid request payload.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  },
+                  "example": {
+                    "error": {
+                      "code": "VALIDATION_ERROR",
+                      "message": "Validation error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      }
     },
     "components": {
-        "schemas": {
-            "AuthRequest": {
-                "properties": {
-                    "id_token": {
-                        "type": "string",
-                        "title": "Id Token"
-                    },
-                    "provider": {
-                        "type": "string",
-                        "title": "Provider"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "id_token",
-                    "provider"
-                ],
-                "title": "AuthRequest"
+      "schemas": {
+        "AuthRequest": {
+          "properties": {
+            "id_token": {
+              "type": "string",
+              "title": "Id Token"
             },
-            "AuthResponse": {
-                "properties": {
-                    "access_token": {
-                        "type": "string",
-                        "title": "Access Token"
-                    },
-                    "refresh_token": {
-                        "type": "string",
-                        "title": "Refresh Token"
-                    },
-                    "token_type": {
-                        "type": "string",
-                        "title": "Token Type",
-                        "default": "bearer"
-                    },
-                    "user": {
-                        "$ref": "#/components/schemas/UserRead"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "access_token",
-                    "refresh_token",
-                    "user"
-                ],
-                "title": "AuthResponse"
-            },
-            "FriendAction": {
-                "properties": {
-                    "requester_id": {
-                        "type": "string",
-                        "format": "uuid",
-                        "title": "Requester Id"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "requester_id"
-                ],
-                "title": "FriendAction"
-            },
-            "FriendRead": {
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "format": "uuid",
-                        "title": "Id"
-                    },
-                    "friend_tag": {
-                        "type": "string",
-                        "title": "Friend Tag"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "id",
-                    "friend_tag"
-                ],
-                "title": "FriendRead"
-            },
-            "FriendRequestCreate": {
-                "properties": {
-                    "friend_tag": {
-                        "type": "string",
-                        "maxLength": 64,
-                        "minLength": 1,
-                        "title": "Friend Tag"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "friend_tag"
-                ],
-                "title": "FriendRequestCreate"
-            },
-            "FriendRequestRead": {
-                "properties": {
-                    "requester_id": {
-                        "type": "string",
-                        "format": "uuid",
-                        "title": "Requester Id"
-                    },
-                    "addressee_id": {
-                        "type": "string",
-                        "format": "uuid",
-                        "title": "Addressee Id"
-                    },
-                    "status": {
-                        "type": "string",
-                        "title": "Status"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "requester_id",
-                    "addressee_id",
-                    "status"
-                ],
-                "title": "FriendRequestRead"
-            },
-            "FriendTagUpdate": {
-                "properties": {
-                    "friend_tag": {
-                        "type": "string",
-                        "maxLength": 64,
-                        "minLength": 1,
-                        "title": "Friend Tag"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "friend_tag"
-                ],
-                "title": "FriendTagUpdate"
-            },
-            "HTTPValidationError": {
-                "properties": {
-                    "detail": {
-                        "items": {
-                            "$ref": "#/components/schemas/ValidationError"
-                        },
-                        "type": "array",
-                        "title": "Detail"
-                    }
-                },
-                "type": "object",
-                "title": "HTTPValidationError"
-            },
-            "PasswordLinkRequest": {
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "format": "email",
-                        "title": "Email"
-                    },
-                    "password": {
-                        "type": "string",
-                        "maxLength": 128,
-                        "minLength": 8,
-                        "title": "Password"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "email",
-                    "password"
-                ],
-                "title": "PasswordLinkRequest"
-            },
-            "PasswordLoginRequest": {
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "format": "email",
-                        "title": "Email"
-                    },
-                    "password": {
-                        "type": "string",
-                        "maxLength": 128,
-                        "minLength": 8,
-                        "title": "Password"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "email",
-                    "password"
-                ],
-                "title": "PasswordLoginRequest"
-            },
-            "RefreshTokenRequest": {
-                "properties": {
-                    "refresh_token": {
-                        "type": "string",
-                        "title": "Refresh Token"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "refresh_token"
-                ],
-                "title": "RefreshTokenRequest"
-            },
-            "RefreshTokenResponse": {
-                "properties": {
-                    "access_token": {
-                        "type": "string",
-                        "title": "Access Token"
-                    },
-                    "refresh_token": {
-                        "type": "string",
-                        "title": "Refresh Token"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "access_token",
-                    "refresh_token"
-                ],
-                "title": "RefreshTokenResponse"
-            },
-            "SubTaskCreate": {
-                "properties": {
-                    "text": {
-                        "type": "string",
-                        "maxLength": 2000,
-                        "minLength": 1,
-                        "title": "Text"
-                    },
-                    "is_completed": {
-                        "anyOf": [
-                            {
-                                "type": "boolean"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Is Completed",
-                        "default": false
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "text"
-                ],
-                "title": "SubTaskCreate"
-            },
-            "SubTaskCreateList": {
-                "properties": {
-                    "subtasks": {
-                        "items": {
-                            "$ref": "#/components/schemas/SubTaskCreate"
-                        },
-                        "type": "array",
-                        "title": "Subtasks"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "subtasks"
-                ],
-                "title": "SubTaskCreateList"
-            },
-            "SubTaskRead": {
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "title": "Id"
-                    },
-                    "text": {
-                        "type": "string",
-                        "title": "Text"
-                    },
-                    "is_completed": {
-                        "type": "boolean",
-                        "title": "Is Completed"
-                    },
-                    "task_id": {
-                        "type": "integer",
-                        "title": "Task Id"
-                    },
-                    "client_id": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "format": "uuid"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Client Id"
-                    },
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "title": "Created At"
-                    },
-                    "updated_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "title": "Updated At"
-                    },
-                    "deleted_at": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Deleted At"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "id",
-                    "text",
-                    "is_completed",
-                    "task_id",
-                    "created_at",
-                    "updated_at"
-                ],
-                "title": "SubTaskRead"
-            },
-            "SubTaskUpdateItem": {
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "title": "Id"
-                    },
-                    "text": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 2000,
-                                "minLength": 1
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Text"
-                    },
-                    "is_completed": {
-                        "anyOf": [
-                            {
-                                "type": "boolean"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Is Completed"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "id"
-                ],
-                "title": "SubTaskUpdateItem"
-            },
-            "SubTaskUpdateList": {
-                "properties": {
-                    "subtasks": {
-                        "items": {
-                            "$ref": "#/components/schemas/SubTaskUpdateItem"
-                        },
-                        "type": "array",
-                        "title": "Subtasks"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "subtasks"
-                ],
-                "title": "SubTaskUpdateList"
-            },
-            "SyncChangesRead": {
-                "properties": {
-                    "next_cursor": {
-                        "type": "integer",
-                        "minimum": 0.0,
-                        "title": "Next Cursor"
-                    },
-                    "changes": {
-                        "items": {
-                            "$ref": "#/components/schemas/SyncEventRead"
-                        },
-                        "type": "array",
-                        "title": "Changes"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "next_cursor",
-                    "changes"
-                ],
-                "title": "SyncChangesRead"
-            },
-            "SyncEventRead": {
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "title": "Id"
-                    },
-                    "entity": {
-                        "type": "string",
-                        "title": "Entity"
-                    },
-                    "entity_id": {
-                        "type": "integer",
-                        "title": "Entity Id"
-                    },
-                    "op": {
-                        "type": "string",
-                        "title": "Op"
-                    },
-                    "occurred_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "title": "Occurred At"
-                    },
-                    "data": {
-                        "anyOf": [
-                            {
-                                "additionalProperties": true,
-                                "type": "object"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Data"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "id",
-                    "entity",
-                    "entity_id",
-                    "op",
-                    "occurred_at"
-                ],
-                "title": "SyncEventRead"
-            },
-            "SyncIdMap": {
-                "properties": {
-                    "client_id": {
-                        "type": "string",
-                        "format": "uuid",
-                        "title": "Client Id"
-                    },
-                    "id": {
-                        "type": "integer",
-                        "title": "Id"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "client_id",
-                    "id"
-                ],
-                "title": "SyncIdMap"
-            },
-            "SyncOpData": {
-                "properties": {
-                    "title": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Title"
-                    },
-                    "description": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Description"
-                    },
-                    "is_completed": {
-                        "anyOf": [
-                            {
-                                "type": "boolean"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Is Completed"
-                    },
-                    "text": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Text"
-                    },
-                    "task_id": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Task Id"
-                    },
-                    "task_client_id": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "format": "uuid"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Task Client Id"
-                    },
-                    "name": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Name"
-                    },
-                    "color": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Color"
-                    },
-                    "is_user_tag": {
-                        "anyOf": [
-                            {
-                                "type": "boolean"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Is User Tag"
-                    }
-                },
-                "type": "object",
-                "title": "SyncOpData"
-            },
-            "SyncOpError": {
-                "properties": {
-                    "op_id": {
-                        "type": "string",
-                        "format": "uuid",
-                        "title": "Op Id"
-                    },
-                    "code": {
-                        "type": "string",
-                        "title": "Code"
-                    },
-                    "message": {
-                        "type": "string",
-                        "title": "Message"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "op_id",
-                    "code",
-                    "message"
-                ],
-                "title": "SyncOpError"
-            },
-            "SyncOpInput": {
-                "properties": {
-                    "op_id": {
-                        "type": "string",
-                        "format": "uuid",
-                        "title": "Op Id"
-                    },
-                    "entity": {
-                        "type": "string",
-                        "title": "Entity"
-                    },
-                    "op": {
-                        "type": "string",
-                        "title": "Op"
-                    },
-                    "id": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Id"
-                    },
-                    "client_id": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "format": "uuid"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Client Id"
-                    },
-                    "data": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/SyncOpData"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "op_id",
-                    "entity",
-                    "op"
-                ],
-                "title": "SyncOpInput"
-            },
-            "SyncPushRequest": {
-                "properties": {
-                    "device_id": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "format": "uuid"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Device Id"
-                    },
-                    "ops": {
-                        "items": {
-                            "$ref": "#/components/schemas/SyncOpInput"
-                        },
-                        "type": "array",
-                        "title": "Ops"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "ops"
-                ],
-                "title": "SyncPushRequest"
-            },
-            "SyncPushResponse": {
-                "properties": {
-                    "ack": {
-                        "items": {
-                            "type": "string",
-                            "format": "uuid"
-                        },
-                        "type": "array",
-                        "title": "Ack"
-                    },
-                    "id_map": {
-                        "additionalProperties": {
-                            "items": {
-                                "$ref": "#/components/schemas/SyncIdMap"
-                            },
-                            "type": "array"
-                        },
-                        "type": "object",
-                        "title": "Id Map"
-                    },
-                    "errors": {
-                        "items": {
-                            "$ref": "#/components/schemas/SyncOpError"
-                        },
-                        "type": "array",
-                        "title": "Errors"
-                    }
-                },
-                "type": "object",
-                "title": "SyncPushResponse"
-            },
-            "TagInput": {
-                "properties": {
-                    "is_user_tag": {
-                        "type": "boolean",
-                        "title": "Is User Tag",
-                        "default": true
-                    },
-                    "name": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 128,
-                                "minLength": 1
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Name"
-                    },
-                    "color": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 32,
-                                "minLength": 1
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Color"
-                    },
-                    "id": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Id"
-                    }
-                },
-                "type": "object",
-                "title": "TagInput"
-            },
-            "TagRead": {
-                "properties": {
-                    "is_user_tag": {
-                        "type": "boolean",
-                        "title": "Is User Tag",
-                        "default": true
-                    },
-                    "name": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 128,
-                                "minLength": 1
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Name"
-                    },
-                    "color": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 32,
-                                "minLength": 1
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Color"
-                    },
-                    "id": {
-                        "type": "integer",
-                        "title": "Id"
-                    },
-                    "client_id": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "format": "uuid"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Client Id"
-                    },
-                    "deleted_at": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Deleted At"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "id"
-                ],
-                "title": "TagRead"
-            },
-            "TaskCreate": {
-                "properties": {
-                    "title": {
-                        "type": "string",
-                        "maxLength": 255,
-                        "minLength": 1,
-                        "title": "Title"
-                    },
-                    "description": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 2000
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Description"
-                    },
-                    "is_completed": {
-                        "anyOf": [
-                            {
-                                "type": "boolean"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Is Completed"
-                    },
-                    "tags": {
-                        "items": {
-                            "$ref": "#/components/schemas/TagInput"
-                        },
-                        "type": "array",
-                        "title": "Tags"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "title"
-                ],
-                "title": "TaskCreate"
-            },
-            "TaskRead": {
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "title": "Id"
-                    },
-                    "title": {
-                        "type": "string",
-                        "title": "Title"
-                    },
-                    "description": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Description"
-                    },
-                    "is_completed": {
-                        "type": "boolean",
-                        "title": "Is Completed"
-                    },
-                    "user_id": {
-                        "type": "string",
-                        "format": "uuid",
-                        "title": "User Id"
-                    },
-                    "client_id": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "format": "uuid"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Client Id"
-                    },
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "title": "Created At"
-                    },
-                    "updated_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "title": "Updated At"
-                    },
-                    "deleted_at": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Deleted At"
-                    },
-                    "tags": {
-                        "items": {
-                            "$ref": "#/components/schemas/TagRead"
-                        },
-                        "type": "array",
-                        "title": "Tags"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "id",
-                    "title",
-                    "is_completed",
-                    "user_id",
-                    "created_at",
-                    "updated_at"
-                ],
-                "title": "TaskRead"
-            },
-            "TaskUpdate": {
-                "properties": {
-                    "title": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 255,
-                                "minLength": 1
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Title"
-                    },
-                    "description": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 2000
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Description"
-                    },
-                    "is_completed": {
-                        "anyOf": [
-                            {
-                                "type": "boolean"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Is Completed"
-                    },
-                    "tags": {
-                        "anyOf": [
-                            {
-                                "items": {
-                                    "$ref": "#/components/schemas/TagInput"
-                                },
-                                "type": "array"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Tags"
-                    }
-                },
-                "type": "object",
-                "title": "TaskUpdate"
-            },
-            "UserRead": {
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "format": "uuid",
-                        "title": "Id"
-                    },
-                    "provider": {
-                        "type": "string",
-                        "title": "Provider"
-                    },
-                    "provider_user_id": {
-                        "type": "string",
-                        "title": "Provider User Id"
-                    },
-                    "email": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Email"
-                    },
-                    "name": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Name"
-                    },
-                    "avatar_url": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Avatar Url"
-                    },
-                    "friend_tag": {
-                        "type": "string",
-                        "title": "Friend Tag"
-                    },
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "title": "Created At"
-                    },
-                    "updated_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "title": "Updated At"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "id",
-                    "provider",
-                    "provider_user_id",
-                    "email",
-                    "name",
-                    "avatar_url",
-                    "friend_tag",
-                    "created_at",
-                    "updated_at"
-                ],
-                "title": "UserRead"
-            },
-            "ValidationError": {
-                "properties": {
-                    "loc": {
-                        "items": {
-                            "anyOf": [
-                                {
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "integer"
-                                }
-                            ]
-                        },
-                        "type": "array",
-                        "title": "Location"
-                    },
-                    "msg": {
-                        "type": "string",
-                        "title": "Message"
-                    },
-                    "type": {
-                        "type": "string",
-                        "title": "Error Type"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "loc",
-                    "msg",
-                    "type"
-                ],
-                "title": "ValidationError"
+            "provider": {
+              "type": "string",
+              "title": "Provider"
             }
+          },
+          "type": "object",
+          "required": [
+            "id_token",
+            "provider"
+          ],
+          "title": "AuthRequest"
         },
-        "securitySchemes": {
-            "HTTPBearer": {
-                "type": "http",
-                "scheme": "bearer"
+        "AuthResponse": {
+          "properties": {
+            "access_token": {
+              "type": "string",
+              "title": "Access Token"
+            },
+            "refresh_token": {
+              "type": "string",
+              "title": "Refresh Token"
+            },
+            "token_type": {
+              "type": "string",
+              "title": "Token Type",
+              "default": "bearer"
+            },
+            "user": {
+              "$ref": "#/components/schemas/UserRead"
             }
+          },
+          "type": "object",
+          "required": [
+            "access_token",
+            "refresh_token",
+            "user"
+          ],
+          "title": "AuthResponse"
+        },
+        "ErrorInfo": {
+          "properties": {
+            "code": {
+              "type": "string",
+              "title": "Code"
+            },
+            "message": {
+              "type": "string",
+              "title": "Message"
+            },
+            "details": {
+              "anyOf": [
+                {},
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Details"
+            }
+          },
+          "type": "object",
+          "required": [
+            "code",
+            "message"
+          ],
+          "title": "ErrorInfo"
+        },
+        "ErrorResponse": {
+          "properties": {
+            "error": {
+              "$ref": "#/components/schemas/ErrorInfo"
+            }
+          },
+          "type": "object",
+          "required": [
+            "error"
+          ],
+          "title": "ErrorResponse"
+        },
+        "FriendAction": {
+          "properties": {
+            "requestId": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Requestid"
+            }
+          },
+          "type": "object",
+          "required": [
+            "requestId"
+          ],
+          "title": "FriendAction"
+        },
+        "FriendRead": {
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            },
+            "friend_tag": {
+              "type": "string",
+              "title": "Friend Tag"
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Name"
+            },
+            "avatar_url": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Avatar Url"
+            },
+            "anonymous_number": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Anonymous Number"
+            }
+          },
+          "type": "object",
+          "required": [
+            "id",
+            "friend_tag"
+          ],
+          "title": "FriendRead"
+        },
+        "FriendRequestCreate": {
+          "properties": {
+            "friend_tag": {
+              "type": "string",
+              "maxLength": 64,
+              "minLength": 1,
+              "title": "Friend Tag"
+            }
+          },
+          "type": "object",
+          "required": [
+            "friend_tag"
+          ],
+          "title": "FriendRequestCreate"
+        },
+        "FriendRequestListItem": {
+          "properties": {
+            "requestId": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Requestid"
+            },
+            "user": {
+              "$ref": "#/components/schemas/FriendRequestUser"
+            }
+          },
+          "type": "object",
+          "required": [
+            "requestId",
+            "user"
+          ],
+          "title": "FriendRequestListItem"
+        },
+        "FriendRequestUser": {
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Name"
+            },
+            "imageUrl": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Imageurl"
+            },
+            "displayName": {
+              "type": "string",
+              "title": "Displayname"
+            }
+          },
+          "type": "object",
+          "required": [
+            "id",
+            "displayName"
+          ],
+          "title": "FriendRequestUser"
+        },
+        "HTTPValidationError": {
+          "properties": {
+            "detail": {
+              "items": {
+                "$ref": "#/components/schemas/ValidationError"
+              },
+              "type": "array",
+              "title": "Detail"
+            }
+          },
+          "type": "object",
+          "title": "HTTPValidationError"
+        },
+        "PasswordLinkRequest": {
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email",
+              "title": "Email"
+            },
+            "password": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 8,
+              "title": "Password"
+            }
+          },
+          "type": "object",
+          "required": [
+            "email",
+            "password"
+          ],
+          "title": "PasswordLinkRequest"
+        },
+        "PasswordLoginRequest": {
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email",
+              "title": "Email"
+            },
+            "password": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 8,
+              "title": "Password"
+            }
+          },
+          "type": "object",
+          "required": [
+            "email",
+            "password"
+          ],
+          "title": "PasswordLoginRequest"
+        },
+        "RefreshTokenRequest": {
+          "properties": {
+            "refresh_token": {
+              "type": "string",
+              "title": "Refresh Token"
+            }
+          },
+          "type": "object",
+          "required": [
+            "refresh_token"
+          ],
+          "title": "RefreshTokenRequest"
+        },
+        "RefreshTokenResponse": {
+          "properties": {
+            "access_token": {
+              "type": "string",
+              "title": "Access Token"
+            },
+            "refresh_token": {
+              "type": "string",
+              "title": "Refresh Token"
+            }
+          },
+          "type": "object",
+          "required": [
+            "access_token",
+            "refresh_token"
+          ],
+          "title": "RefreshTokenResponse"
+        },
+        "SubTaskCreate": {
+          "properties": {
+            "text": {
+              "type": "string",
+              "maxLength": 2000,
+              "minLength": 1,
+              "title": "Text"
+            },
+            "is_completed": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Completed",
+              "default": false
+            }
+          },
+          "type": "object",
+          "required": [
+            "text"
+          ],
+          "title": "SubTaskCreate"
+        },
+        "SubTaskCreateList": {
+          "properties": {
+            "subtasks": {
+              "items": {
+                "$ref": "#/components/schemas/SubTaskCreate"
+              },
+              "type": "array",
+              "title": "Subtasks"
+            }
+          },
+          "type": "object",
+          "required": [
+            "subtasks"
+          ],
+          "title": "SubTaskCreateList"
+        },
+        "SubTaskRead": {
+          "properties": {
+            "id": {
+              "type": "integer",
+              "title": "Id"
+            },
+            "text": {
+              "type": "string",
+              "title": "Text"
+            },
+            "is_completed": {
+              "type": "boolean",
+              "title": "Is Completed"
+            },
+            "task_id": {
+              "type": "integer",
+              "title": "Task Id"
+            },
+            "client_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Client Id"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time",
+              "title": "Created At"
+            },
+            "updated_at": {
+              "type": "string",
+              "format": "date-time",
+              "title": "Updated At"
+            },
+            "deleted_at": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Deleted At"
+            }
+          },
+          "type": "object",
+          "required": [
+            "id",
+            "text",
+            "is_completed",
+            "task_id",
+            "created_at",
+            "updated_at"
+          ],
+          "title": "SubTaskRead"
+        },
+        "SubTaskUpdateItem": {
+          "properties": {
+            "id": {
+              "type": "integer",
+              "title": "Id"
+            },
+            "text": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Text"
+            },
+            "is_completed": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Completed"
+            }
+          },
+          "type": "object",
+          "required": [
+            "id"
+          ],
+          "title": "SubTaskUpdateItem"
+        },
+        "SubTaskUpdateList": {
+          "properties": {
+            "subtasks": {
+              "items": {
+                "$ref": "#/components/schemas/SubTaskUpdateItem"
+              },
+              "type": "array",
+              "title": "Subtasks"
+            }
+          },
+          "type": "object",
+          "required": [
+            "subtasks"
+          ],
+          "title": "SubTaskUpdateList"
+        },
+        "SyncChangesRead": {
+          "properties": {
+            "next_cursor": {
+              "type": "integer",
+              "minimum": 0.0,
+              "title": "Next Cursor"
+            },
+            "changes": {
+              "items": {
+                "$ref": "#/components/schemas/SyncEventRead"
+              },
+              "type": "array",
+              "title": "Changes"
+            }
+          },
+          "type": "object",
+          "required": [
+            "next_cursor",
+            "changes"
+          ],
+          "title": "SyncChangesRead"
+        },
+        "SyncEventRead": {
+          "properties": {
+            "id": {
+              "type": "integer",
+              "title": "Id"
+            },
+            "entity": {
+              "type": "string",
+              "title": "Entity"
+            },
+            "entity_id": {
+              "type": "integer",
+              "title": "Entity Id"
+            },
+            "op": {
+              "type": "string",
+              "title": "Op"
+            },
+            "occurred_at": {
+              "type": "string",
+              "format": "date-time",
+              "title": "Occurred At"
+            },
+            "data": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Data"
+            }
+          },
+          "type": "object",
+          "required": [
+            "id",
+            "entity",
+            "entity_id",
+            "op",
+            "occurred_at"
+          ],
+          "title": "SyncEventRead"
+        },
+        "SyncIdMap": {
+          "properties": {
+            "client_id": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Client Id"
+            },
+            "id": {
+              "type": "integer",
+              "title": "Id"
+            }
+          },
+          "type": "object",
+          "required": [
+            "client_id",
+            "id"
+          ],
+          "title": "SyncIdMap"
+        },
+        "SyncOpData": {
+          "properties": {
+            "title": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Title"
+            },
+            "description": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Description"
+            },
+            "is_completed": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Completed"
+            },
+            "text": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Text"
+            },
+            "task_id": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Task Id"
+            },
+            "task_client_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Task Client Id"
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Name"
+            },
+            "color": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Color"
+            },
+            "is_user_tag": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is User Tag"
+            }
+          },
+          "type": "object",
+          "title": "SyncOpData"
+        },
+        "SyncOpError": {
+          "properties": {
+            "op_id": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Op Id"
+            },
+            "code": {
+              "type": "string",
+              "title": "Code"
+            },
+            "message": {
+              "type": "string",
+              "title": "Message"
+            }
+          },
+          "type": "object",
+          "required": [
+            "op_id",
+            "code",
+            "message"
+          ],
+          "title": "SyncOpError"
+        },
+        "SyncOpInput": {
+          "properties": {
+            "op_id": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Op Id"
+            },
+            "entity": {
+              "type": "string",
+              "title": "Entity"
+            },
+            "op": {
+              "type": "string",
+              "title": "Op"
+            },
+            "id": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Id"
+            },
+            "client_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Client Id"
+            },
+            "data": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/SyncOpData"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "type": "object",
+          "required": [
+            "op_id",
+            "entity",
+            "op"
+          ],
+          "title": "SyncOpInput"
+        },
+        "SyncPushRequest": {
+          "properties": {
+            "device_id": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Device Id"
+            },
+            "ops": {
+              "items": {
+                "$ref": "#/components/schemas/SyncOpInput"
+              },
+              "type": "array",
+              "title": "Ops"
+            }
+          },
+          "type": "object",
+          "required": [
+            "ops"
+          ],
+          "title": "SyncPushRequest"
+        },
+        "SyncPushResponse": {
+          "properties": {
+            "ack": {
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "type": "array",
+              "title": "Ack"
+            },
+            "id_map": {
+              "additionalProperties": {
+                "items": {
+                  "$ref": "#/components/schemas/SyncIdMap"
+                },
+                "type": "array"
+              },
+              "type": "object",
+              "title": "Id Map"
+            },
+            "errors": {
+              "items": {
+                "$ref": "#/components/schemas/SyncOpError"
+              },
+              "type": "array",
+              "title": "Errors"
+            }
+          },
+          "type": "object",
+          "title": "SyncPushResponse"
+        },
+        "TagInput": {
+          "properties": {
+            "is_user_tag": {
+              "type": "boolean",
+              "title": "Is User Tag",
+              "default": true
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 128,
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Name"
+            },
+            "color": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 32,
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Color"
+            },
+            "id": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Id"
+            }
+          },
+          "type": "object",
+          "title": "TagInput"
+        },
+        "TagRead": {
+          "properties": {
+            "is_user_tag": {
+              "type": "boolean",
+              "title": "Is User Tag",
+              "default": true
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 128,
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Name"
+            },
+            "color": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 32,
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Color"
+            },
+            "id": {
+              "type": "integer",
+              "title": "Id"
+            },
+            "client_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Client Id"
+            },
+            "deleted_at": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Deleted At"
+            }
+          },
+          "type": "object",
+          "required": [
+            "id"
+          ],
+          "title": "TagRead"
+        },
+        "TaskCreate": {
+          "properties": {
+            "title": {
+              "type": "string",
+              "maxLength": 255,
+              "minLength": 1,
+              "title": "Title"
+            },
+            "description": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Description"
+            },
+            "is_completed": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Completed"
+            },
+            "tags": {
+              "items": {
+                "$ref": "#/components/schemas/TagInput"
+              },
+              "type": "array",
+              "title": "Tags"
+            }
+          },
+          "type": "object",
+          "required": [
+            "title"
+          ],
+          "title": "TaskCreate"
+        },
+        "TaskRead": {
+          "properties": {
+            "id": {
+              "type": "integer",
+              "title": "Id"
+            },
+            "title": {
+              "type": "string",
+              "title": "Title"
+            },
+            "description": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Description"
+            },
+            "is_completed": {
+              "type": "boolean",
+              "title": "Is Completed"
+            },
+            "user_id": {
+              "type": "string",
+              "format": "uuid",
+              "title": "User Id"
+            },
+            "client_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Client Id"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time",
+              "title": "Created At"
+            },
+            "updated_at": {
+              "type": "string",
+              "format": "date-time",
+              "title": "Updated At"
+            },
+            "deleted_at": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Deleted At"
+            },
+            "tags": {
+              "items": {
+                "$ref": "#/components/schemas/TagRead"
+              },
+              "type": "array",
+              "title": "Tags"
+            }
+          },
+          "type": "object",
+          "required": [
+            "id",
+            "title",
+            "is_completed",
+            "user_id",
+            "created_at",
+            "updated_at"
+          ],
+          "title": "TaskRead"
+        },
+        "TaskUpdate": {
+          "properties": {
+            "title": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 255,
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Title"
+            },
+            "description": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Description"
+            },
+            "is_completed": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Completed"
+            },
+            "tags": {
+              "anyOf": [
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/TagInput"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tags"
+            }
+          },
+          "type": "object",
+          "title": "TaskUpdate"
+        },
+        "UserRead": {
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            },
+            "provider": {
+              "type": "string",
+              "title": "Provider"
+            },
+            "provider_user_id": {
+              "type": "string",
+              "title": "Provider User Id"
+            },
+            "email": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Email"
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Name"
+            },
+            "avatar_url": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Avatar Url"
+            },
+            "friend_tag": {
+              "type": "string",
+              "title": "Friend Tag"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time",
+              "title": "Created At"
+            },
+            "updated_at": {
+              "type": "string",
+              "format": "date-time",
+              "title": "Updated At"
+            }
+          },
+          "type": "object",
+          "required": [
+            "id",
+            "provider",
+            "provider_user_id",
+            "email",
+            "name",
+            "avatar_url",
+            "friend_tag",
+            "created_at",
+            "updated_at"
+          ],
+          "title": "UserRead"
+        },
+        "ValidationError": {
+          "properties": {
+            "loc": {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ]
+              },
+              "type": "array",
+              "title": "Location"
+            },
+            "msg": {
+              "type": "string",
+              "title": "Message"
+            },
+            "type": {
+              "type": "string",
+              "title": "Error Type"
+            },
+            "input": {
+              "title": "Input"
+            },
+            "ctx": {
+              "type": "object",
+              "title": "Context"
+            }
+          },
+          "type": "object",
+          "required": [
+            "loc",
+            "msg",
+            "type"
+          ],
+          "title": "ValidationError"
         }
+      },
+      "securitySchemes": {
+        "HTTPBearer": {
+          "type": "http",
+          "scheme": "bearer"
+        }
+      }
     }
-}
+  }

@@ -38,45 +38,38 @@ class SelectLanguageBottomSheet extends StatelessWidget {
           : null;
     }
 
-    return Padding(
-      padding: EdgeInsetsGeometry.symmetric(
-        horizontal: AppInsets.sheetHorizontal,
-        vertical: AppInsets.sheetVertical,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            l10n?.language ?? '',
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+    return FloatingBottomSheetLayout(
+      children: [
+        Text(
+          l10n?.language ?? '',
+          style: theme.textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: AppInsets.sheetTitleBottom),
+        CardWithActions(
+          actions: [
+            CardActionEntry(
+              CardAction(
+                title: l10n?.localeDisplayName(null) ?? '',
+                description: descriptionFor(null),
+                descriptionColor: descriptionColorFor(context, null),
+                onPressed: () => _onLocalePressed(context, null),
+              ),
             ),
-          ),
-          const SizedBox(height: AppInsets.sheetTitleBottom),
-          CardWithActions(
-            actions: [
-              CardActionEntry(
+            ...AppLocalizations.supportedLocales.map(
+              (locale) => CardActionEntry(
                 CardAction(
-                  title: l10n?.localeDisplayName(null) ?? '',
-                  description: descriptionFor(null),
-                  descriptionColor: descriptionColorFor(context, null),
-                  onPressed: () => _onLocalePressed(context, null),
+                  title: l10n?.localeDisplayName(locale) ?? '',
+                  description: descriptionFor(locale),
+                  descriptionColor: descriptionColorFor(context, locale),
+                  onPressed: () => _onLocalePressed(context, locale),
                 ),
               ),
-              ...AppLocalizations.supportedLocales.map(
-                (locale) => CardActionEntry(
-                  CardAction(
-                    title: l10n?.localeDisplayName(locale) ?? '',
-                    description: descriptionFor(locale),
-                    descriptionColor: descriptionColorFor(context, locale),
-                    onPressed: () => _onLocalePressed(context, locale),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

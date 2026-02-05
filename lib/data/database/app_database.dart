@@ -11,6 +11,9 @@ import 'package:taskify/data/database/tables/task_tags_table.dart';
 import 'package:taskify/data/database/tables/users_table.dart';
 import 'package:taskify/data/database/tables/sync_queue_table.dart';
 import 'package:taskify/data/database/tables/sync_state_table.dart';
+import 'package:taskify/data/database/tables/friends_table.dart';
+import 'package:taskify/data/database/tables/incoming_friend_requests_table.dart';
+import 'package:taskify/data/database/tables/outgoing_friend_requests_table.dart';
 import 'package:taskify/core/services/talker_service.dart';
 
 part 'app_database.g.dart';
@@ -24,6 +27,9 @@ part 'app_database.g.dart';
   UsersTable,
   SyncQueueTable,
   SyncStateTable,
+  FriendsTable,
+  IncomingFriendRequestsTable,
+  OutgoingFriendRequestsTable,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());

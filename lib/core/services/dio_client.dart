@@ -154,6 +154,34 @@ class DioClient {
     }
   }
 
+  Future<ApiResult<T>> delete<T>({
+    required String path,
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    T Function(dynamic data)? parser,
+  }) async {
+    try {
+      TalkerService.instance.info('syncTag DELETE $path');
+      final response = await _dio.delete(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+      );
+      final parsed = parser != null
+          ? parser(response.data)
+          : response.data as T;
+      return Right(parsed);
+    } on DioException catch (e) {
+      return Left(_mapDioFailure(e));
+    } on TypeError catch (e) {
+      return Left(ServerFailure('Response parse error: $e'));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
   Failure _mapDioFailure(DioException error) {
     switch (error.type) {
       case DioExceptionType.connectionTimeout:

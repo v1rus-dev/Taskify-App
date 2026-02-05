@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:firebase_app_installations/firebase_app_installations.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/domain/auth/repository/auth_repository.dart';
-import 'package:taskify/domain/sync/models/sync_state.dart';
+import 'package:taskify/domain/sync/models/sync_state_entity.dart';
 import 'package:taskify/domain/sync/repositories/sync_repository.dart';
 import 'package:taskify/domain/sync/usecases/sync_interactor.dart';
 
@@ -110,7 +110,7 @@ class SyncCoordinator {
 
   Future<String?> _ensureDeviceId() async {
     final stateResult = await _syncRepository.getState();
-    SyncState? state;
+    SyncStateEntity? state;
     stateResult.fold(
       ifLeft: (_) {},
       ifRight: (right) => state = right,
@@ -120,7 +120,7 @@ class SyncCoordinator {
       return existing;
     }
     final id = await _installations.getId();
-    final updated = (state ?? const SyncState(deviceId: null, lastCursor: 0))
+    final updated = (state ?? const SyncStateEntity(deviceId: null, lastCursor: 0))
         .copyWith(deviceId: id);
     await _syncRepository.saveState(updated);
     return id;

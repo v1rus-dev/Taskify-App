@@ -27,44 +27,40 @@ class SelectTimeFormatBottomSheet extends StatelessWidget {
           : null;
     }
 
-    return Padding(
-      padding: EdgeInsetsGeometry.symmetric(horizontal: AppInsets.sheetHorizontal, vertical: AppInsets.sheetVertical),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            l10n?.timeFormat ?? '',
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+    return FloatingBottomSheetLayout(
+      children: [
+        Text(
+          l10n?.timeFormat ?? '',
+          style: theme.textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: AppInsets.sheetTitleBottom),
+        CardWithActions(
+          actions: [
+            CardActionEntry(
+              CardAction(
+                title: l10n?.timeFormat24 ?? '',
+                description: descriptionFor(TimeFormatType.hour24),
+                descriptionColor:
+                    descriptionColorFor(context, TimeFormatType.hour24),
+                onPressed: () =>
+                    _onTimeFormatPressed(context, TimeFormatType.hour24),
+              ),
             ),
-          ),
-          const SizedBox(height: AppInsets.sheetTitleBottom),
-          CardWithActions(
-            actions: [
-              CardActionEntry(
-                CardAction(
-                  title: l10n?.timeFormat24 ?? '',
-                  description: descriptionFor(TimeFormatType.hour24),
-                  descriptionColor:
-                      descriptionColorFor(context, TimeFormatType.hour24),
-                  onPressed: () =>
-                      _onTimeFormatPressed(context, TimeFormatType.hour24),
-                ),
+            CardActionEntry(
+              CardAction(
+                title: l10n?.timeFormat12 ?? '',
+                description: descriptionFor(TimeFormatType.hour12),
+                descriptionColor:
+                    descriptionColorFor(context, TimeFormatType.hour12),
+                onPressed: () =>
+                    _onTimeFormatPressed(context, TimeFormatType.hour12),
               ),
-              CardActionEntry(
-                CardAction(
-                  title: l10n?.timeFormat12 ?? '',
-                  description: descriptionFor(TimeFormatType.hour12),
-                  descriptionColor:
-                      descriptionColorFor(context, TimeFormatType.hour12),
-                  onPressed: () =>
-                      _onTimeFormatPressed(context, TimeFormatType.hour12),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

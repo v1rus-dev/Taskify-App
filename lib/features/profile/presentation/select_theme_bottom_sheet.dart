@@ -29,56 +29,47 @@ class SelectThemeBottomSheet extends StatelessWidget {
           : null;
     }
 
-    return Padding(
-      padding: EdgeInsetsGeometry.symmetric(
-        horizontal: AppInsets.sheetHorizontal,
-        vertical: AppInsets.sheetVertical,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            l10n?.theme ?? '',
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+    return FloatingBottomSheetLayout(
+      children: [
+        Text(
+          l10n?.theme ?? '',
+          style: theme.textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: AppInsets.sheetTitleBottom),
+        CardWithActions(
+          actions: [
+            CardActionEntry(
+              CardAction(
+                title: l10n?.themeLight ?? '',
+                description: descriptionFor(AppThemeMode.light),
+                descriptionColor:
+                    descriptionColorFor(context, AppThemeMode.light),
+                onPressed: () => _onThemePressed(context, AppThemeMode.light),
+              ),
             ),
-          ),
-          const SizedBox(height: AppInsets.sheetTitleBottom),
-          CardWithActions(
-            actions: [
-              CardActionEntry(
-                CardAction(
-                  title: l10n?.themeLight ?? '',
-                  description: descriptionFor(AppThemeMode.light),
-                  descriptionColor:
-                      descriptionColorFor(context, AppThemeMode.light),
-                  onPressed: () =>
-                      _onThemePressed(context, AppThemeMode.light),
-                ),
+            CardActionEntry(
+              CardAction(
+                title: l10n?.themeDark ?? '',
+                description: descriptionFor(AppThemeMode.dark),
+                descriptionColor:
+                    descriptionColorFor(context, AppThemeMode.dark),
+                onPressed: () => _onThemePressed(context, AppThemeMode.dark),
               ),
-              CardActionEntry(
-                CardAction(
-                  title: l10n?.themeDark ?? '',
-                  description: descriptionFor(AppThemeMode.dark),
-                  descriptionColor:
-                      descriptionColorFor(context, AppThemeMode.dark),
-                  onPressed: () => _onThemePressed(context, AppThemeMode.dark),
-                ),
+            ),
+            CardActionEntry(
+              CardAction(
+                title: l10n?.themeSystem ?? '',
+                description: descriptionFor(AppThemeMode.system),
+                descriptionColor:
+                    descriptionColorFor(context, AppThemeMode.system),
+                onPressed: () => _onThemePressed(context, AppThemeMode.system),
               ),
-              CardActionEntry(
-                CardAction(
-                  title: l10n?.themeSystem ?? '',
-                  description: descriptionFor(AppThemeMode.system),
-                  descriptionColor:
-                      descriptionColorFor(context, AppThemeMode.system),
-                  onPressed: () =>
-                      _onThemePressed(context, AppThemeMode.system),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -7,8 +7,8 @@ import 'package:taskify/features/edit_task/data/mappers/sub_task_mapper.dart';
 import 'package:taskify/domain/tags/models/sub_task.dart';
 import 'package:taskify/features/edit_task/domain/repositories/sub_task_repository.dart';
 import 'package:taskify/features/home/data/datasources/task_local_datasource.dart';
-import 'package:taskify/domain/sync/models/sync_op_data.dart';
-import 'package:taskify/domain/sync/models/sync_queue_entry.dart';
+import 'package:taskify/domain/sync/models/sync_op_data_entity.dart';
+import 'package:taskify/domain/sync/models/sync_queue_entry_entity.dart';
 import 'package:taskify/domain/sync/repositories/sync_repository.dart';
 import 'package:uuid/uuid.dart';
 
@@ -146,12 +146,12 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
           'syncTag subtask create missing task mapping',
         );
       }
-      final entry = SyncQueueEntry(
+      final entry = SyncQueueEntryEntity(
         opId: _uuid.v4(),
         entity: 'subtask',
         op: 'create',
         id: subTask.networkId,
-        data: SyncOpData(
+        data: SyncOpDataEntity(
           text: subTask.title,
           isCompleted: subTask.isCompleted,
           taskId: task?.networkId,
@@ -167,12 +167,12 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
       if (subTask.networkId == null) {
         TalkerService.instance.warning('syncTag subtask update missing ids');
       }
-      final entry = SyncQueueEntry(
+      final entry = SyncQueueEntryEntity(
         opId: _uuid.v4(),
         entity: 'subtask',
         op: 'update',
         id: subTask.networkId,
-        data: SyncOpData(text: subTask.title, isCompleted: subTask.isCompleted),
+        data: SyncOpDataEntity(text: subTask.title, isCompleted: subTask.isCompleted),
       );
       await _enqueue(entry);
     }
@@ -183,7 +183,7 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
       if (subTask.networkId == null) {
         TalkerService.instance.warning('syncTag subtask delete missing ids');
       }
-      final entry = SyncQueueEntry(
+      final entry = SyncQueueEntryEntity(
         opId: _uuid.v4(),
         entity: 'subtask',
         op: 'delete',
@@ -194,7 +194,7 @@ class SubTaskRepositoryImpl implements SubTaskRepository {
     }
   }
 
-  Future<void> _enqueue(SyncQueueEntry entry) async {
+  Future<void> _enqueue(SyncQueueEntryEntity entry) async {
     final result = await _syncRepository.enqueueOp(entry);
     result.fold(
       ifLeft: (failure) => TalkerService.instance.error(

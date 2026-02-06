@@ -21,12 +21,24 @@ class AddFriendBottomSheetPage extends StatelessWidget {
   }
 }
 
-class AddFriendBottomSheet extends StatelessWidget {
-  AddFriendBottomSheet({super.key});
+class AddFriendBottomSheet extends StatefulWidget {
+  const AddFriendBottomSheet({super.key});
 
+  @override
+  State<AddFriendBottomSheet> createState() => _AddFriendBottomSheetState();
+}
+
+class _AddFriendBottomSheetState extends State<AddFriendBottomSheet>
+    with SingleTickerProviderStateMixin {
   final TextEditingController friendCodeController = TextEditingController();
 
   void _onAddFriendPressed(BuildContext context) {
+  }
+
+  @override
+  void dispose() {
+    friendCodeController.dispose();
+    super.dispose();
   }
 
   @override
@@ -35,9 +47,13 @@ class AddFriendBottomSheet extends StatelessWidget {
       children: [
         const AddFriendHeader(),
         const Gap(16),
-        BlocBuilder<AddFriendBloc, AddFriendState>(
-          builder: (context, state) {
-            return switch (state.stateType) {
+        AnimatedSize(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeInOut,
+          alignment: Alignment.topCenter,
+          child: BlocBuilder<AddFriendBloc, AddFriendState>(
+            builder: (context, state) {
+              return switch (state.stateType) {
                 AddFriendStateType.textField => AddFriendTextField(
                     key: const ValueKey('textField'),
                     controller: friendCodeController,
@@ -47,7 +63,8 @@ class AddFriendBottomSheet extends StatelessWidget {
                     controller: friendCodeController,
                   ),
               };
-          },
+            },
+          ),
         ),
         const Gap(20),
         ValueListenableBuilder(

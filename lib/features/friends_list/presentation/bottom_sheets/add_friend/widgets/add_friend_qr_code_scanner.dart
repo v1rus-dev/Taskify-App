@@ -116,69 +116,72 @@ class _AddFriendQrCodeScannerState extends State<AddFriendQrCodeScanner> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
 
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: 400,
-          maxHeight: 400,
-        ),
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                const ColoredBox(color: Colors.black),
-                if (_isPermissionResolved && _hasPermission)
-                  Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      MobileScanner(
-                        controller: _scannerController,
-                        onDetect: _onDetect,
-                      ),
-                      const _QrScannerMask(),
-                    ],
-                  ),
-                if (_isPermissionResolved && !_hasPermission)
-                  _PermissionDeniedOverlay(
-                    shouldShowOpenSettings: _permissionStatus.isPermanentlyDenied,
-                    onOpenSettings: _onOpenSettingsPressed,
-                  ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 12,
-                  child: Center(
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () => _onEnterCodePressed(context),
-                        borderRadius: BorderRadius.circular(8),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          child: Text(
-                            l10n?.enterCode ?? '',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontSize: 14,
-                              color: context.textSecondaryColor,
-                              decoration: TextDecoration.underline,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final height = width * 1.25;
+
+        return Center(
+          child: SizedBox(
+            width: width,
+            height: height,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  const ColoredBox(color: Colors.black),
+                  if (_isPermissionResolved && _hasPermission)
+                    Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        MobileScanner(
+                          controller: _scannerController,
+                          onDetect: _onDetect,
+                        ),
+                        const _QrScannerMask(),
+                      ],
+                    ),
+                  if (_isPermissionResolved && !_hasPermission)
+                    _PermissionDeniedOverlay(
+                      shouldShowOpenSettings:
+                          _permissionStatus.isPermanentlyDenied,
+                      onOpenSettings: _onOpenSettingsPressed,
+                    ),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 12,
+                    child: Center(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => _onEnterCodePressed(context),
+                          borderRadius: BorderRadius.circular(8),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            child: Text(
+                              l10n?.enterCode ?? '',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontSize: 14,
+                                color: context.textSecondaryColor,
+                                decoration: TextDecoration.underline,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

@@ -97,8 +97,12 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(const ValidationFailure('Unsupported auth provider'));
       }
 
-      if (provider == AuthProviders.test) {
-        final authResult = await authApi.authenticateTest<AuthResponseModel>(
+      if (provider == AuthProviders.testFirst || provider == AuthProviders.testSecond) {
+        final authResult = provider == AuthProviders.testFirst ? await authApi.authenticateTestFirst<AuthResponseModel>(
+          parser: (data) => AuthResponseModel.fromJson(
+            data as Map<String, dynamic>,
+          ),
+        ) : await authApi.authenticateTestSecond<AuthResponseModel>(
           parser: (data) => AuthResponseModel.fromJson(
             data as Map<String, dynamic>,
           ),
@@ -126,7 +130,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
         return Right(
           AuthSessionEntity(
-            provider: AuthProviders.test,
+            provider: AuthProviders.testFirst,
             uid: response!.user.id,
             email: response!.user.email,
             displayName: response!.user.name,
@@ -137,7 +141,8 @@ class AuthRepositoryImpl implements AuthRepository {
       final AuthSessionEntity session = switch (provider) {
         AuthProviders.google => await _signInWithGoogle(),
         AuthProviders.apple => await _signInWithApple(),
-        AuthProviders.test => throw StateError('Unreachable'),
+        AuthProviders.testFirst => throw StateError('Unreachable'),
+        AuthProviders.testSecond => throw StateError('Unreachable'),
         AuthProviders.unknown => throw StateError('Unreachable'),
       };
 

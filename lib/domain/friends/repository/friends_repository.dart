@@ -4,9 +4,21 @@ import 'package:taskify/domain/friends/models/friend_entity.dart';
 import 'package:taskify/domain/friends/models/friend_request_entity.dart';
 
 abstract class FriendsRepository {
-  Future<Either<Failure, List<FriendEntity>>> getFriends();
-  Future<Either<Failure, List<FriendRequestEntity>>> getIncomingRequests();
-  Future<Either<Failure, List<FriendRequestEntity>>> getOutgoingRequests();
+  Future<Either<Failure, List<FriendEntity>>> fetchFriendsRemote();
+  Future<Either<Failure, List<FriendRequestEntity>>>
+  fetchIncomingRequestsRemote();
+  Future<Either<Failure, List<FriendRequestEntity>>>
+  fetchOutgoingRequestsRemote();
+  Future<Either<Failure, void>> replaceFriends(List<FriendEntity> friends);
+  Future<Either<Failure, void>> replaceIncomingRequests(
+    List<FriendRequestEntity> requests,
+  );
+  Future<Either<Failure, void>> replaceOutgoingRequests(
+    List<FriendRequestEntity> requests,
+  );
+  Stream<List<FriendEntity>> observeFriends();
+  Stream<List<FriendRequestEntity>> observeIncomingRequests();
+  Stream<List<FriendRequestEntity>> observeOutgoingRequests();
   Future<Either<Failure, FriendRequestEntity>> sendFriendRequest(
     String friendTag,
   );

@@ -23,8 +23,13 @@ class SignInBottomSheet extends StatelessWidget {
     context.pop();
   }
 
-  void _onSignInWithTestPressed(BuildContext context) {
-    context.read<AuthCubit>().signInWithTest();
+  void _onSignInWithTestFirstPressed(BuildContext context) {
+    context.read<AuthCubit>().signInWithTestFirst();
+    context.pop();
+  }
+
+  void _onSignInWithTestSecondPressed(BuildContext context) {
+    context.read<AuthCubit>().signInWithTestSecond();
     context.pop();
   }
 
@@ -114,15 +119,39 @@ class SignInBottomSheet extends StatelessWidget {
                     ),
                     const Gap(8),
                     Text(
-                      'Sign in to Test Account',
+                      'Sign in to Test First Account',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: Colors.black,
                       ),
                     ),
                   ],
                 ),
-                onPressed: () => _onSignInWithTestPressed(context),
+                onPressed: () => _onSignInWithTestFirstPressed(context),
               ),
+            CardCustomEntry(
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    AppIcons.profile,
+                    package: AppIcons.packageName,
+                    width: 24,
+                    height: 24,
+                    colorFilter: ColorFilter.mode(
+                      Colors.black,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  const Gap(8),
+                  Text(
+                    'Sign in to Test Second Account',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              onPressed: () => _onSignInWithTestSecondPressed(context),
+            ),
           ],
         ),
       ],

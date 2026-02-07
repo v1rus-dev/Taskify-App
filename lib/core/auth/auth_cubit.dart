@@ -26,7 +26,8 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> signInWithGoogle() => _signIn(AuthProviders.google);
   Future<void> signInWithApple() => _signIn(AuthProviders.apple);
-  Future<void> signInWithTest() => _signIn(AuthProviders.test);
+  Future<void> signInWithTestFirst() => _signIn(AuthProviders.testFirst);
+  Future<void> signInWithTestSecond() => _signIn(AuthProviders.testSecond);
 
   Future<void> signOut() async {
     try {

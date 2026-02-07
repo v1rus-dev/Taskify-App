@@ -12,7 +12,7 @@ You are an expert in Flutter, Bloc, and Clean Architecture. Use feature-first or
 
 ### Updating this document
 
-AI agents should update this file whenever they learn something new about this project that future tasks might need to take into account. Keeping the guidelines current helps everyone work more effectively.
+AI agents should update this file whenever they learn something new about this project, only something what can be usefull for all project, like architecture, common component etc. Not specific features. Keeping the guidelines current helps everyone work more effectively.
 
 ## Architecture
 
@@ -68,4 +68,4 @@ UI Components which can uses more then one feature, write reusable and keep in `
 
 ## Commit & Pull Request Quidelines
 
-- Commits: imperative mood; prefer Conventional Commits (e.g., ‘feat:‘, ‘fix:‘, ‘docs:‘) with a clear scope.
+- Commits: imperative mood; prefer Conventional Commits (e.g., ‘feat:‘, ‘fix:‘, ‘docs:‘) with a clear scope.- Friends screen should not auto-fetch on every open: subscribe to local streams and use pull-to-refresh for manual sync.

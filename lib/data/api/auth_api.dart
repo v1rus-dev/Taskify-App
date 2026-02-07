@@ -23,11 +23,20 @@ class AuthApi {
     );
   }
 
-  Future<Either<Failure, T>> authenticateTest<T>({
+  Future<Either<Failure, T>> authenticateTestFirst<T>({
     T Function(dynamic data)? parser,
   }) {
     return _client.post(
-      path: 'auth/test',
+      path: 'auth/test/first',
+      parser: parser,
+    );
+  }
+
+  Future<Either<Failure, T>> authenticateTestSecond<T>({
+    T Function(dynamic data)? parser,
+  }) {
+    return _client.post(
+      path: 'auth/test/second',
       parser: parser,
     );
   }

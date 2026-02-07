@@ -4,25 +4,28 @@ import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/data/database/app_database.dart' as db;
 
 abstract class FriendsLocalDataSource {
-  Future<Either<Failure, List<db.FriendsTableData>>> getFriends();
-  Future<Either<Failure, List<db.IncomingFriendRequestsTableData>>>
-      getIncomingRequests();
-  Future<Either<Failure, List<db.OutgoingFriendRequestsTableData>>>
-      getOutgoingRequests();
+  Stream<List<db.FriendsTableData>> observeFriends();
+  Stream<List<db.FriendRequestsTableData>> observeIncomingRequests();
+  Stream<List<db.FriendRequestsTableData>> observeOutgoingRequests();
 
   Future<Either<Failure, void>> replaceFriends(
     List<db.FriendsTableCompanion> companions,
   );
   Future<Either<Failure, void>> replaceIncomingRequests(
-    List<db.IncomingFriendRequestsTableCompanion> companions,
+    List<db.FriendRequestsTableCompanion> companions,
   );
   Future<Either<Failure, void>> replaceOutgoingRequests(
-    List<db.OutgoingFriendRequestsTableCompanion> companions,
+    List<db.FriendRequestsTableCompanion> companions,
+  );
+  Future<Either<Failure, void>> upsertFriend(
+    db.FriendsTableCompanion companion,
+  );
+  Future<Either<Failure, void>> upsertRequest(
+    db.FriendRequestsTableCompanion companion,
   );
 
   Future<Either<Failure, void>> deleteFriendById(String friendId);
-  Future<Either<Failure, void>> deleteIncomingRequest(String requestId);
-  Future<Either<Failure, void>> deleteOutgoingRequest(String requestId);
+  Future<Either<Failure, void>> deleteRequest(String requestId);
 }
 
 class FriendsLocalDataSourceImpl implements FriendsLocalDataSource {
@@ -31,48 +34,25 @@ class FriendsLocalDataSourceImpl implements FriendsLocalDataSource {
   final db.AppDatabase _database;
 
   @override
-  Future<Either<Failure, List<db.FriendsTableData>>> getFriends() async {
-    try {
-      final rows = await _database.select(_database.friendsTable).get();
-      return Right(rows);
-    } catch (e) {
-      TalkerService.instance.error('syncTag getFriends local error', e);
-      return Left(DatabaseFailure(e.toString()));
-    }
+  Stream<List<db.FriendsTableData>> observeFriends() {
+    return _database
+        .select(_database.friendsTable)
+        .watch()
+        .map((rows) => rows.toList());
   }
 
   @override
-  Future<Either<Failure, List<db.IncomingFriendRequestsTableData>>>
-      getIncomingRequests() async {
-    try {
-      final rows = await _database
-          .select(_database.incomingFriendRequestsTable)
-          .get();
-      return Right(rows);
-    } catch (e) {
-      TalkerService.instance.error(
-        'syncTag getIncomingRequests local error',
-        e,
-      );
-      return Left(DatabaseFailure(e.toString()));
-    }
+  Stream<List<db.FriendRequestsTableData>> observeIncomingRequests() {
+    final query = _database.select(_database.friendRequestsTable);
+    query.where((row) => row.isIncoming.equals(true));
+    return query.watch().map((rows) => rows.toList());
   }
 
   @override
-  Future<Either<Failure, List<db.OutgoingFriendRequestsTableData>>>
-      getOutgoingRequests() async {
-    try {
-      final rows = await _database
-          .select(_database.outgoingFriendRequestsTable)
-          .get();
-      return Right(rows);
-    } catch (e) {
-      TalkerService.instance.error(
-        'syncTag getOutgoingRequests local error',
-        e,
-      );
-      return Left(DatabaseFailure(e.toString()));
-    }
+  Stream<List<db.FriendRequestsTableData>> observeOutgoingRequests() {
+    final query = _database.select(_database.friendRequestsTable);
+    query.where((row) => row.isIncoming.equals(false));
+    return query.watch().map((rows) => rows.toList());
   }
 
   @override
@@ -95,42 +75,42 @@ class FriendsLocalDataSourceImpl implements FriendsLocalDataSource {
 
   @override
   Future<Either<Failure, void>> replaceIncomingRequests(
-    List<db.IncomingFriendRequestsTableCompanion> companions,
+    List<db.FriendRequestsTableCompanion> companions,
   ) async {
     try {
       await _database.batch((batch) {
-        batch.deleteAll(_database.incomingFriendRequestsTable);
+        batch.deleteWhere(
+          _database.friendRequestsTable,
+          (table) => table.isIncoming.equals(true),
+        );
         if (companions.isNotEmpty) {
-          batch.insertAll(_database.incomingFriendRequestsTable, companions);
+          batch.insertAll(_database.friendRequestsTable, companions);
         }
       });
       return const Right(null);
     } catch (e) {
-      TalkerService.instance.error(
-        'syncTag replaceIncomingRequests error',
-        e,
-      );
+      TalkerService.instance.error('syncTag replaceIncomingRequests error', e);
       return Left(DatabaseFailure(e.toString()));
     }
   }
 
   @override
   Future<Either<Failure, void>> replaceOutgoingRequests(
-    List<db.OutgoingFriendRequestsTableCompanion> companions,
+    List<db.FriendRequestsTableCompanion> companions,
   ) async {
     try {
       await _database.batch((batch) {
-        batch.deleteAll(_database.outgoingFriendRequestsTable);
+        batch.deleteWhere(
+          _database.friendRequestsTable,
+          (table) => table.isIncoming.equals(false),
+        );
         if (companions.isNotEmpty) {
-          batch.insertAll(_database.outgoingFriendRequestsTable, companions);
+          batch.insertAll(_database.friendRequestsTable, companions);
         }
       });
       return const Right(null);
     } catch (e) {
-      TalkerService.instance.error(
-        'syncTag replaceOutgoingRequests error',
-        e,
-      );
+      TalkerService.instance.error('syncTag replaceOutgoingRequests error', e);
       return Left(DatabaseFailure(e.toString()));
     }
   }
@@ -138,9 +118,9 @@ class FriendsLocalDataSourceImpl implements FriendsLocalDataSource {
   @override
   Future<Either<Failure, void>> deleteFriendById(String friendId) async {
     try {
-      await (_database.delete(_database.friendsTable)
-            ..where((row) => row.id.equals(friendId)))
-          .go();
+      await (_database.delete(
+        _database.friendsTable,
+      )..where((row) => row.id.equals(friendId))).go();
       return const Right(null);
     } catch (e) {
       TalkerService.instance.error('syncTag deleteFriendById error', e);
@@ -149,33 +129,45 @@ class FriendsLocalDataSourceImpl implements FriendsLocalDataSource {
   }
 
   @override
-  Future<Either<Failure, void>> deleteIncomingRequest(String requestId) async {
+  Future<Either<Failure, void>> upsertFriend(
+    db.FriendsTableCompanion companion,
+  ) async {
     try {
-      await (_database.delete(_database.incomingFriendRequestsTable)
-            ..where((row) => row.requestId.equals(requestId)))
-          .go();
+      await _database
+          .into(_database.friendsTable)
+          .insertOnConflictUpdate(companion);
       return const Right(null);
     } catch (e) {
-      TalkerService.instance.error(
-        'syncTag deleteIncomingRequest error',
-        e,
-      );
+      TalkerService.instance.error('syncTag upsertFriend error', e);
       return Left(DatabaseFailure(e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, void>> deleteOutgoingRequest(String requestId) async {
+  Future<Either<Failure, void>> upsertRequest(
+    db.FriendRequestsTableCompanion companion,
+  ) async {
     try {
-      await (_database.delete(_database.outgoingFriendRequestsTable)
-            ..where((row) => row.requestId.equals(requestId)))
-          .go();
+      await (_database.delete(
+        _database.friendRequestsTable,
+      )..where((row) => row.requestId.equals(companion.requestId.value))).go();
+      await _database.into(_database.friendRequestsTable).insert(companion);
       return const Right(null);
     } catch (e) {
-      TalkerService.instance.error(
-        'syncTag deleteOutgoingRequest error',
-        e,
-      );
+      TalkerService.instance.error('syncTag upsertRequest error', e);
+      return Left(DatabaseFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteRequest(String requestId) async {
+    try {
+      await (_database.delete(
+        _database.friendRequestsTable,
+      )..where((row) => row.requestId.equals(requestId))).go();
+      return const Right(null);
+    } catch (e) {
+      TalkerService.instance.error('syncTag deleteRequest error', e);
       return Left(DatabaseFailure(e.toString()));
     }
   }

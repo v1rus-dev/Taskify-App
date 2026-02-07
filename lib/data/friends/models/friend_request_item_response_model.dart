@@ -1,4 +1,4 @@
-import 'package:taskify/data/friends/models/friend_request_user_response_model.dart';
+import 'package:taskify/data/friends/models/friend_response_model.dart';
 import 'package:taskify/domain/friends/models/friend_request_entity.dart';
 
 class FriendRequestItemResponseModel {
@@ -8,21 +8,20 @@ class FriendRequestItemResponseModel {
   });
 
   final String requestId;
-  final FriendRequestUserResponseModel user;
+  final FriendResponseModel user;
 
   factory FriendRequestItemResponseModel.fromJson(Map<String, dynamic> json) {
     return FriendRequestItemResponseModel(
       requestId: json['request_id'] as String,
-      user: FriendRequestUserResponseModel.fromJson(
-        json['user'] as Map<String, dynamic>,
-      ),
+      user: FriendResponseModel.fromJson(json['user'] as Map<String, dynamic>),
     );
   }
 
-  FriendRequestEntity toDomain() {
+  FriendRequestEntity toDomain({required bool isIncoming}) {
     return FriendRequestEntity(
       requestId: requestId,
       user: user.toDomain(),
+      isIncoming: isIncoming,
     );
   }
 }

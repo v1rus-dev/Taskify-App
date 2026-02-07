@@ -31,9 +31,30 @@ class FriendsListScreen extends StatelessWidget {
   }
 
   void _onAddFriendPressed(BuildContext context) {
+    final bloc = context.read<FriendsListBloc>();
     unfocusAndThen(context, () async {
-      showAppBottomSheet(context: context, type: AppBottomSheetType.floating, child: AddFriendBottomSheetPage());
+      final friendCode = await showAppBottomSheet<String>(
+        context: context,
+        type: AppBottomSheetType.floating,
+        child: AddFriendBottomSheetPage(),
+      );
+      if (friendCode != null) {
+        bloc.add(TryAddFriend(friendCode));
+      }
     });
+  }
+
+  Future<void> _onRefresh(BuildContext context) {
+    return context.read<FriendsListBloc>().refreshData();
+  }
+
+  Widget _buildContent(BuildContext context, FriendsListState state) {
+    if (state.friends.isEmpty) {
+      return FriendsListEmptyPart(
+        onAddFriendPressed: () => _onAddFriendPressed(context),
+      );
+    }
+    return FriendsListSuccessPart(friends: state.friends);
   }
 
   @override
@@ -58,15 +79,22 @@ class FriendsListScreen extends StatelessWidget {
       ),
       body: BlocBuilder<FriendsListBloc, FriendsListState>(
         builder: (context, state) {
-          if (state.friends.isEmpty) {
-            return FriendsListEmptyPart(
-              onAddFriendPressed: () => _onAddFriendPressed(context),
-            );
-          } else {
-            return FriendsListSuccessPart(
-              friends: state.friends,
-            );
-          }
+          return RefreshIndicator(
+            onRefresh: () => _onRefresh(context),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: _buildContent(context, state),
+                  ),
+                );
+              },
+            ),
+          );
         },
       ),
     );

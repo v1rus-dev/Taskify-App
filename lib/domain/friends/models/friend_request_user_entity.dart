@@ -5,25 +5,29 @@ class FriendRequestUserEntity extends Equatable {
     required this.id,
     required this.displayName,
     this.name,
-    this.imageUrl,
+    this.avatarUrl,
+    this.anonymousNumber,
   });
 
   final String id;
   final String displayName;
   final String? name;
-  final String? imageUrl;
+  final String? avatarUrl;
+  final String? anonymousNumber;
 
   FriendRequestUserEntity copyWith({
     String? id,
     String? displayName,
     String? name,
-    String? imageUrl,
+    String? avatarUrl,
+    String? anonymousNumber,
   }) {
     return FriendRequestUserEntity(
       id: id ?? this.id,
       displayName: displayName ?? this.displayName,
       name: name ?? this.name,
-      imageUrl: imageUrl ?? this.imageUrl,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      anonymousNumber: anonymousNumber ?? this.anonymousNumber,
     );
   }
 
@@ -32,6 +36,7 @@ class FriendRequestUserEntity extends Equatable {
         id,
         displayName,
         name,
-        imageUrl,
+        avatarUrl,
+        anonymousNumber,
       ];
 }

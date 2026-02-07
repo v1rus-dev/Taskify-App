@@ -25,19 +25,10 @@ class FriendsStartupTask implements AppStartTask {
           ifRight: (_) {},
         ),
       ),
-      _interactor.getIncomingRequests().then(
+      _interactor.getFriendRequests().then(
         (result) => result.fold(
           ifLeft: (failure) => TalkerService.instance.error(
-            'startupTask friends getIncomingRequests failed',
-            failure,
-          ),
-          ifRight: (_) {},
-        ),
-      ),
-      _interactor.getOutgoingRequests().then(
-        (result) => result.fold(
-          ifLeft: (failure) => TalkerService.instance.error(
-            'startupTask friends getOutgoingRequests failed',
+            'startupTask friends getFriendRequests failed',
             failure,
           ),
           ifRight: (_) {},

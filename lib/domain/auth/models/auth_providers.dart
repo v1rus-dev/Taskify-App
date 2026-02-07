@@ -1,6 +1,7 @@
 enum AuthProviders {
   google,
   apple,
-  test,
+  testFirst,
+  testSecond,
   unknown,
 }

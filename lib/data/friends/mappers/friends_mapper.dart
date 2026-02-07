@@ -4,7 +4,6 @@ import 'package:taskify/data/friends/models/friend_request_item_response_model.d
 import 'package:taskify/data/friends/models/friend_response_model.dart';
 import 'package:taskify/domain/friends/models/friend_entity.dart';
 import 'package:taskify/domain/friends/models/friend_request_entity.dart';
-import 'package:taskify/domain/friends/models/friend_request_user_entity.dart';
 
 extension FriendResponseModelMapper on FriendResponseModel {
   db.FriendsTableCompanion toCompanion() {
@@ -18,25 +17,43 @@ extension FriendResponseModelMapper on FriendResponseModel {
   }
 }
 
-extension FriendRequestItemResponseModelMapper
-    on FriendRequestItemResponseModel {
-  db.IncomingFriendRequestsTableCompanion toIncomingCompanion() {
-    return db.IncomingFriendRequestsTableCompanion(
-      requestId: Value(requestId),
-      userId: Value(user.id),
-      userName: Value(user.name),
-      userImageUrl: Value(user.imageUrl),
-      userDisplayName: Value(user.displayName),
+extension FriendEntityMapper on FriendEntity {
+  db.FriendsTableCompanion toCompanion() {
+    return db.FriendsTableCompanion(
+      id: Value(id),
+      friendTag: Value(friendTag),
+      name: Value(name),
+      avatarUrl: Value(avatarUrl),
+      anonymousNumber: Value(anonymousNumber),
     );
   }
+}
 
-  db.OutgoingFriendRequestsTableCompanion toOutgoingCompanion() {
-    return db.OutgoingFriendRequestsTableCompanion(
+extension FriendRequestItemResponseModelMapper
+    on FriendRequestItemResponseModel {
+  db.FriendRequestsTableCompanion toCompanion({required bool isIncoming}) {
+    return db.FriendRequestsTableCompanion(
       requestId: Value(requestId),
       userId: Value(user.id),
-      userName: Value(user.name),
-      userImageUrl: Value(user.imageUrl),
-      userDisplayName: Value(user.displayName),
+      friendTag: Value(user.friendTag),
+      name: Value(user.name),
+      avatarUrl: Value(user.avatarUrl),
+      anonymousNumber: Value(user.anonymousNumber),
+      isIncoming: Value(isIncoming),
+    );
+  }
+}
+
+extension FriendRequestEntityMapper on FriendRequestEntity {
+  db.FriendRequestsTableCompanion toCompanion({bool? isIncoming}) {
+    return db.FriendRequestsTableCompanion(
+      requestId: Value(requestId),
+      userId: Value(user.id),
+      friendTag: Value(user.friendTag),
+      name: Value(user.name),
+      avatarUrl: Value(user.avatarUrl),
+      anonymousNumber: Value(user.anonymousNumber),
+      isIncoming: Value(isIncoming ?? this.isIncoming),
     );
   }
 }
@@ -53,29 +70,17 @@ extension FriendDriftMapper on db.FriendsTableData {
   }
 }
 
-extension IncomingRequestDriftMapper on db.IncomingFriendRequestsTableData {
+extension FriendRequestDriftMapper on db.FriendRequestsTableData {
   FriendRequestEntity toDomain() {
     return FriendRequestEntity(
       requestId: requestId,
-      user: FriendRequestUserEntity(
+      isIncoming: isIncoming,
+      user: FriendEntity(
         id: userId,
-        displayName: userDisplayName,
-        name: userName,
-        imageUrl: userImageUrl,
-      ),
-    );
-  }
-}
-
-extension OutgoingRequestDriftMapper on db.OutgoingFriendRequestsTableData {
-  FriendRequestEntity toDomain() {
-    return FriendRequestEntity(
-      requestId: requestId,
-      user: FriendRequestUserEntity(
-        id: userId,
-        displayName: userDisplayName,
-        name: userName,
-        imageUrl: userImageUrl,
+        friendTag: friendTag,
+        name: name,
+        avatarUrl: avatarUrl,
+        anonymousNumber: anonymousNumber,
       ),
     );
   }

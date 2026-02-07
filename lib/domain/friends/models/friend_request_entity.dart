@@ -1,18 +1,17 @@
 import 'package:equatable/equatable.dart';
-import 'package:taskify/domain/friends/models/friend_request_user_entity.dart';
+import 'package:taskify/domain/friends/models/friend_entity.dart';
 
 class FriendRequestEntity extends Equatable {
   const FriendRequestEntity({
     required this.requestId,
+    required this.isIncoming,
     required this.user,
   });
 
   final String requestId;
-  final FriendRequestUserEntity user;
+  final bool isIncoming;
+  final FriendEntity user;
 
   @override
-  List<Object?> get props => [
-        requestId,
-        user,
-      ];
+  List<Object?> get props => [requestId, isIncoming, user];
 }

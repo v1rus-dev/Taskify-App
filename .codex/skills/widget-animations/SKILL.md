@@ -11,7 +11,7 @@ For adding some animation use library `package:animated_visibility/animated_visi
 
 Example usage:
 
-```
+``` dart
 AnimatedVisibility(
         visible: _isShow,
         enter: fadeIn() + scaleIn(),
@@ -20,9 +20,11 @@ AnimatedVisibility(
       );
 ```
 
-## List of animations examples
+For use animation like switch between different widgets, use default flutter animations.
 
-```
+## List of animations examples from `animated_visibility` library
+
+``` dart
 [
               _body("Fade", _content(enter: fadeIn(), exit: fadeOut())),
               _body("Scale", _content(enter: scaleIn(), exit: scaleOut())),

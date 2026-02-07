@@ -1,179 +1,71 @@
-# Repository Guidelines
+# Project Overview
 
-# Overview
+Taskify is a ToDo application for mobile, working on Android and iOS, powered by Flutter. The main function of application: todo, auth, friends, group spaces and group todos.
 
-You are an expert Flutter developer specializing in Clean Architecture with Feature-first organization and Bloc for state management.
+## Flutter Expert Profile
 
-## Core Principles
+You are an expert in Flutter, Bloc, and Clean Architecture. Use feature-first organization.
 
-### Clean Architecture
-- Strictly adhere to the Clean Architecture layers: Presentation, Domain, and Data
-- Follow the dependency rule: dependencies always point inward
-- Domain layer contains entities, repositories (interfaces), and use cases or interactors
-- Data layer implements repositories and contains data sources and models
-- Presentation layer contains UI components, bloc and view models
-- Use proper abstractions with interfaces/abstract classes for each component
-- Every feature should follow this layered architecture pattern
+## Documentation Requirements
 
-### Feature-First Organization
-- Organize code by features instead of technical layers
-- Each feature is a self-contained module with its own implementation of all layers
-- Core or shared functionality goes in a separate 'core' directory
-- Features should have minimal dependencies on other features
-- Common directory structure for each feature:
+- Complex Logic: Try not to use a comments
 
-## Project Structure & Module Organization
-This is a Flutter app with the main code under `lib/`. Key areas include:
-- `lib/app/`: application bootstrap and app-level widgets.
-- `lib/core/`: shared utilities, constants, and cross-cutting concerns.
-- `lib/data/`: data sources, repositories, and persistence (Drift, Dio).
-- `lib/domain/`: domain models and business logic.
-- `lib/features/`: feature-by-feature UI, state, and flows.
-- `lib/l10n/`: localization assets; referenced in `pubspec.yaml`.
-- `design`: local design system with
+### Updating this document
 
-Platform folders live in `android/` and `ios/`.
+AI agents should update this file whenever they learn something new about this project that future tasks might need to take into account. Keeping the guidelines current helps everyone work more effectively.
 
-## Build, and Development Commands
-- `flutter pub get`: install dependencies.
-- `flutter run`: run the app on a connected device/emulator.
-- `flutter test`: execute unit/widget tests under `test/`.
-- `flutter analyze`: run static analysis using `analysis_options.yaml`.
-- `flutter build apk`: produce a release APK (adjust for iOS as needed).
+## Architecture
+
+This is a Flutter app with the main code under `lib/` and design package in `design/lib`
+
+`lib` areas include:
+-`app`- application initialization.
+-`app/router` - navigation system powered by GoRouter.
+-`core` - shared utilities, constants, and cross-cutting concerns.
+-`data` - implementation of the data layer, which keep database (Drift), datasource, and api (Dio). And implementation of shared buisness logic from `domain`;
+-`domain` - shared domain models and shared buisness logic.
+-`features` - features powered by feature-first.
+-`l10n` - application translation module.
+
+`design/lib` areas includes:
+-`bottom_sheets` - base bottom sheets widgets.
+-`constants` - application resources constants like: AnimationDuration, Icon, Inset, Radiuse.
+-`dialogs` - application dialog system.
+-`enum` - shared ui enums, like `enums/app_theme_mode.dart`.
+-`model` - shared ui models.
+-`themes` - implementation of application themes.
+-`themes/color` - implementation of application colors.
+-`themes/typography` - implementation of application typography.
+-`widgets` - shared widgets.
+
+UI Components which can uses more then one feature, write reusable and keep in `design/lib/widgets`.
 
 ## Dependency Injection
-- Use GetIt as a service locator for dependency injection
-- Register dependencies by feature in separate files
-- Implement lazy initialization where appropriate
-- Use factories for transient objects and singletons for services
-- Create proper abstractions that can be easily mocked for testing
 
-## Coding Style & Naming Conventions
-Follow Dart/Flutter defaults and `flutter_lints`. Use 2-space indentation, `PascalCase` for types, `camelCase` for variables/functions, and `snake_case` for file names (e.g., `home_screen_state.dart`). Keep files focused by feature under `lib/features/`.
+- Use GetIt as a service locator for dependency injection `libs/core/services/locator.dart`.
+- Implement lazy initialization where appropriate.
+- Use factories for transient objects and singletons for services.
+- Register dependencies by feature in separate files.
 
-## Ui pattern
-- Large logical parts of the screen are divided into parts, for example ScreenBottomPart, ScreenTopPart, ScreenErrorPart, ScreenSuccessPart
-- Always try to use Material with InkWell for clicks.
+## Code style
 
-## Coding limitations
-Try never using WidgetsBindingObserver.
-Don't create database migration. Just use only one scheme because this app in not production now.
+- Keep code simple, explicit, typed.
+- Adhere to generally accepted code style standards in Flutter.
+- Don't use freezed, can use Equetable.
+- Use `either` for async function results.
 
-## Flutter code style
-- Always use Color.withValue() inseted of withOpacity because withOpacity is deprecated.
-- On pressed function ALWAYS do in specific function
+## UI code style & principals
 
-```
-class ExampleWidget extends StatelessWidget {
-  const ExampleWidget({super.key});
+- Functions called in widgets are written as a separate function inside the widget.
+- Divide logical UI blocks into different widgets and different files.
+- Use Material with InkWell for all buttons, for ripple effects, except clicked text, in this situation you can use simple GestureDetector.
 
-  void _onPressed(BuildContext context) {
-    debugPrint('Button pressed');
-    // here is ALWAYS executed logic
-  }
+## Build commands
 
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () => _onPressed(context),
-      child: const Text('Press me'),
-    );
-  }
-}
-```
+- `flutter pub get` - for updating libraries or build flutter project after.
+- `flutter clean` - for clean project.
+- `dart run build_ranner build --delete-conflicting-outputs` - for regenerate database after changing models.
 
-## Generated Files & Configuration
-`lib/firebase_options.dart` is generated by FlutterFire CLI; do not edit manually. Freezed/Drift outputs (`*.freezed.dart`, `*.g.dart`) are generated via `build_runner` and should be updated when their source files change.
+## Commit & Pull Request Quidelines
 
-## Coding Standards
-
-### State Management
-- States must be immutable and implemented using Freezed.
-- Use union/sealed states to represent UI state:
-  initial, loading, success, error.
-- Errors should be strongly typed and contain detailed failure information.
-- Keep state classes small and focused on UI needs.
-- Perform state transitions via copyWith or by emitting new union states.
-- Do not store side effects in state.
-- Handle side effects (navigation, snackbars, dialogs) using BlocListener or BlocConsumer.
-- Optimize widget rebuilds using BlocSelector, buildWhen, or listenWhen.
-- Separate persistent UI state from one-shot UI events.
-
-### Error Handling
-- Use Either<Failure, Success> from Dartz for functional error handling
-- Create custom Failure classes for domain-specific errors
-- Implement proper error mapping between layers
-- Centralize error handling strategies
-- Provide user-friendly error messages
-- Log errors for debugging and analytics
-
-#### Dartz Error Handling
-- Use Either for better error control without exceptions
-- Left represents failure case, Right represents success case
-- Create a base Failure class and extend it for specific error types
-- Leverage pattern matching with fold() method to handle both success and error cases in one call
-- Use flatMap/bind for sequential operations that could fail
-- Create extension functions to simplify working with Either
-- Example implementation for handling errors with Dartz following functional programming:
-
-```
-// Define base failure class
-abstract class Failure extends Equatable {
-  final String message;
-  
-  const Failure(this.message);
-  
-  @override
-  List<Object> get props => [message];
-}
-
-// Specific failure types
-class ServerFailure extends Failure {
-  const ServerFailure([String message = 'Server error occurred']) : super(message);
-}
-
-class CacheFailure extends Failure {
-  const CacheFailure([String message = 'Cache error occurred']) : super(message);
-}
-
-class NetworkFailure extends Failure {
-  const NetworkFailure([String message = 'Network error occurred']) : super(message);
-}
-
-class ValidationFailure extends Failure {
-  const ValidationFailure([String message = 'Validation failed']) : super(message);
-}
-
-// Extension to handle Either<Failure, T> consistently
-extension EitherExtensions<L, R> on Either<L, R> {
-  R getRight() => (this as Right<L, R>).value;
-  L getLeft() => (this as Left<L, R>).value;
-  
-  // Simplify chaining operations that can fail
-  Either<L, T> flatMap<T>(Either<L, T> Function(R r) f) {
-    return fold(
-      (l) => Left(l),
-      (r) => f(r),
-    );
-  }
-}
-```
-
-### Repository Pattern
-- Repositories act as a single source of truth for data
-- Implement caching strategies when appropriate
-- Handle network connectivity issues gracefully
-- Map data models to domain entities
-- Create proper abstractions with well-defined method signatures
-- Handle pagination and data fetching logic
-
-### Performance Considerations
-- Use const constructors for immutable widgets
-- Implement efficient list rendering with ListView.builder if not say use CustomScrollView and slivers
-- Minimize widget rebuilds with proper state management
-- Use computation isolation for expensive operations with compute()
-- Implement pagination for large data sets
-- Cache network resources appropriately
-- Profile and optimize render performance
-
-Refer to official Flutter and bloc documentation for more detailed implementation guidelines.
+- Commits: imperative mood; prefer Conventional Commits (e.g., ‘feat:‘, ‘fix:‘, ‘docs:‘) with a clear scope.

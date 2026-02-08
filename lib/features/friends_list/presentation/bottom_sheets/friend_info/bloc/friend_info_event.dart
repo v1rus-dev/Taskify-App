@@ -10,3 +10,7 @@ sealed class FriendInfoEvent extends Equatable {
 final class FriendInfoStarted extends FriendInfoEvent {
   const FriendInfoStarted();
 }
+
+final class FriendInfoRemovePressed extends FriendInfoEvent {
+  const FriendInfoRemovePressed();
+}

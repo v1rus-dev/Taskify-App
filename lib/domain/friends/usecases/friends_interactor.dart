@@ -1,13 +1,17 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
+import 'package:taskify/core/network/network_info.dart';
+import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/domain/friends/models/friend_entity.dart';
+import 'package:taskify/domain/friends/models/friend_profile_entity.dart';
 import 'package:taskify/domain/friends/models/friend_request_entity.dart';
 import 'package:taskify/domain/friends/repository/friends_repository.dart';
 
 class FriendsInteractor {
-  FriendsInteractor(this._repository);
+  FriendsInteractor(this._repository, this._networkInfo);
 
   final FriendsRepository _repository;
+  final NetworkInfo _networkInfo;
 
   Future<Either<Failure, void>> getFriends() async {
     final remoteResult = await _repository.fetchFriendsRemote();
@@ -79,6 +83,57 @@ class FriendsInteractor {
 
   Stream<List<FriendRequestEntity>> observeOutgoingRequests() {
     return _repository.observeOutgoingRequests();
+  }
+
+  Future<Either<Failure, FriendProfileEntity>> getFriendInfo(
+    String userId,
+  ) async {
+    TalkerService.instance.info('Getting friend info for user: $userId');
+    final hasInternet = await _networkInfo.hasInternet;
+    TalkerService.instance.info('Has internet: $hasInternet');
+    if (!hasInternet) {
+      return _getFriendFromLocal(userId);
+    }
+
+    final remoteResult = await _repository.fetchFriendProfileRemote(userId);
+    Failure? failure;
+    FriendProfileEntity? profile;
+    remoteResult.fold(
+      ifLeft: (left) => failure = left,
+      ifRight: (right) => profile = right,
+    );
+
+    if (profile != null) {
+      if (profile!.isFriend) {
+        final saveResult = await _repository.upsertFriend(profile!.friend);
+        saveResult.fold(ifLeft: (left) => failure ??= left, ifRight: (_) {});
+      }
+      if (failure != null) {
+        return Left(failure!);
+      }
+      return Right(profile!);
+    }
+
+    final localResult = await _getFriendFromLocal(userId);
+    if (localResult.isRight) {
+      return localResult;
+    }
+    return Left(failure ?? const ServerFailure('Failed to load friend info'));
+  }
+
+  Future<Either<Failure, FriendProfileEntity>> _getFriendFromLocal(
+    String userId,
+  ) async {
+    final localResult = await _repository.getFriendById(userId);
+    return localResult.fold(
+      ifLeft: Left.new,
+      ifRight: (friend) {
+        if (friend == null) {
+          return const Left(CacheFailure('Friend is not available offline'));
+        }
+        return Right(FriendProfileEntity(friend: friend, isFriend: true));
+      },
+    );
   }
 
   Future<Either<Failure, void>> _refreshAfterMutation({

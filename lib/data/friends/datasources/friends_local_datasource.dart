@@ -7,6 +7,7 @@ abstract class FriendsLocalDataSource {
   Stream<List<db.FriendsTableData>> observeFriends();
   Stream<List<db.FriendRequestsTableData>> observeIncomingRequests();
   Stream<List<db.FriendRequestsTableData>> observeOutgoingRequests();
+  Future<Either<Failure, db.FriendsTableData?>> getFriendById(String friendId);
 
   Future<Either<Failure, void>> replaceFriends(
     List<db.FriendsTableCompanion> companions,
@@ -39,6 +40,21 @@ class FriendsLocalDataSourceImpl implements FriendsLocalDataSource {
         .select(_database.friendsTable)
         .watch()
         .map((rows) => rows.toList());
+  }
+
+  @override
+  Future<Either<Failure, db.FriendsTableData?>> getFriendById(
+    String friendId,
+  ) async {
+    try {
+      final query = _database.select(_database.friendsTable)
+        ..where((row) => row.id.equals(friendId));
+      final friend = await query.getSingleOrNull();
+      return Right(friend);
+    } catch (e) {
+      TalkerService.instance.error('syncTag getFriendById error', e);
+      return Left(DatabaseFailure(e.toString()));
+    }
   }
 
   @override

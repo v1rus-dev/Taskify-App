@@ -15,6 +15,8 @@ import 'package:taskify/features/profile/data/profile_di.dart';
 import 'package:taskify/data/friends/friends_di.dart';
 import 'package:taskify/core/app_startup/app_startup_di.dart';
 import 'package:taskify/core/home_widget/task_home_widget_service.dart';
+import 'package:taskify/core/network/network_info.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 final locator = GetIt.instance;
 
@@ -23,13 +25,19 @@ Future<void> initServiceLocator(
   required ServerEnv serverEnv,
 }) async {
   locator.registerSingleton<ServerEnv>(serverEnv);
+  locator.registerLazySingleton<Connectivity>(() => Connectivity());
+  locator.registerLazySingleton<NetworkInfo>(
+    () => NetworkInfoImpl(locator<Connectivity>()),
+  );
   await initDatabase(appDatabase);
   initAuthStorageDependencies();
   await initDio();
   initApiDependencies();
   await initRepositories();
   initInteractors();
-  locator.registerLazySingleton(() => TaskHomeWidgetService(locator<TaskInteractor>()));
+  locator.registerLazySingleton(
+    () => TaskHomeWidgetService(locator<TaskInteractor>()),
+  );
 }
 
 Future<void> initDatabase(AppDatabase appDatabase) async {

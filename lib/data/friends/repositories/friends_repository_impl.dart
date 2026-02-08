@@ -4,6 +4,7 @@ import 'package:taskify/data/friends/datasources/friends_local_datasource.dart';
 import 'package:taskify/data/friends/datasources/friends_network_datasource.dart';
 import 'package:taskify/data/friends/mappers/friends_mapper.dart';
 import 'package:taskify/domain/friends/models/friend_entity.dart';
+import 'package:taskify/domain/friends/models/friend_profile_entity.dart';
 import 'package:taskify/domain/friends/models/friend_request_entity.dart';
 import 'package:taskify/domain/friends/repository/friends_repository.dart';
 
@@ -12,7 +13,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
     required FriendsNetworkDataSource networkDataSource,
     required FriendsLocalDataSource localDataSource,
   }) : _networkDataSource = networkDataSource,
-        _localDataSource = localDataSource;
+       _localDataSource = localDataSource;
 
   final FriendsNetworkDataSource _networkDataSource;
   final FriendsLocalDataSource _localDataSource;
@@ -24,6 +25,22 @@ class FriendsRepositoryImpl implements FriendsRepository {
       ifLeft: Left.new,
       ifRight: (models) =>
           Right(models.map((model) => model.toDomain()).toList()),
+    );
+  }
+
+  @override
+  Future<Either<Failure, FriendProfileEntity>> fetchFriendProfileRemote(
+    String userId,
+  ) async {
+    final result = await _networkDataSource.getFriendProfile(userId);
+    return result.fold(
+      ifLeft: Left.new,
+      ifRight: (model) => Right(
+        FriendProfileEntity(
+          friend: model.user.toDomain(),
+          isFriend: model.isFriend,
+        ),
+      ),
     );
   }
 
@@ -56,7 +73,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
     return _localDataSource.replaceFriends(
       friends.map((friend) => friend.toCompanion()).toList(),
     );
-      }
+  }
 
   @override
   Future<Either<Failure, void>> replaceIncomingRequests(
@@ -121,6 +138,20 @@ class FriendsRepositoryImpl implements FriendsRepository {
   }
 
   @override
+  Future<Either<Failure, FriendEntity?>> getFriendById(String friendId) async {
+    final result = await _localDataSource.getFriendById(friendId);
+    return result.fold(
+      ifLeft: Left.new,
+      ifRight: (row) => Right(row?.toDomain()),
+    );
+  }
+
+  @override
+  Future<Either<Failure, void>> upsertFriend(FriendEntity friend) {
+    return _localDataSource.upsertFriend(friend.toCompanion());
+  }
+
+  @override
   Future<Either<Failure, FriendEntity>> acceptRequest(String requestId) async {
     final result = await _networkDataSource.acceptRequest(requestId);
     Failure? failure;
@@ -141,8 +172,8 @@ class FriendsRepositoryImpl implements FriendsRepository {
       return deleteResult.fold(
         ifLeft: Left.new,
         ifRight: (_) => Right(friend!),
-    );
-        }
+      );
+    }
 
     final saveResult = await _localDataSource.upsertFriend(
       friend!.toCompanion(),
@@ -180,10 +211,6 @@ class FriendsRepositoryImpl implements FriendsRepository {
   @override
   Future<Either<Failure, String>> regenerateFriendTag() async {
     final result = await _networkDataSource.regenerateFriendTag();
-    return result.fold(
-      ifLeft: Left.new,
-      ifRight: (model) => Right(model.friendTag),
-    );
     return result.fold(
       ifLeft: Left.new,
       ifRight: (model) => Right(model.friendTag),

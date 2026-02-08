@@ -52,6 +52,7 @@ UI Components which can uses more then one feature, write reusable and keep in `
 - Implement lazy initialization where appropriate.
 - Use factories for transient objects and singletons for services.
 - Register dependencies by feature in separate files.
+- Shared network availability checks should go through `core/network/network_info.dart` (`NetworkInfo`), not directly from feature BLoCs.
 
 ## Code style
 

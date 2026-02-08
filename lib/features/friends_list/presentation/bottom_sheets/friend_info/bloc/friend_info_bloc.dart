@@ -1,6 +1,7 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/core/services/locator.dart';
+import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/domain/friends/usecases/friends_interactor.dart';
 import 'package:taskify/features/friends_list/presentation/models/friend_model_ui.dart';
 
@@ -14,13 +15,70 @@ class FriendInfoBloc extends Bloc<FriendInfoEvent, FriendInfoState> {
 
   FriendInfoBloc({required this.friendId}) : super(FriendInfoLoading()) {
     on<FriendInfoStarted>(_onStarted);
+    on<FriendInfoRemovePressed>(_onRemovePressed);
   }
 
-  void _onStarted(
+  Future<void> _onStarted(
     FriendInfoStarted event,
     Emitter<FriendInfoState> emit,
   ) async {
-    // final friend = await _interactor.getFriendById(friendId);
-    // emit(FriendInfoSuccess(friend: friend));
+    final result = await _interactor.getFriendInfo(friendId);
+    result.fold(
+      ifLeft: (failure) {
+        emit(FriendInfoError(message: failure.message));
+      },
+      ifRight: (friendProfile) {
+        emit(
+          FriendInfoSuccess(
+            friend: friendProfile.friend.toUiModel(),
+            isFriend: friendProfile.isFriend,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _onRemovePressed(
+    FriendInfoRemovePressed event,
+    Emitter<FriendInfoState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is! FriendInfoSuccess) {
+      return;
+    }
+    if (!currentState.isFriend || currentState.isRemoving) {
+      return;
+    }
+
+    emit(
+      currentState.copyWith(isRemoving: true, clearRemoveErrorMessage: true),
+    );
+
+    final result = await _interactor.removeFriend(currentState.friend.id);
+    result.fold(
+      ifLeft: (failure) {
+        TalkerService.instance.error(
+          'Failed to remove friend: ${failure.message}',
+        );
+        emit(
+          currentState.copyWith(
+            isRemoving: false,
+            removeErrorMessage: failure.message,
+          ),
+        );
+      },
+      ifRight: (_) {
+        TalkerService.instance.info(
+          'Friend removed from profile bottom sheet: ${currentState.friend.id}',
+        );
+        emit(
+          currentState.copyWith(
+            isFriend: false,
+            isRemoving: false,
+            clearRemoveErrorMessage: true,
+          ),
+        );
+      },
+    );
   }
 }

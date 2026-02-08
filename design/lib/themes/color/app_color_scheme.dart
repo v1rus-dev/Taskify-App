@@ -19,6 +19,7 @@ class AppColorScheme {
   final Color bottomSheetDragHandle;
   final Color iconColor;
   final Color primarySecondary;
+  final Color warningInfo;
 
   const AppColorScheme({
     required this.background,
@@ -39,5 +40,6 @@ class AppColorScheme {
     required this.bottomSheetDragHandle,
     required this.iconColor,
     required this.primarySecondary,
+    required this.warningInfo,
   });
 }

@@ -11,6 +11,11 @@ class FriendsListState extends Equatable {
   final List<FriendRequestModelUi> incomingRequests;
   final List<FriendRequestModelUi> outgoingRequests;
 
+  bool get isAllEmpty => friends.isEmpty && incomingRequests.isEmpty && outgoingRequests.isEmpty;
+
+  bool get requestsIsEmpty => incomingRequests.isEmpty && outgoingRequests.isEmpty;
+  bool get requestsIsNotEmpty => incomingRequests.isNotEmpty || outgoingRequests.isNotEmpty;
+
   FriendsListState copyWith({
     List<FriendModelUi>? friends,
     List<FriendRequestModelUi>? incomingRequests,

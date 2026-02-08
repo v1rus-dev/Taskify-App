@@ -1,5 +1,6 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
 class RoundedSquareAvatar extends StatelessWidget {
   const RoundedSquareAvatar({
@@ -7,11 +8,13 @@ class RoundedSquareAvatar extends StatelessWidget {
     this.imageUrl,
     required this.name,
     this.borderRadius = 8,
+    this.fallbackSize = 40,
   });
 
   final String? imageUrl;
   final String name;
   final double borderRadius;
+  final double fallbackSize;
 
   Color _colorFromName() {
     final normalizedName = name.trim().toLowerCase();
@@ -30,10 +33,20 @@ class RoundedSquareAvatar extends StatelessWidget {
       borderRadius: BorderRadius.circular(borderRadius),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final size = constraints.biggest;
+          final hasBoundedWidth = constraints.hasBoundedWidth;
+          final hasBoundedHeight = constraints.hasBoundedHeight;
+          final width = hasBoundedWidth
+              ? constraints.maxWidth
+              : (hasBoundedHeight ? constraints.maxHeight : fallbackSize);
+          final height = hasBoundedHeight
+              ? constraints.maxHeight
+              : (hasBoundedWidth ? constraints.maxWidth : fallbackSize);
+          final resolvedWidth = math.max(width, 0).toDouble();
+          final resolvedHeight = math.max(height, 0).toDouble();
+
           return SizedBox(
-            width: size.width,
-            height: size.height,
+            width: resolvedWidth,
+            height: resolvedHeight,
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
               child: imageUrl != null && imageUrl!.trim().isNotEmpty

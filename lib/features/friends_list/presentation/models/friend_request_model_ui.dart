@@ -5,10 +5,12 @@ import 'package:taskify/features/friends_list/presentation/models/friend_model_u
 class FriendRequestModelUi extends Equatable {
   const FriendRequestModelUi({
     required this.requestId,
+    required this.isIncoming,
     required this.user,
   });
 
   final String requestId;
+  final bool isIncoming;
   final FriendModelUi user;
 
   @override
@@ -19,6 +21,7 @@ extension FriendRequestReadUiMapper on FriendRequestEntity {
   FriendRequestModelUi toUiModel() {
     return FriendRequestModelUi(
       requestId: requestId,
+      isIncoming: isIncoming,
       user: user.toUiModel(),
     );
   }

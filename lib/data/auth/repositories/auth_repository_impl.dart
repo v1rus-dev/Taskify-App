@@ -60,32 +60,69 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, AuthSessionEntity?>> getSession() async {
     try {
       final user = _auth.currentUser;
-      if (user == null) {
+      if (user != null) {
+        final idToken = await user.getIdToken();
+        final provider = user.providerData.isNotEmpty
+            ? switch (user.providerData.first.providerId) {
+                'google.com' => AuthProviders.google,
+                'apple.com' => AuthProviders.apple,
+                _ => AuthProviders.unknown,
+              }
+            : AuthProviders.unknown;
+
+        return Right(
+          AuthSessionEntity(
+            provider: provider,
+            uid: user.uid,
+            idToken: idToken,
+            email: user.email,
+            displayName: user.displayName,
+          ),
+        );
+      }
+
+      final accessToken = await authTokenHandler.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
         return Right(null);
       }
 
-      final idToken = await user.getIdToken();
-      final provider = user.providerData.isNotEmpty
-          ? switch (user.providerData.first.providerId) {
-              'google.com' => AuthProviders.google,
-              'apple.com' => AuthProviders.apple,
-              _ => AuthProviders.unknown,
-            }
-          : AuthProviders.unknown;
-
-      return Right(
-        AuthSessionEntity(
-          provider: provider,
-          uid: user.uid,
-          idToken: idToken,
-          email: user.email,
-          displayName: user.displayName,
-        ),
+      final userResult = await authLocalDataSource.getUser();
+      Failure? failure;
+      AuthSessionEntity? localSession;
+      userResult.fold(
+        ifLeft: (left) => failure = left,
+        ifRight: (localUser) {
+          if (localUser == null) {
+            return;
+          }
+          localSession = AuthSessionEntity(
+            provider: _mapProvider(localUser.provider),
+            uid: localUser.id,
+            email: localUser.email,
+            displayName: localUser.name,
+          );
+        },
       );
+
+      if (failure != null) {
+        return Left(failure!);
+      }
+
+      return Right(localSession);
     } catch (e) {
       TalkerService.instance.error('syncTag Get session failed', e);
       return Left(ServerFailure(e.toString()));
     }
+  }
+
+  AuthProviders _mapProvider(String provider) {
+    return switch (provider) {
+      'google' || 'google.com' => AuthProviders.google,
+      'apple' || 'apple.com' => AuthProviders.apple,
+      'testFirst' => AuthProviders.testFirst,
+      'testSecond' => AuthProviders.testSecond,
+      _ => AuthProviders.unknown,
+    };
   }
 
   @override

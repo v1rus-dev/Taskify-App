@@ -33,4 +33,6 @@ class AppIcons {
   static const String arrowBackAndroid = 'assets/icons/ic_arrow_back_android.svg';
   static const String addUser = 'assets/icons/ic_add_user.svg';
   static const String clear = 'assets/icons/ic_clear.svg';
+  static const String warningInfo = 'assets/icons/ic_warning_info.svg';
+  static const String warningInfoSmall = 'assets/icons/ic_warning_info_small.svg';
 }

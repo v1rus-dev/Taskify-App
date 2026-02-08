@@ -40,6 +40,12 @@ This is a Flutter app with the main code under `lib/` and design package in `des
 
 UI Components which can uses more then one feature, write reusable and keep in `design/lib/widgets`.
 
+### Auth session source of truth
+
+- `AuthRepository.getSession()` is the single source of truth for "is authenticated" in app-wide coordinators.
+- Session restore must support both Firebase providers (Google/Apple) and non-Firebase local sessions (test accounts via saved tokens + local user).
+- Startup/sync coordinators should refresh auth state through `AuthRepository.getSession()` on app start, not rely only on in-memory cubit state.
+
 ## Dependency Injection
 
 - Use GetIt as a service locator for dependency injection `libs/core/services/locator.dart`.

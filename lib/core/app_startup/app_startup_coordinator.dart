@@ -1,10 +1,16 @@
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/domain/app_startup/app_start_task.dart';
+import 'package:taskify/domain/auth/repository/auth_repository.dart';
 
 class AppStartupCoordinator {
-  AppStartupCoordinator({required List<AppStartTask> tasks}) : _tasks = tasks;
+  AppStartupCoordinator({
+    required List<AppStartTask> tasks,
+    required AuthRepository authRepository,
+  })  : _tasks = tasks,
+        _authRepository = authRepository;
 
   final List<AppStartTask> _tasks;
+  final AuthRepository _authRepository;
 
   bool _appStarted = false;
   bool _isAuthenticated = false;
@@ -13,10 +19,13 @@ class AppStartupCoordinator {
 
   void onAppStart() {
     _appStarted = true;
-    _tryRun('app_start');
+    _refreshAndTryRun();
   }
 
   void setAuthenticated(bool isAuthenticated) {
+    if (_isAuthenticated == isAuthenticated) {
+      return;
+    }
     _isAuthenticated = isAuthenticated;
     TalkerService.instance.info(
       'startupTask auth changed: $_isAuthenticated',
@@ -78,5 +87,21 @@ class AppStartupCoordinator {
     if (_pending) {
       _tryRun('pending');
     }
+  }
+
+  Future<void> _refreshAndTryRun() async {
+    await _refreshAuthState();
+    _tryRun('app_start');
+  }
+
+  Future<void> _refreshAuthState() async {
+    final result = await _authRepository.getSession();
+    result.fold(
+      ifLeft: (_) => _isAuthenticated = false,
+      ifRight: (session) => _isAuthenticated = session != null,
+    );
+    TalkerService.instance.info(
+      'startupTask auth refreshed: $_isAuthenticated',
+    );
   }
 }

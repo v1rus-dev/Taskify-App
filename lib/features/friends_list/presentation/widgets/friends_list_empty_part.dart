@@ -36,9 +36,9 @@ class FriendsListEmptyPart extends StatelessWidget {
             ),
             const Gap(16),
             AppTextButton(
-                text: AppLocalizations.of(context)?.addFriends ?? '',
-                onPressed: onAddFriendPressed,
-              ),
+              text: AppLocalizations.of(context)?.addFriends ?? '',
+              onPressed: onAddFriendPressed,
+            ),
           ],
         ),
       ),

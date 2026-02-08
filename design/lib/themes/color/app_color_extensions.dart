@@ -181,6 +181,16 @@ class AppColorExtensions {
 
     return lightScheme.primarySecondary;
   }
+
+  static Color getWarningInfoColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    if (isDark) {
+      return darkScheme.warningInfo;
+    }
+
+    return lightScheme.warningInfo;
+  }
 }
 
 extension AppColorContextExtensions on BuildContext {
@@ -211,4 +221,5 @@ extension AppColorContextExtensions on BuildContext {
   Color get iconColor => AppColorExtensions.getIconColor(this);
   Color get primarySecondaryColor =>
       AppColorExtensions.getPrimarySecondaryColor(this);
+  Color get warningInfoColor => AppColorExtensions.getWarningInfoColor(this);
 }

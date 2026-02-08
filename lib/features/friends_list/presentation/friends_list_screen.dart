@@ -1,15 +1,14 @@
-import 'package:design/constants/app_icons.dart';
 import 'package:design/design.dart';
-import 'package:design/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/features/friends_list/presentation/bloc/friends_list_bloc.dart';
 import 'package:taskify/features/friends_list/presentation/bottom_sheets/add_friend/add_friend_bottom_sheet.dart';
+import 'package:taskify/features/friends_list/presentation/widgets/friend_request_part.dart';
 import 'package:taskify/features/friends_list/presentation/widgets/friends_list_empty_part.dart';
-import 'package:taskify/features/friends_list/presentation/widgets/friends_list_success_part.dart';
+import 'package:taskify/features/friends_list/presentation/widgets/friends_list_part.dart';
 import 'package:taskify/l10n/app_localizations.dart';
-import 'package:taskify/app/router/app_router.dart';
 
 class FriendsListPage extends StatelessWidget {
   const FriendsListPage({super.key});
@@ -48,13 +47,29 @@ class FriendsListScreen extends StatelessWidget {
     return context.read<FriendsListBloc>().refreshData();
   }
 
-  Widget _buildContent(BuildContext context, FriendsListState state) {
-    if (state.friends.isEmpty) {
-      return FriendsListEmptyPart(
-        onAddFriendPressed: () => _onAddFriendPressed(context),
-      );
-    }
-    return FriendsListSuccessPart(friends: state.friends);
+  List<Widget> _buildEmptySliver(BuildContext context) {
+    return [
+      SliverFillRemaining(
+        hasScrollBody: false,
+        child: FriendsListEmptyPart(
+          onAddFriendPressed: () => _onAddFriendPressed(context),
+        ),
+      ),
+    ];
+  }
+
+  List<Widget> _buildNotEmptySlivers(
+    BuildContext context,
+    FriendsListState state,
+  ) {
+    return [
+      if (state.requestsIsNotEmpty)
+        FriendRequestPart(
+          incomingRequests: state.incomingRequests,
+          outgoingRequests: state.outgoingRequests,
+        ),
+      if (state.friends.isNotEmpty) FriendsListPart(friends: state.friends),
+    ];
   }
 
   @override
@@ -81,18 +96,11 @@ class FriendsListScreen extends StatelessWidget {
         builder: (context, state) {
           return RefreshIndicator(
             onRefresh: () => _onRefresh(context),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    child: _buildContent(context, state),
-                  ),
-                );
-              },
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: state.isAllEmpty
+                  ? _buildEmptySliver(context)
+                  : _buildNotEmptySlivers(context, state),
             ),
           );
         },

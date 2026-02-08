@@ -20,6 +20,7 @@ const lightScheme = AppColorScheme(
   bottomSheetDragHandle: Color(0xFFD9D9D9),
   iconColor: Color(0xFFC9C9C9),
   primarySecondary: Color(0x99B2C6FF),
+  warningInfo: Color(0xFFF59E0B),
 );
 
 const darkScheme = AppColorScheme(
@@ -41,4 +42,5 @@ const darkScheme = AppColorScheme(
   bottomSheetDragHandle: Color(0xFFFFFFFF),
   iconColor: Color(0xFFC9C9C9),
   primarySecondary: Color(0x99B2C6FF),
+  warningInfo: Color(0xFFF59E0B),
 );

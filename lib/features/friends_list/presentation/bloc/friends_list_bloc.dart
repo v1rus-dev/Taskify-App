@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:taskify/core/network/network_info.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/domain/friends/usecases/friends_interactor.dart';
@@ -21,6 +22,7 @@ class FriendsListBloc extends Bloc<FriendsListEvent, FriendsListState> {
   }
 
   final FriendsInteractor _interactor = locator<FriendsInteractor>();
+  final NetworkInfo _networkInfo = locator<NetworkInfo>();
   StreamSubscription? _friendsSubscription;
   StreamSubscription? _incomingRequestsSubscription;
   StreamSubscription? _outgoingRequestsSubscription;
@@ -52,9 +54,16 @@ class FriendsListBloc extends Bloc<FriendsListEvent, FriendsListState> {
             ),
           );
         });
+    await refreshData();
   }
 
   Future<void> refreshData() async {
+    final hasInternet = await _networkInfo.hasInternet;
+    if (!hasInternet) {
+      TalkerService.instance.info('friendsList refresh skipped: no internet');
+      return;
+    }
+
     final futures = <Future<void>>[
       _interactor.getFriends().then(
         (result) => result.fold(

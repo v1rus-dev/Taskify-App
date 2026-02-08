@@ -26,7 +26,7 @@
             </intent-filter>
         </activity>
         <receiver
-            android:name=".TaskifyTodayWidgetProvider"
+            android:name="yegor.cheprasov.taskify.TaskifyTodayWidgetProvider"
             android:exported="true"
             android:permission="android.permission.BIND_APPWIDGET">
             <intent-filter>

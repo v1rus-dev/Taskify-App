@@ -49,6 +49,7 @@ class TaskifyTodayWidgetProvider : AppWidgetProvider() {
         val hasTasks = visibleTasks.isNotEmpty()
         views.setViewVisibility(R.id.widget_empty_container, if (hasTasks) View.GONE else View.VISIBLE)
         views.setViewVisibility(R.id.widget_tasks_container, if (hasTasks) View.VISIBLE else View.GONE)
+        views.setViewVisibility(R.id.widget_create_button_header, if (hasTasks) View.VISIBLE else View.GONE)
 
         views.removeAllViews(R.id.widget_tasks_container)
         visibleTasks.forEach { task ->
@@ -72,6 +73,18 @@ class TaskifyTodayWidgetProvider : AppWidgetProvider() {
             Uri.parse("taskify://create"),
         )
         views.setOnClickPendingIntent(R.id.widget_create_button, createIntent)
+        views.setOnClickPendingIntent(R.id.widget_create_button_header, createIntent)
+
+        val remainingCount = tasks.size - visibleTasks.size
+        if (hasTasks && remainingCount > 0) {
+            views.setViewVisibility(R.id.widget_more_tasks, View.VISIBLE)
+            views.setTextViewText(
+                R.id.widget_more_tasks,
+                context.getString(R.string.more_tasks, remainingCount),
+            )
+        } else {
+            views.setViewVisibility(R.id.widget_more_tasks, View.GONE)
+        }
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
@@ -102,15 +115,19 @@ class TaskifyTodayWidgetProvider : AppWidgetProvider() {
         val minHeightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
         val minWidthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
 
-        if (minHeightDp <= 140 || minWidthDp <= 140) {
-            return 2
+        if (minHeightDp <= 110 || minWidthDp <= 110) {
+            return 3
         }
 
-        if (minHeightDp <= 220) {
-            return 4
+        if (minHeightDp <= 180) {
+            return 5
         }
 
-        return 8
+        if (minHeightDp <= 260) {
+            return 8
+        }
+
+        return 12
     }
 
     private data class WidgetTaskItem(

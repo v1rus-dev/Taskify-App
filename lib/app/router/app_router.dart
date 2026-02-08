@@ -12,6 +12,24 @@ import 'package:taskify/features/friends_list/presentation/friends_list_screen.d
 
 final GoRouter appRouter = GoRouter(
   initialLocation: RouterPaths.home,
+  redirect: (context, state) {
+    final loc = state.uri.toString();
+    final path = state.uri.path;
+    if (loc == 'taskify://create' ||
+        loc.endsWith('://create') ||
+        path == '/create' ||
+        path == 'create') {
+      return RouterPaths.createTask;
+    }
+    if (loc.startsWith('taskify://task/') || path.startsWith('task/')) {
+      final segments = state.uri.pathSegments;
+      final id = segments.isNotEmpty ? segments.last : state.uri.path.split('/').lastOrNull;
+      if (id != null && id.isNotEmpty) {
+        return '${RouterPaths.editTask}?id=$id';
+      }
+    }
+    return null;
+  },
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
@@ -54,11 +72,22 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: RouterPaths.editTask,
       pageBuilder: (context, state) {
-        final taskId = state.extra as int?;
+        final taskId = state.extra as int? ??
+            int.tryParse(state.uri.queryParameters['id'] ?? '');
         return bottomUpTransitionBuilder(
           ValueKey('editTask-$taskId'),
           context,
           EditTaskPage(taskId: taskId),
+        );
+      },
+    ),
+    GoRoute(
+      path: RouterPaths.createTask,
+      pageBuilder: (context, state) {
+        return bottomUpTransitionBuilder(
+          const ValueKey('createTask'),
+          context,
+          const EditTaskPage(taskId: null),
         );
       },
     ),

@@ -77,7 +77,7 @@ class TaskHomeWidgetService {
     await HomeWidget.saveWidgetData<int>('today_tasks_count', payload.length);
 
     await HomeWidget.updateWidget(
-      androidName: 'TaskifyTodayWidgetProvider',
+      qualifiedAndroidName: 'yegor.cheprasov.taskify.TaskifyTodayWidgetProvider',
     );
   }
 
@@ -87,7 +87,7 @@ class TaskHomeWidgetService {
     }
 
     if (uri.host == 'create') {
-      appRouter.go(RouterPaths.editTask);
+      appRouter.go(RouterPaths.createTask);
       return;
     }
 

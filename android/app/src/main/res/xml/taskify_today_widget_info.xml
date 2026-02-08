@@ -13,4 +13,4 @@
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="0"
     android:widgetCategory="home_screen"
-    android:description="Задачи на сегодня" />
+    android:description="@string/tasks_for_today" />

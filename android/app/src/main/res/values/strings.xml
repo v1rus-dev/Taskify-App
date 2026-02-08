@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Taskify</string>
+    <string name="tasks_for_today">Tasks for today</string>
+    <string name="today_you_can_rest_create_a_new_task_and_focus">Today you can rest ✨\nCreate a new task and focus.</string>
+    <string name="create_task">Create task</string>
+    <string name="more_tasks">+%d more</string>
+</resources>

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +14,7 @@ import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/core/providers/locale_notifier.dart';
 import 'package:taskify/core/providers/theme_notifier.dart';
 import 'package:taskify/core/app_startup/app_startup_coordinator.dart';
+import 'package:taskify/core/home_widget/task_home_widget_service.dart';
 
 class TaskifyApp extends StatefulWidget {
   const TaskifyApp({super.key});
@@ -22,9 +24,12 @@ class TaskifyApp extends StatefulWidget {
 }
 
 class _TaskifyAppState extends State<TaskifyApp> {
+  late final TaskHomeWidgetService _taskHomeWidgetService;
   @override
   void initState() {
     super.initState();
+    _taskHomeWidgetService = locator<TaskHomeWidgetService>();
+    unawaited(_taskHomeWidgetService.initialize());
     WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
         _onSystemThemeChanged;
 
@@ -33,6 +38,7 @@ class _TaskifyAppState extends State<TaskifyApp> {
 
   @override
   void dispose() {
+    unawaited(_taskHomeWidgetService.dispose());
     WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
         null;
     super.dispose();

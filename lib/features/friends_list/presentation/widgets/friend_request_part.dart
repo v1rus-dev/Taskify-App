@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/features/friends_list/presentation/models/friend_request_model_ui.dart';
 import 'package:taskify/features/friends_list/presentation/widgets/friend_request_card.dart';
+import 'package:design/design.dart';
+import 'package:taskify/features/friends_list/presentation/bottom_sheets/friend_request/friend_request_bottom_sheet.dart';
 
 class FriendRequestPart extends StatelessWidget {
   const FriendRequestPart({
@@ -15,6 +17,22 @@ class FriendRequestPart extends StatelessWidget {
   final List<FriendRequestModelUi> outgoingRequests;
 
   final int maxRequestsToShow;
+
+  void _onFriendRequestPressed(
+    BuildContext context,
+    FriendRequestModelUi request,
+  ) {
+    unfocusAndThen(
+      context,
+      () => showAppBottomSheet(
+        context: context,
+        type: AppBottomSheetType.floating,
+        child: FriendRequestBottomSheetPage(request: request),
+      ),
+    );
+  }
+
+  void _onSeeAllPressed(BuildContext context) {}
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +57,10 @@ class FriendRequestPart extends StatelessWidget {
             ),
             const Gap(8),
             ...requestsToShow.map(
-              (request) =>
-                  FriendRequestCard(request: request, onPressed: () {}),
+              (request) => FriendRequestCard(
+                request: request,
+                onPressed: () => _onFriendRequestPressed(context, request),
+              ),
             ),
             if (isOverflow)
               Align(

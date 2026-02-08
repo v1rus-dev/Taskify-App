@@ -35,4 +35,5 @@ class AppIcons {
   static const String clear = 'assets/icons/ic_clear.svg';
   static const String warningInfo = 'assets/icons/ic_warning_info.svg';
   static const String warningInfoSmall = 'assets/icons/ic_warning_info_small.svg';
+  static const String reject = 'assets/icons/ic_reject.svg';
 }

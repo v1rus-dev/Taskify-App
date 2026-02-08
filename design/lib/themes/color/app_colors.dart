@@ -15,7 +15,7 @@ const lightScheme = AppColorScheme(
   shadow: Color(0x0D000000),
   bottomSheetOverlay: Color(0x33000000),
   error: Color(0xFFD32F2F),
-  success: Color(0xFF2E7D32),
+  success: Color(0xFF2F9E44),
   pending: Color(0xFFFFB300),
   bottomSheetDragHandle: Color(0xFFD9D9D9),
   iconColor: Color(0xFFC9C9C9),

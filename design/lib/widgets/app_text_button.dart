@@ -6,15 +6,22 @@ class AppTextButton extends StatelessWidget {
     required this.text,
     this.isEnabled = true,
     required this.onPressed,
+    this.backgroundColor,
+    this.textColor,
   });
 
   final String text;
   final VoidCallback onPressed;
   final bool isEnabled;
+  final Color? backgroundColor;
+  final Color? textColor;
 
   Color _getBackgroundColor() =>
-      isEnabled ? Color(0xFF002FFF).withValues(alpha: 0.6) : Color(0xFFDEDEDE);
-  Color _getTextColor() => isEnabled ? Colors.white : Color(0xFF898989);
+      isEnabled
+          ? backgroundColor ?? Color(0xFF002FFF).withValues(alpha: 0.6)
+          : Color(0xFFDEDEDE);
+  Color _getTextColor() =>
+      isEnabled ? textColor ?? Colors.white : Color(0xFF898989);
 
   @override
   Widget build(BuildContext context) {

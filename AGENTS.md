@@ -66,6 +66,7 @@ UI Components which can uses more then one feature, write reusable and keep in `
 - Functions called in widgets are written as a separate function inside the widget.
 - Divide logical UI blocks into different widgets and different files.
 - Use Material with InkWell for all buttons, for ripple effects, except clicked text, in this situation you can use simple GestureDetector.
+- Use centralized dialog helpers from `design/lib/dialogs/app_dialogs.dart`; avoid direct `showDialog` in feature screens.
 
 ## Build commands
 

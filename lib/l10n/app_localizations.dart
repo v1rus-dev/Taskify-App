@@ -58,7 +58,11 @@ class AppLocalizations {
   String get addSubTask => translate('addSubTask');
   String get edit => translate('edit');
   String get exitFromAccount => translate('exitFromAccount');
+  String get exitFromAccountConfirmDescription =>
+      translate('exitFromAccountConfirmDescription');
   String get deleteAccount => translate('deleteAccount');
+  String get deleteAccountConfirmDescription =>
+      translate('deleteAccountConfirmDescription');
   String get signInWithGoogle => translate('signInWithGoogle');
   String get signInWithApple => translate('signInWithApple');
   String get am => translate('am');

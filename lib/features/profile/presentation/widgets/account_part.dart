@@ -9,11 +9,37 @@ import 'package:taskify/l10n/app_localizations.dart';
 class AccountPart extends StatelessWidget {
   const AccountPart({super.key});
 
-  void _onSignOutPressed(BuildContext context) {
+  Future<void> _onSignOutPressed(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    final shouldSignOut = await showAppConfirmDialog(
+      context: context,
+      title: l10n?.exitFromAccount ?? '',
+      description: l10n?.exitFromAccountConfirmDescription ?? '',
+      confirmButtonTitle: l10n?.exitFromAccount,
+    );
+
+    if (shouldSignOut != true || !context.mounted) {
+      return;
+    }
+
     context.read<AuthCubit>().signOut();
   }
 
-  void _onRemoveAccountPressed(BuildContext context) {
+  Future<void> _onRemoveAccountPressed(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    final localizations = MaterialLocalizations.of(context);
+    final shouldDeleteAccount = await showAppErrorDialog(
+      context: context,
+      title: l10n?.deleteAccount ?? '',
+      description: l10n?.deleteAccountConfirmDescription ?? '',
+      primaryButtonTitle: l10n?.deleteAccount,
+      secondaryButtonTitle: localizations.cancelButtonLabel,
+    );
+
+    if (shouldDeleteAccount != true || !context.mounted) {
+      return;
+    }
+
     context.read<ProfileBloc>().add(const ProfileRemoveAccount());
   }
 
@@ -30,7 +56,7 @@ class AccountPart extends StatelessWidget {
             height: 24,
           ),
           showArrow: false,
-          onPressed: () => _onSignOutPressed(context),
+          onPressed: () async => _onSignOutPressed(context),
         ),
       ),
       CardActionEntry(
@@ -48,7 +74,7 @@ class AccountPart extends StatelessWidget {
           ),
           showArrow: false,
           titleColor: AppColorExtensions.getErrorColor(context),
-          onPressed: () => _onRemoveAccountPressed(context),
+          onPressed: () async => _onRemoveAccountPressed(context),
         ),
       ),
     ];

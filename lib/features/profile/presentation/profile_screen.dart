@@ -38,34 +38,10 @@ class ProfileScreen extends StatelessWidget {
     return BlocSideEffectListener<ProfileBloc, ProfileSideEffect>(
       listener: (effect) {
         if (effect is ProfileShowLoadingDialog) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) {
-              return PopScope(
-                canPop: false,
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const SizedBox(
-                      width: 28,
-                      height: 28,
-                      child: CircularProgressIndicator.adaptive(
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
+          showAppLoadingDialog(context: context);
         }
         if (effect is ProfileDismissLoadingDialog) {
-          Navigator.pop(context);
+          dismissAppLoadingDialog(context);
         }
       },
       child: Scaffold(

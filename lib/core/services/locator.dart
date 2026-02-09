@@ -17,6 +17,7 @@ import 'package:taskify/core/app_startup/app_startup_di.dart';
 import 'package:taskify/core/home_widget/task_home_widget_service.dart';
 import 'package:taskify/core/network/network_info.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:taskify/features/activity/data/activity_di.dart';
 
 final locator = GetIt.instance;
 
@@ -50,6 +51,7 @@ Future<void> initRepositories() async {
   initAuthDependencies();
   initProfileDependencies();
   initEditTaskDependencies();
+  initActivityDependencies();
   initFriendsDependencies();
   initAppStartupDependencies();
 }

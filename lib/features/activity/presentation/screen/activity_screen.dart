@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:design/widgets/screen_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taskify/core/services/locator.dart';
+import 'package:taskify/features/activity/domain/usecases/activity_interactor.dart';
 import 'package:taskify/features/activity/presentation/bloc/activity_bloc.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
@@ -10,7 +12,9 @@ class AcitivityScreenPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ActivityBloc(),
+      create: (context) =>
+          ActivityBloc(activityInteractor: locator<ActivityInteractor>())
+            ..add(const ActivityStarted()),
       child: const ActivityScreen(),
     );
   }

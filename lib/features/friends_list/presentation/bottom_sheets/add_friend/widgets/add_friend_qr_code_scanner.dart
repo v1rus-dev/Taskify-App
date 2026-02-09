@@ -168,7 +168,6 @@ class _AddFriendQrCodeScannerState extends State<AddFriendQrCodeScanner> {
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 fontSize: 14,
                                 color: context.textSecondaryColor,
-                                decoration: TextDecoration.underline,
                               ),
                             ),
                           ),

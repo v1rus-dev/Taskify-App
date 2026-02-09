@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:taskify/l10n/app_localizations.dart';
 import 'package:taskify/features/friends_list/presentation/bottom_sheets/add_friend/bloc/add_friend_bloc.dart';
 import 'package:taskify/features/friends_list/presentation/bottom_sheets/add_friend/widgets/add_friend_header.dart';
 import 'package:taskify/features/friends_list/presentation/models/add_friend_state_type.dart';
@@ -77,7 +78,7 @@ class _AddFriendBottomSheetState extends State<AddFriendBottomSheet>
           builder: (context, value, child) {
             final isValid = FriendCode.isValid(value.text);
             return AppTextButton(
-              text: 'Add Friend',
+              text: AppLocalizations.of(context)?.addFriend ?? '',
               isEnabled: isValid,
               onPressed: () => _onAddFriendPressed(context),
             );

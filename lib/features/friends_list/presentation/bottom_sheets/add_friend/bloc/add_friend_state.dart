@@ -3,7 +3,7 @@ part of 'add_friend_bloc.dart';
 class AddFriendState extends Equatable {
   const AddFriendState({
     this.friendCode = '',
-    this.stateType = AddFriendStateType.qrCode,
+    this.stateType = AddFriendStateType.textField,
   });
 
   final String friendCode;

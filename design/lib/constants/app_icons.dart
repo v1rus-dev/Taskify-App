@@ -36,4 +36,5 @@ class AppIcons {
   static const String warningInfo = 'assets/icons/ic_warning_info.svg';
   static const String warningInfoSmall = 'assets/icons/ic_warning_info_small.svg';
   static const String reject = 'assets/icons/ic_reject.svg';
+  static const String qrCode = 'assets/icons/ic_qr_code.svg';
 }

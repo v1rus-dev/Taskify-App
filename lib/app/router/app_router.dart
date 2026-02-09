@@ -9,6 +9,7 @@ import 'package:taskify/features/profile/presentation/profile_screen.dart';
 import 'package:taskify/features/spaces/presentation/screen/spaces_screen.dart';
 import 'package:taskify/features/activity/presentation/screen/activity_screen.dart';
 import 'package:taskify/features/friends_list/presentation/friends_list_screen.dart';
+import 'package:taskify/features/debug/presentation/debug_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: RouterPaths.home,
@@ -94,6 +95,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: RouterPaths.friendsList,
       builder: (context, state) => const FriendsListPage(),
+    ),
+    GoRoute(
+      path: RouterPaths.debug,
+      builder: (context, state) => const DebugScreenPage(),
     ),
   ],
 );

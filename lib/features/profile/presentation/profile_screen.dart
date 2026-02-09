@@ -10,6 +10,7 @@ import 'package:taskify/features/profile/data/repository/profile_repository.dart
 import 'package:taskify/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:taskify/features/profile/presentation/widgets/account_part.dart';
 import 'package:taskify/features/profile/presentation/widgets/app_configuration_part.dart';
+import 'package:taskify/features/profile/presentation/widgets/debug_part.dart';
 import 'package:taskify/features/profile/presentation/widgets/profile_part.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
@@ -80,6 +81,7 @@ class ProfileScreen extends StatelessWidget {
                     const ProfilePart(),
                     const Gap(12),
                     const AppConfigurationPart(),
+                    const DebugPart(),
                     const Gap(12),
                     AccountPart(),
                   ],

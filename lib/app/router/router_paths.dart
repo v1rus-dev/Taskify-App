@@ -6,4 +6,5 @@ class RouterPaths {
   static const String spaces = '/spaces';
   static const String activity = '/activity';
   static const String friendsList = '/friends_list';
+  static const String debug = '/debug';
 }

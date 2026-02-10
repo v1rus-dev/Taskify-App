@@ -7,9 +7,12 @@ import 'package:taskify/features/home/presentation/screen/home_screen.dart';
 import 'package:taskify/features/root/presentation/root_screen.dart';
 import 'package:taskify/features/profile/presentation/profile_screen.dart';
 import 'package:taskify/features/spaces/presentation/screen/spaces_screen.dart';
+import 'package:taskify/features/spaces/presentation/screen/space_details_screen.dart';
 import 'package:taskify/features/activity/presentation/screen/activity_screen.dart';
 import 'package:taskify/features/friends_list/presentation/friends_list_screen.dart';
 import 'package:taskify/features/debug/presentation/debug_screen.dart';
+import 'package:taskify/features/spaces/domain/models/space.dart';
+import 'package:taskify/features/spaces/domain/models/space_role.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: RouterPaths.home,
@@ -95,6 +98,21 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: RouterPaths.friendsList,
       builder: (context, state) => const FriendsListPage(),
+    ),
+    GoRoute(
+      path: '${RouterPaths.spaceDetails}/:spaceId',
+      builder: (context, state) {
+        final extra = state.extra;
+        final space = extra is SpaceEntity
+            ? extra
+            : SpaceEntity(
+                id: state.pathParameters['spaceId'] ?? '',
+                name: 'Space',
+                role: SpaceRole.viewer,
+                isLightweight: false,
+              );
+        return SpaceDetailsPage(space: space);
+      },
     ),
     GoRoute(
       path: RouterPaths.debug,

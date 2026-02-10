@@ -10,10 +10,8 @@ import 'package:taskify/core/auth/access_token_provider.dart';
 import 'dart:async';
 
 class DioClient {
-  DioClient({
-    required ServerEnv serverEnv,
-    AuthTokenHandler? authTokenHandler,
-  })  : _dio = _buildDio(serverEnv, authTokenHandler);
+  DioClient({required ServerEnv serverEnv, AuthTokenHandler? authTokenHandler})
+    : _dio = _buildDio(serverEnv, authTokenHandler);
 
   final Dio _dio;
 
@@ -55,13 +53,9 @@ class DioClient {
             final token = await authTokenHandler.getAccessToken();
             if (token != null && token.isNotEmpty) {
               options.headers['Authorization'] = 'Bearer $token';
-              TalkerService.instance.info(
-                'syncTag auth header attached',
-              );
+              TalkerService.instance.info('syncTag auth header attached');
             } else {
-              TalkerService.instance.info(
-                'syncTag auth header missing',
-              );
+              TalkerService.instance.info('syncTag auth header missing');
             }
             handler.next(options);
           },
@@ -110,6 +104,34 @@ class DioClient {
     try {
       TalkerService.instance.info('syncTag PUT $path');
       final response = await _dio.put(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+      );
+      final parsed = parser != null
+          ? parser(response.data)
+          : response.data as T;
+      return Right(parsed);
+    } on DioException catch (e) {
+      return Left(_mapDioFailure(e));
+    } on TypeError catch (e) {
+      return Left(ServerFailure('Response parse error: $e'));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  Future<ApiResult<T>> patch<T>({
+    required String path,
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    T Function(dynamic data)? parser,
+  }) async {
+    try {
+      TalkerService.instance.info('syncTag PATCH $path');
+      final response = await _dio.patch(
         path,
         data: data,
         queryParameters: queryParameters,

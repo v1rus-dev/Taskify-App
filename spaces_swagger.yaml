@@ -1,0 +1,911 @@
+openapi: 3.1.0
+info:
+  title: Taskify Spaces API (MVP)
+  version: 1.0.0
+  description: >
+    Spaces Core Collaboration MVP contract (trimmed):
+    no space patch, no space archive, no activity, no notifications.
+servers:
+  - url: https://api.taskify.local
+tags:
+  - name: Spaces
+  - name: Space Members
+  - name: Space Invites
+  - name: Space Lists
+  - name: Space Tasks
+  - name: Space Subtasks
+  - name: Space Notes
+  - name: Quick Share
+  - name: Sync
+
+security:
+  - bearerAuth: []
+
+paths:
+  /spaces:
+    post:
+      tags: [Spaces]
+      summary: Create space
+      operationId: createSpace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpaceCreateRequest'
+      responses:
+        '201':
+          description: Space created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+    get:
+      tags: [Spaces]
+      summary: List spaces for current user
+      operationId: listSpaces
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Space list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /spaces/{spaceId}:
+    get:
+      tags: [Spaces]
+      summary: Get space by id
+      operationId: getSpace
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+      responses:
+        '200':
+          description: Space details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+    delete:
+      tags: [Spaces]
+      summary: Delete space (owner only)
+      operationId: deleteSpace
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+      responses:
+        '204':
+          description: Space deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/OwnerActionForbidden'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+
+  /spaces/{spaceId}/leave:
+    post:
+      tags: [Spaces]
+      summary: Leave space
+      operationId: leaveSpace
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+      responses:
+        '200':
+          description: Left space
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveSpaceResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+
+  /spaces/{spaceId}/expand:
+    post:
+      tags: [Quick Share]
+      summary: Expand lightweight space to regular
+      operationId: expandLightweightSpace
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+      responses:
+        '200':
+          description: Expanded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceExpandResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+
+  /spaces/{spaceId}/members:
+    get:
+      tags: [Space Members]
+      summary: List members
+      operationId: listSpaceMembers
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+      responses:
+        '200':
+          description: Members
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceMembersResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+    post:
+      tags: [Space Members]
+      summary: Add member from friends
+      operationId: addSpaceMember
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpaceMemberCreateRequest'
+      responses:
+        '201':
+          description: Member added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceMemberRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+        '409':
+          $ref: '#/components/responses/AlreadyMember'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /spaces/{spaceId}/members/{userId}:
+    patch:
+      tags: [Space Members]
+      summary: Change member role (no owner transfer in MVP)
+      operationId: updateSpaceMemberRole
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpaceMemberRoleUpdateRequest'
+      responses:
+        '200':
+          description: Role updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceMemberRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          oneOf:
+            - $ref: '#/components/responses/InsufficientRole'
+            - $ref: '#/components/responses/OwnerTransferNotSupported'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/SpaceMemberNotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+    delete:
+      tags: [Space Members]
+      summary: Remove member
+      operationId: removeSpaceMember
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '204':
+          description: Member removed
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/OwnerActionForbidden'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/SpaceMemberNotFound'
+
+  /spaces/{spaceId}/invites:
+    get:
+      tags: [Space Invites]
+      summary: List invites
+      operationId: listSpaceInvites
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+      responses:
+        '200':
+          description: Invites
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceInvitesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+    post:
+      tags: [Space Invites]
+      summary: Create invite token (multi-use until expiresAt)
+      operationId: createSpaceInvite
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpaceInviteCreateRequest'
+      responses:
+        '201':
+          description: Invite created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceInviteRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /spaces/{spaceId}/invites/{inviteId}/revoke:
+    post:
+      tags: [Space Invites]
+      summary: Revoke invite
+      operationId: revokeSpaceInvite
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/InviteId'
+      responses:
+        '200':
+          description: Invite revoked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceInviteRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/SpaceInviteNotFound'
+
+  /spaces/invites/{token}/accept:
+    post:
+      tags: [Space Invites]
+      summary: Accept invite token
+      operationId: acceptSpaceInvite
+      parameters:
+        - $ref: '#/components/parameters/InviteToken'
+      responses:
+        '200':
+          description: Invite accepted (idempotent for same user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptInviteResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/SpaceInviteNotFound'
+        '410':
+          oneOf:
+            - $ref: '#/components/responses/InviteExpired'
+            - $ref: '#/components/responses/InviteRevoked'
+
+  /spaces/{spaceId}/lists:
+    get:
+      tags: [Space Lists]
+      summary: List task lists
+      operationId: listSpaceLists
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+      responses:
+        '200':
+          description: Lists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceTaskListsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+    post:
+      tags: [Space Lists]
+      summary: Create task list
+      operationId: createSpaceList
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpaceTaskListCreateRequest'
+      responses:
+        '201':
+          description: List created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceTaskListRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /spaces/{spaceId}/lists/reorder:
+    post:
+      tags: [Space Lists]
+      summary: Reorder task lists
+      operationId: reorderSpaceLists
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpaceTaskListReorderRequest'
+      responses:
+        '200':
+          description: Reordered lists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceTaskListsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+
+  /spaces/{spaceId}/lists/{listId}:
+    patch:
+      tags: [Space Lists]
+      summary: Update task list
+      operationId: updateSpaceList
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/ListId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpaceTaskListUpdateRequest'
+      responses:
+        '200':
+          description: List updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceTaskListRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/ListNotFound'
+    delete:
+      tags: [Space Lists]
+      summary: Delete task list (hard delete)
+      operationId: deleteSpaceList
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/ListId'
+      responses:
+        '204':
+          description: List deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/ListNotFound'
+
+  /spaces/{spaceId}/tasks:
+    get:
+      tags: [Space Tasks]
+      summary: List tasks
+      operationId: listSpaceTasks
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - name: listId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: assigneeId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: includeCompleted
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceTasksResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+    post:
+      tags: [Space Tasks]
+      summary: Create task
+      operationId: createSpaceTask
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpaceTaskCreateRequest'
+      responses:
+        '201':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceTaskRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /spaces/{spaceId}/tasks/{taskId}:
+    get:
+      tags: [Space Tasks]
+      summary: Get task
+      operationId: getSpaceTask
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: Task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceTaskRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/TaskNotFound'
+    patch:
+      tags: [Space Tasks]
+      summary: Update task
+      operationId: updateSpaceTask
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpaceTaskUpdateRequest'
+      responses:
+        '200':
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceTaskRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/TaskNotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+    delete:
+      tags: [Space Tasks]
+      summary: Delete task (hard delete)
+      operationId: deleteSpaceTask
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '204':
+          description: Task deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/TaskNotFound'
+
+  /spaces/{spaceId}/tasks/{taskId}/claim:
+    post:
+      tags: [Space Tasks]
+      summary: Claim task for current user
+      operationId: claimSpaceTask
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: Task claimed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceTaskRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/TaskNotFound'
+
+  /spaces/{spaceId}/tasks/{taskId}/unclaim:
+    post:
+      tags: [Space Tasks]
+      summary: Remove claim from task
+      operationId: unclaimSpaceTask
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: Task unclaimed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceTaskRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/TaskNotFound'
+
+  /spaces/{spaceId}/tasks/{taskId}/assign:
+    post:
+      tags: [Space Tasks]
+      summary: Assign task
+      operationId: assignSpaceTask
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpaceTaskAssignRequest'
+      responses:
+        '200':
+          description: Task assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceTaskRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          oneOf:
+            - $ref: '#/components/responses/InsufficientRole'
+            - $ref: '#/components/responses/AssigneeNotMember'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/TaskNotFound'
+
+  /spaces/{spaceId}/tasks/{taskId}/complete:
+    post:
+      tags: [Space Tasks]
+      summary: Mark task completed
+      operationId: completeSpaceTask
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: Task completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceTaskRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          oneOf:
+            - $ref: '#/components/responses/InsufficientRole'
+            - $ref: '#/components/responses/ViewerCompleteForbidden'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/TaskNotFound'
+
+  /spaces/{spaceId}/tasks/{taskId}/uncomplete:
+    post:
+      tags: [Space Tasks]
+      summary: Mark task not completed
+      operationId: uncompleteSpaceTask
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: Task uncompleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceTaskRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          oneOf:
+            - $ref: '#/components/responses/InsufficientRole'
+            - $ref: '#/components/responses/ViewerCompleteForbidden'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/TaskNotFound'
+
+  /spaces/{spaceId}/tasks/{taskId}/subtasks:
+    get:
+      tags: [Space Subtasks]
+      summary: List subtasks
+      operationId: listSpaceSubtasks
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: Subtasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceSubtasksResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/TaskNotFound'
+    post:
+      tags: [Space Subtasks]
+      summary: Create subtask
+      operationId: createSpaceSubtask
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpaceSubtaskCreateRequest'
+      responses:
+        '201':
+          description: Subtask created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceSubTaskRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/TaskNotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /spaces/{spaceId}/tasks/{taskId}/subtasks/{subtaskId}:
+    patch:
+      tags: [Space Subtasks]
+      summary: Update subtask
+      operationId: updateSpaceSubtask
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/TaskId'
+        - $ref: '#/components/parameters/SubtaskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpaceSubtaskUpdateRequest'
+      responses:
+        '200':
+          description: Subtask updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceSubTaskRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/SubtaskNotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+    delete:
+      tags: [Space Subtasks]
+      summary: Delete subtask (hard delete)
+      operationId: deleteSpaceSubtask
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/TaskId'
+        - $ref: '#/components/parameters/SubtaskId'
+      responses:
+        '204':
+          description: Subtask deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/SubtaskNotFound'
+
+  /spaces/{spaceId}/notes:
+    get:
+      tags: [Space Notes]
+      summary: List notes
+      operationId: listSpaceNotes
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Notes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceNotesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+    post:
+      tags: [Space Notes]
+      summary: Create note
+      operationId: createSpaceNote
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpaceNoteCreateRequest'
+      responses:
+        '201':
+          description: Note created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceNoteRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientRole'
+        '404':
+          $ref: '#/components/responses/SpaceNotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /spaces/{spaceId}/notes/{noteId}:
+    get:
+      tags: [Space Notes]
+      summary: Get note
+      operationId: getSpaceNote
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/NoteId'
+      responses:
+        '200':
+          description: Note
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceNoteRead'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          oneOf:
+            - $ref: '#/components/responses/SpaceNotFound'
+            - $ref: '#/components/responses/NoteNotFound'
+    patch:
+      tags: [Space Notes]
+      summary: Update note
+      operationId: updateSpaceNote
+      parameters:
+        - $ref: '#/components/parameters/SpaceId'
+        - $ref: '#/components/parameters/NoteId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpaceNoteUpdateRequest'
+      responses:
+        '200':
+          description: Note updated
+          content:
+            application/json:
+              schema:

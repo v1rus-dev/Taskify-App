@@ -18,6 +18,8 @@ AI agents should update this file whenever they learn something new about this p
 
 This is a Flutter app with the main code under `lib/` and design package in `design/lib`
 
+- Spaces backend contract source of truth for client implementation is `spaces_swagger.yaml` in project root (current MVP contract).
+
 `lib` areas include:
 -`app`- application initialization.
 -`app/router` - navigation system powered by GoRouter.

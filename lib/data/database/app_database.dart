@@ -13,6 +13,13 @@ import 'package:taskify/data/database/tables/sync_queue_table.dart';
 import 'package:taskify/data/database/tables/sync_state_table.dart';
 import 'package:taskify/data/database/tables/friends_table.dart';
 import 'package:taskify/data/database/tables/friend_requests_table.dart';
+import 'package:taskify/data/database/tables/spaces_table.dart';
+import 'package:taskify/data/database/tables/space_members_table.dart';
+import 'package:taskify/data/database/tables/space_invites_table.dart';
+import 'package:taskify/data/database/tables/space_lists_table.dart';
+import 'package:taskify/data/database/tables/space_tasks_table.dart';
+import 'package:taskify/data/database/tables/space_subtasks_table.dart';
+import 'package:taskify/data/database/tables/space_notes_table.dart';
 import 'package:taskify/core/services/talker_service.dart';
 
 part 'app_database.g.dart';
@@ -29,13 +36,20 @@ part 'app_database.g.dart';
     SyncStateTable,
     FriendsTable,
     FriendRequestsTable,
+    SpacesTable,
+    SpaceMembersTable,
+    SpaceInvitesTable,
+    SpaceListsTable,
+    SpaceTasksTable,
+    SpaceSubtasksTable,
+    SpaceNotesTable,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -66,6 +80,15 @@ class AppDatabase extends _$AppDatabase {
           await m.database.customStatement(
             'DROP TABLE IF EXISTS outgoing_friend_requests_table;',
           );
+        }
+        if (from < 6) {
+          await m.createTable(spacesTable);
+          await m.createTable(spaceMembersTable);
+          await m.createTable(spaceInvitesTable);
+          await m.createTable(spaceListsTable);
+          await m.createTable(spaceTasksTable);
+          await m.createTable(spaceSubtasksTable);
+          await m.createTable(spaceNotesTable);
         }
       },
     );

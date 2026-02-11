@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/animation.dart';
 
 enum ActivityCellLevel { empty, low, medium, high }
 
@@ -51,4 +52,19 @@ class ActivityTopTag extends Equatable {
 
   @override
   List<Object?> get props => [tagId, isCustom, title, colorValue, usageCount];
+}
+
+extension ActivityCellLevelExtension on ActivityCellLevel {
+  Color get color {
+    switch (this) {
+      case ActivityCellLevel.empty:
+        return Color(0xFFF4F4F4);
+      case ActivityCellLevel.low:
+        return Color(0xFFBBF7D0);
+      case ActivityCellLevel.medium:
+        return Color(0xFF4DDA80);
+      case ActivityCellLevel.high:
+        return Color(0xFF22C55E);
+    }
+  }
 }

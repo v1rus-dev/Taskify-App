@@ -1,4 +1,4 @@
-﻿{
+{
   "appTitle": "Taskify",
   "writeANewTask": "Новая задача",
   "description": "Описание",
@@ -76,5 +76,19 @@
   "addFriendDescription": "Введите код друга или отсканируйте QR-код",
   "enterCode": "Введите код",
   "cameraAccessRequired": "Для сканирования нужен доступ к камере",
-  "openSettings": "Открыть настройки"
+  "openSettings": "Открыть настройки",
+  "stats": "Статистика",
+  "last3Months": "Последние 3 месяца",
+  "completeTaskToSeeYourProgress": "Завершите задачи, чтобы увидеть свою прогресс",
+  "completeTasksToStartOne": "Начинте свою серию",
+  "activeDayStreak": "Серия дней",
+  "daysOne": "1 день",
+  "daysFew": "{count} дня",
+  "daysMany": "{count} дней",
+  "daysOther": "{count} дней",
+  "yourBestStreakAmountOne": "Лучшая серия 1 день",
+  "yourBestStreakAmountFew": "Лучшая серия {count} дня",
+  "yourBestStreakAmountMany": "Лучшая серия {count} дней",
+  "mostUsedTags": "Популярные теги",
+  "emptyTags": "Добавьте теги к вашим задачам, чтобы увидеть их здесь"
 }

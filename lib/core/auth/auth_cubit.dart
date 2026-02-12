@@ -3,18 +3,17 @@ import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/auth/auth_state.dart';
 import 'package:taskify/features/auth/domain/models/auth_providers.dart';
 import 'package:taskify/features/auth/domain/repository/auth_repository.dart';
-import 'package:taskify/core/sync/sync_coordinator.dart';
+import 'package:taskify/features/sync/domain/services/sync_coordinator.dart';
 import 'package:taskify/core/app_startup/app_startup_coordinator.dart';
-
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit(
     this._authRepository, {
     SyncCoordinator? syncCoordinator,
     AppStartupCoordinator? startupCoordinator,
-  })  : _syncCoordinator = syncCoordinator,
-        _startupCoordinator = startupCoordinator,
-        super(const AuthState()) {
+  }) : _syncCoordinator = syncCoordinator,
+       _startupCoordinator = startupCoordinator,
+       super(const AuthState()) {
     _syncCoordinator?.onAppStart();
     _startupCoordinator?.onAppStart();
     _loadSession();
@@ -57,10 +56,7 @@ class AuthCubit extends Cubit<AuthState> {
       result.fold(
         ifLeft: (failure) {
           TalkerService.instance.error('syncTag Sign in error', failure);
-          emit(state.copyWith(
-            isLoading: false,
-            errorMessage: failure.message,
-          ));
+          emit(state.copyWith(isLoading: false, errorMessage: failure.message));
         },
         ifRight: (session) {
           TalkerService.instance.info('syncTag Sign in successful');
@@ -71,10 +67,7 @@ class AuthCubit extends Cubit<AuthState> {
       );
     } catch (e) {
       TalkerService.instance.error('syncTag Sign in error', e);
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      ));
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
   }
 
@@ -86,7 +79,9 @@ class AuthCubit extends Cubit<AuthState> {
           TalkerService.instance.error('syncTag Load session error', failure);
         },
         ifRight: (session) {
-          TalkerService.instance.info('syncTag Load session: ${session?.toString()}');
+          TalkerService.instance.info(
+            'syncTag Load session: ${session?.toString()}',
+          );
           if (session != null) {
             emit(state.copyWith(session: session));
             _syncCoordinator?.setAuthenticated(true);

@@ -4,7 +4,7 @@ import 'package:taskify/core/database/database_di.dart';
 import 'package:taskify/features/auth/data/auth_di.dart';
 import 'package:taskify/data/api/api_di.dart';
 import 'package:taskify/data/interactors/interactors_di.dart';
-import 'package:taskify/data/sync/sync_di.dart';
+import 'package:taskify/features/sync/data/sync_di.dart';
 import 'package:taskify/features/home/data/home_di.dart';
 import 'package:taskify/features/tasks/domain/usecases/task_interactor.dart';
 import 'package:taskify/core/config/server_env.dart';

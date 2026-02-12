@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/core/auth/auth_cubit.dart';
 import 'package:taskify/core/providers/time_format_notifier.dart';
 import 'package:taskify/core/services/locator.dart';
-import 'package:taskify/core/sync/sync_coordinator.dart';
+import 'package:taskify/features/sync/domain/services/sync_coordinator.dart';
 import 'package:taskify/data/interactors/app_configuration_interactor.dart';
 import 'package:taskify/features/auth/domain/repository/auth_repository.dart';
 import 'package:taskify/l10n/app_localizations.dart';

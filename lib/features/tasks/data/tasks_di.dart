@@ -1,7 +1,7 @@
 import 'package:taskify/core/database/app_database.dart';
 import 'package:taskify/core/services/locator.dart';
-import 'package:taskify/core/sync/sync_coordinator.dart';
-import 'package:taskify/domain/sync/repositories/sync_repository.dart';
+import 'package:taskify/features/sync/domain/usecases/enqueue_sync_op_use_case.dart';
+import 'package:taskify/features/sync/domain/usecases/request_sync_use_case.dart';
 import 'package:taskify/features/tasks/data/repositories/sub_task_repository_impl.dart';
 import 'package:taskify/features/tasks/data/repositories/tag_repository_impl.dart';
 import 'package:taskify/features/tasks/data/repositories/task_repository_impl.dart';
@@ -32,16 +32,16 @@ void initTasksDependencies() {
       locator<TaskLocalDataSource>(),
       locator<SubTaskLocalDataSource>(),
       locator<TagLocalDataSource>(),
-      locator<SyncRepository>(),
-      locator<SyncCoordinator>(),
+      locator<EnqueueSyncOpUseCase>(),
+      locator<RequestSyncUseCase>(),
     ),
   );
   locator.registerLazySingleton<SubTaskRepository>(
     () => SubTaskRepositoryImpl(
       locator<SubTaskLocalDataSource>(),
       locator<TaskLocalDataSource>(),
-      locator<SyncRepository>(),
-      locator<SyncCoordinator>(),
+      locator<EnqueueSyncOpUseCase>(),
+      locator<RequestSyncUseCase>(),
     ),
   );
   locator.registerLazySingleton<TagRepository>(

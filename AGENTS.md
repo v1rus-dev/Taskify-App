@@ -55,6 +55,12 @@ UI Components which can uses more then one feature, write reusable and keep in `
   `presentation/friends_list`, `presentation/add_friend_bottom_sheet`,
   `presentation/friend_info_bottom_sheet`, `presentation/friend_request_bottom_sheet`.
 
+### Sync domain ownership
+
+- `features/sync` is the owner of sync models, repositories, use cases and orchestration (`SyncCoordinator`).
+- Do not add new global sync code under `lib/data/sync`, `lib/domain/sync`, or `lib/core/sync`.
+- Cross-feature sync usage must go through sync use cases (for example `EnqueueSyncOpUseCase`, `RequestSyncUseCase`), not direct `SyncRepository` access.
+
 ### Auth session source of truth
 
 - `AuthRepository.getSession()` is the single source of truth for "is authenticated" in app-wide coordinators.

@@ -1,10 +1,11 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/talker_service.dart';
-import 'package:taskify/core/sync/sync_coordinator.dart';
 import 'package:taskify/core/database/app_database.dart' as db;
+import 'package:taskify/features/sync/domain/usecases/enqueue_sync_op_use_case.dart';
+import 'package:taskify/features/sync/domain/usecases/request_sync_use_case.dart';
 import 'package:taskify/features/tasks/data/mappers/task_mapper.dart';
 import 'package:taskify/features/tasks/data/mappers/tag_mapper.dart';
 import 'package:taskify/features/tasks/data/models/task_wrapper.dart';
@@ -17,17 +18,14 @@ import 'package:taskify/features/tasks/data/sources/tag_local_datasource.dart';
 import 'package:taskify/features/tasks/data/mappers/sub_task_mapper.dart';
 import 'package:taskify/features/tasks/data/models/task_entity.dart';
 import 'package:taskify/features/tasks/domain/repositories/task_repository.dart';
-import 'package:taskify/domain/sync/models/sync_op_data_entity.dart';
-import 'package:taskify/domain/sync/models/sync_queue_entry_entity.dart';
-import 'package:taskify/domain/sync/repositories/sync_repository.dart';
 import 'package:uuid/uuid.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
   final TaskLocalDataSource localDataSource;
   final SubTaskLocalDataSource subTaskLocalDataSource;
   final TagLocalDataSource tagLocalDataSource;
-  final SyncRepository syncRepository;
-  final SyncCoordinator syncCoordinator;
+  final EnqueueSyncOpUseCase enqueueSyncOpUseCase;
+  final RequestSyncUseCase requestSyncUseCase;
   final Uuid _uuid = const Uuid();
   static final Map<int, DefaultTagEntity> _defaultTagsById = {
     for (final tag in DefaultTag.values)
@@ -38,8 +36,8 @@ class TaskRepositoryImpl implements TaskRepository {
     this.localDataSource,
     this.subTaskLocalDataSource,
     this.tagLocalDataSource,
-    this.syncRepository,
-    this.syncCoordinator,
+    this.enqueueSyncOpUseCase,
+    this.requestSyncUseCase,
   );
 
   @override
@@ -52,7 +50,9 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<Either<Failure, List<TaskEntity>>> getTasksByDate(DateTime date) async {
+  Future<Either<Failure, List<TaskEntity>>> getTasksByDate(
+    DateTime date,
+  ) async {
     final result = await localDataSource.getTasksByDate(date);
     return result.fold(
       ifLeft: (failure) => Left(failure),
@@ -86,7 +86,7 @@ class TaskRepositoryImpl implements TaskRepository {
       return Left(failure!);
     }
     await _enqueueTaskOp(task: created!, op: 'create');
-    syncCoordinator.scheduleSync(reason: 'task_create');
+    requestSyncUseCase(reason: 'task_create');
     return Right(created!);
   }
 
@@ -104,7 +104,7 @@ class TaskRepositoryImpl implements TaskRepository {
       return Left(failure!);
     }
     await _enqueueTaskOp(task: updated!, op: 'update');
-    syncCoordinator.scheduleSync(reason: 'task_update');
+    requestSyncUseCase(reason: 'task_update');
     return Right(updated!);
   }
 
@@ -112,16 +112,13 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<Either<Failure, void>> deleteTask(int id) async {
     final existing = await localDataSource.getTaskById(id);
     TaskEntity? task;
-    existing.fold(
-      ifLeft: (_) {},
-      ifRight: (value) => task = value.toDomain(),
-    );
+    existing.fold(ifLeft: (_) {}, ifRight: (value) => task = value.toDomain());
     final result = await localDataSource.deleteTask(id);
     await result.fold(
       ifLeft: (_) async {},
       ifRight: (_) async {
         await _enqueueTaskDelete(task);
-        syncCoordinator.scheduleSync(reason: 'task_delete');
+        requestSyncUseCase(reason: 'task_delete');
       },
     );
     return result;
@@ -158,34 +155,28 @@ class TaskRepositoryImpl implements TaskRepository {
     }
 
     controller.onListen = () {
-      tasksSubscription = localDataSource.observeTasks().listen(
-        (tasks) {
-          tasksSnapshot = tasks;
-          emitIfReady();
-        },
-        onError: controller.addError,
-      );
-      subTasksSubscription = subTaskLocalDataSource.observeSubTasks().listen(
-        (subTasks) {
-          subTasksSnapshot = subTasks;
-          emitIfReady();
-        },
-        onError: controller.addError,
-      );
-      taskTagsSubscription = tagLocalDataSource.observeTaskTags().listen(
-        (taskTags) {
-          taskTagsSnapshot = taskTags;
-          emitIfReady();
-        },
-        onError: controller.addError,
-      );
-      customTagsSubscription = tagLocalDataSource.observeCustomTags().listen(
-        (customTags) {
-          customTagsSnapshot = customTags;
-          emitIfReady();
-        },
-        onError: controller.addError,
-      );
+      tasksSubscription = localDataSource.observeTasks().listen((tasks) {
+        tasksSnapshot = tasks;
+        emitIfReady();
+      }, onError: controller.addError);
+      subTasksSubscription = subTaskLocalDataSource.observeSubTasks().listen((
+        subTasks,
+      ) {
+        subTasksSnapshot = subTasks;
+        emitIfReady();
+      }, onError: controller.addError);
+      taskTagsSubscription = tagLocalDataSource.observeTaskTags().listen((
+        taskTags,
+      ) {
+        taskTagsSnapshot = taskTags;
+        emitIfReady();
+      }, onError: controller.addError);
+      customTagsSubscription = tagLocalDataSource.observeCustomTags().listen((
+        customTags,
+      ) {
+        customTagsSnapshot = customTags;
+        emitIfReady();
+      }, onError: controller.addError);
     };
 
     controller.onCancel = () async {
@@ -253,36 +244,28 @@ class TaskRepositoryImpl implements TaskRepository {
     }
 
     controller.onListen = () {
-      taskSubscription = localDataSource.observeTaskById(id).listen(
-        (task) {
-          taskSnapshot = task;
-          emitIfReady();
-        },
-        onError: controller.addError,
-      );
+      taskSubscription = localDataSource.observeTaskById(id).listen((task) {
+        taskSnapshot = task;
+        emitIfReady();
+      }, onError: controller.addError);
       subTasksSubscription = subTaskLocalDataSource
           .observeSubTasksByTaskId(id)
-          .listen(
-        (subTasks) {
-          subTasksSnapshot = subTasks;
-          emitIfReady();
-        },
-        onError: controller.addError,
-      );
-      taskTagsSubscription = tagLocalDataSource.observeTaskTags().listen(
-        (taskTags) {
-          taskTagsSnapshot = taskTags;
-          emitIfReady();
-        },
-        onError: controller.addError,
-      );
-      customTagsSubscription = tagLocalDataSource.observeCustomTags().listen(
-        (customTags) {
-          customTagsSnapshot = customTags;
-          emitIfReady();
-        },
-        onError: controller.addError,
-      );
+          .listen((subTasks) {
+            subTasksSnapshot = subTasks;
+            emitIfReady();
+          }, onError: controller.addError);
+      taskTagsSubscription = tagLocalDataSource.observeTaskTags().listen((
+        taskTags,
+      ) {
+        taskTagsSnapshot = taskTags;
+        emitIfReady();
+      }, onError: controller.addError);
+      customTagsSubscription = tagLocalDataSource.observeCustomTags().listen((
+        customTags,
+      ) {
+        customTagsSnapshot = customTags;
+        emitIfReady();
+      }, onError: controller.addError);
     };
 
     controller.onCancel = () async {
@@ -325,8 +308,8 @@ class TaskRepositoryImpl implements TaskRepository {
     };
 
     return tasks.map((task) {
-      final tagsRows = taskTagsByTaskId[task.id] ??
-          const <db.TaskTagsTableData>[];
+      final tagsRows =
+          taskTagsByTaskId[task.id] ?? const <db.TaskTagsTableData>[];
       if (tagsRows.length > 1) {
         tagsRows.sort((a, b) => a.createdAt.compareTo(b.createdAt));
       }
@@ -354,24 +337,22 @@ class TaskRepositoryImpl implements TaskRepository {
     required String op,
   }) async {
     if (op != 'create' && task.networkId == null && task.clientId == null) {
-      TalkerService.instance.warning(
-        'syncTag enqueue task op missing ids',
-      );
+      TalkerService.instance.warning('syncTag enqueue task op missing ids');
     }
     final opId = _uuid.v4();
-    final entry = SyncQueueEntryEntity(
+    final command = EnqueueSyncOpCommand(
       opId: opId,
       entity: 'task',
       op: op,
       id: task.networkId,
       clientId: task.clientId,
-      data: SyncOpDataEntity(
+      data: EnqueueSyncOpData(
         title: task.title,
         description: task.description,
         isCompleted: task.isCompleted,
       ),
     );
-    final result = await syncRepository.enqueueOp(entry);
+    final result = await enqueueSyncOpUseCase(command);
     result.fold(
       ifLeft: (failure) => TalkerService.instance.error(
         'syncTag enqueue task op failed',
@@ -383,11 +364,9 @@ class TaskRepositoryImpl implements TaskRepository {
 
   Future<void> _enqueueTaskDelete(TaskEntity? task) async {
     if (task?.networkId == null && task?.clientId == null) {
-      TalkerService.instance.warning(
-        'syncTag enqueue task delete missing ids',
-      );
+      TalkerService.instance.warning('syncTag enqueue task delete missing ids');
     }
-    final entry = SyncQueueEntryEntity(
+    final command = EnqueueSyncOpCommand(
       opId: _uuid.v4(),
       entity: 'task',
       op: 'delete',
@@ -395,7 +374,7 @@ class TaskRepositoryImpl implements TaskRepository {
       clientId: task?.clientId,
       data: null,
     );
-    final result = await syncRepository.enqueueOp(entry);
+    final result = await enqueueSyncOpUseCase(command);
     result.fold(
       ifLeft: (failure) => TalkerService.instance.error(
         'syncTag enqueue task delete failed',
@@ -406,4 +385,3 @@ class TaskRepositoryImpl implements TaskRepository {
     );
   }
 }
-

@@ -71,6 +71,11 @@ UI Components which can uses more then one feature, write reusable and keep in `
 - `features/auth` owns auth API and auth preferences storage (`AppPreferences`).
 - Do not add new global business layers under `lib/data` or `lib/domain`; keep composition root feature-only.
 
+### Bottom navigation BLoC scope
+
+- BLoCs for root bottom-navigation tabs (`home`, `spaces`, `activity`, `profile`) are initialized in `features/root/presentation/root_screen.dart`.
+- Tab screens must reuse these existing BLoCs and should not create their own `BlocProvider(create: ...)` instances.
+
 ## Dependency Injection
 
 - Use GetIt as a service locator for dependency injection `libs/core/services/locator.dart`.

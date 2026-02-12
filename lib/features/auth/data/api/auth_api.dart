@@ -15,10 +15,7 @@ class AuthApi {
   }) {
     return _client.post(
       path: 'auth',
-      data: {
-        'provider': provider,
-        'id_token': idToken,
-      },
+      data: {'provider': provider, 'id_token': idToken},
       parser: parser,
     );
   }
@@ -26,19 +23,13 @@ class AuthApi {
   Future<Either<Failure, T>> authenticateTestFirst<T>({
     T Function(dynamic data)? parser,
   }) {
-    return _client.post(
-      path: 'auth/test/first',
-      parser: parser,
-    );
+    return _client.post(path: 'auth/test/first', parser: parser);
   }
 
   Future<Either<Failure, T>> authenticateTestSecond<T>({
     T Function(dynamic data)? parser,
   }) {
-    return _client.post(
-      path: 'auth/test/second',
-      parser: parser,
-    );
+    return _client.post(path: 'auth/test/second', parser: parser);
   }
 
   Future<Either<Failure, AuthTokensResponseModel>> refresh({
@@ -46,12 +37,9 @@ class AuthApi {
   }) {
     return _client.post(
       path: 'auth/refresh',
-      data: {
-        'refresh_token': refreshToken,
-      },
-      parser: (data) => AuthTokensResponseModel.fromJson(
-        data as Map<String, dynamic>,
-      ),
+      data: {'refresh_token': refreshToken},
+      parser: (data) =>
+          AuthTokensResponseModel.fromJson(data as Map<String, dynamic>),
     );
   }
 }

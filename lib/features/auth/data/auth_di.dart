@@ -1,6 +1,7 @@
 import 'package:taskify/core/services/locator.dart';
-import 'package:taskify/data/api/auth_api.dart';
 import 'package:taskify/core/auth/access_token_provider.dart';
+import 'package:taskify/core/services/dio_client.dart';
+import 'package:taskify/features/auth/data/api/auth_api.dart';
 import 'package:taskify/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:taskify/features/auth/data/sources/auth_local_data_source.dart';
 import 'package:taskify/features/auth/data/sources/auth_token_handler_impl.dart';
@@ -16,6 +17,7 @@ void initAuthStorageDependencies() {
 }
 
 void initAuthDependencies() {
+  locator.registerLazySingleton(() => AuthApi(locator<DioClient>()));
   locator.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       authApi: locator.get<AuthApi>(),

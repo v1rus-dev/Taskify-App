@@ -1,7 +1,4 @@
-enum TimeFormatType {
-  hour24,
-  hour12,
-}
+enum TimeFormatType { hour24, hour12 }
 
 extension TimeFormatTypeX on TimeFormatType {
   bool get is24Hour => this == TimeFormatType.hour24;

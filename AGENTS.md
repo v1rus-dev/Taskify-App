@@ -22,8 +22,6 @@ This is a Flutter app with the main code under `lib/` and design package in `des
 -`app`- application initialization.
 -`app/router` - navigation system powered by GoRouter.
 -`core` - shared utilities, constants, and cross-cutting concerns.
--`data` - implementation of the data layer, which keep database (Drift), datasource, and api (Dio). And implementation of shared buisness logic from `domain`;
--`domain` - shared domain models and shared buisness logic.
 -`features` - features powered by feature-first.
 -`l10n` - application translation module.
 
@@ -66,6 +64,12 @@ UI Components which can uses more then one feature, write reusable and keep in `
 - `AuthRepository.getSession()` is the single source of truth for "is authenticated" in app-wide coordinators.
 - Session restore must support both Firebase providers (Google/Apple) and non-Firebase local sessions (test accounts via saved tokens + local user).
 - Startup/sync coordinators should refresh auth state through `AuthRepository.getSession()` on app start, not rely only on in-memory cubit state.
+
+### Settings and auth ownership
+
+- `features/settings` owns app configuration use cases and settings domain models (for example time format).
+- `features/auth` owns auth API and auth preferences storage (`AppPreferences`).
+- Do not add new global business layers under `lib/data` or `lib/domain`; keep composition root feature-only.
 
 ## Dependency Injection
 

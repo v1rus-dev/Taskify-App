@@ -6,7 +6,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/utils/auth_config.dart';
-import 'package:taskify/data/api/auth_api.dart';
+import 'package:taskify/features/auth/data/api/auth_api.dart';
 import 'package:taskify/features/auth/data/models/auth_response_model.dart';
 import 'package:taskify/features/auth/data/sources/auth_local_data_source.dart';
 import 'package:taskify/features/auth/domain/models/auth_providers.dart';
@@ -134,16 +134,17 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(const ValidationFailure('Unsupported auth provider'));
       }
 
-      if (provider == AuthProviders.testFirst || provider == AuthProviders.testSecond) {
-        final authResult = provider == AuthProviders.testFirst ? await authApi.authenticateTestFirst<AuthResponseModel>(
-          parser: (data) => AuthResponseModel.fromJson(
-            data as Map<String, dynamic>,
-          ),
-        ) : await authApi.authenticateTestSecond<AuthResponseModel>(
-          parser: (data) => AuthResponseModel.fromJson(
-            data as Map<String, dynamic>,
-          ),
-        );
+      if (provider == AuthProviders.testFirst ||
+          provider == AuthProviders.testSecond) {
+        final authResult = provider == AuthProviders.testFirst
+            ? await authApi.authenticateTestFirst<AuthResponseModel>(
+                parser: (data) =>
+                    AuthResponseModel.fromJson(data as Map<String, dynamic>),
+              )
+            : await authApi.authenticateTestSecond<AuthResponseModel>(
+                parser: (data) =>
+                    AuthResponseModel.fromJson(data as Map<String, dynamic>),
+              );
 
         Failure? failure;
         AuthResponseModel? response;
@@ -157,10 +158,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
         final saveResult = await _saveAuthResponse(response!);
         Failure? saveFailure;
-        saveResult.fold(
-          ifLeft: (left) => saveFailure = left,
-          ifRight: (_) {},
-        );
+        saveResult.fold(ifLeft: (left) => saveFailure = left, ifRight: (_) {});
         if (saveFailure != null) {
           return Left(saveFailure!);
         }
@@ -191,9 +189,8 @@ class AuthRepositoryImpl implements AuthRepository {
       final authResult = await authApi.authenticate<AuthResponseModel>(
         provider: provider.name,
         idToken: idToken,
-        parser: (data) => AuthResponseModel.fromJson(
-          data as Map<String, dynamic>,
-        ),
+        parser: (data) =>
+            AuthResponseModel.fromJson(data as Map<String, dynamic>),
       );
 
       Failure? failure;
@@ -208,10 +205,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       final saveResult = await _saveAuthResponse(response!);
       Failure? saveFailure;
-      saveResult.fold(
-        ifLeft: (left) => saveFailure = left,
-        ifRight: (_) {},
-      );
+      saveResult.fold(ifLeft: (left) => saveFailure = left, ifRight: (_) {});
       if (saveFailure != null) {
         return Left(saveFailure!);
       }
@@ -226,22 +220,19 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, void>> _saveAuthResponse(
     AuthResponseModel response,
   ) async {
-    final tokenResult =
-        await authTokenHandler.saveTokens(
-          accessToken: response.accessToken,
-          refreshToken: response.refreshToken,
-        );
-    Failure? tokenFailure;
-    tokenResult.fold(
-      ifLeft: (left) => tokenFailure = left,
-      ifRight: (_) {},
+    final tokenResult = await authTokenHandler.saveTokens(
+      accessToken: response.accessToken,
+      refreshToken: response.refreshToken,
     );
+    Failure? tokenFailure;
+    tokenResult.fold(ifLeft: (left) => tokenFailure = left, ifRight: (_) {});
     if (tokenFailure != null) {
       return Left(tokenFailure!);
     }
 
-    final saveUserResult =
-        await authLocalDataSource.saveUser(response.user.toEntity());
+    final saveUserResult = await authLocalDataSource.saveUser(
+      response.user.toEntity(),
+    );
     Failure? saveUserFailure;
     saveUserResult.fold(
       ifLeft: (left) => saveUserFailure = left,

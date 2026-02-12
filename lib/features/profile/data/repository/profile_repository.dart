@@ -2,7 +2,7 @@ import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/features/auth/data/models/auth_user_response_model.dart';
 import 'package:taskify/features/auth/data/sources/auth_local_data_source.dart';
-import 'package:taskify/data/mappers/auth_mapper.dart';
+import 'package:taskify/features/auth/data/mappers/auth_mapper.dart';
 import 'package:taskify/features/friends/domain/usecases/regenerate_friend_tag_use_case.dart';
 
 abstract class ProfileRepository {

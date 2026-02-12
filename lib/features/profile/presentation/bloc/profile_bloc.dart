@@ -4,10 +4,10 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
 import 'package:taskify/core/database/app_database.dart';
-import 'package:taskify/domain/models/time_format_type.dart';
-import 'package:taskify/data/interactors/app_configuration_interactor.dart';
 import 'package:taskify/features/auth/data/models/auth_user_response_model.dart';
 import 'package:taskify/features/profile/data/repository/profile_repository.dart';
+import 'package:taskify/features/settings/domain/models/time_format_type.dart';
+import 'package:taskify/features/settings/domain/usecases/app_configuration_interactor.dart';
 
 part 'profile_event.dart';
 part 'profile_state.dart';

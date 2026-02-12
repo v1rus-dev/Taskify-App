@@ -2,8 +2,6 @@ import 'package:get_it/get_it.dart';
 import 'package:taskify/core/database/app_database.dart';
 import 'package:taskify/core/database/database_di.dart';
 import 'package:taskify/features/auth/data/auth_di.dart';
-import 'package:taskify/data/api/api_di.dart';
-import 'package:taskify/data/interactors/interactors_di.dart';
 import 'package:taskify/features/sync/data/sync_di.dart';
 import 'package:taskify/features/home/data/home_di.dart';
 import 'package:taskify/features/tasks/domain/usecases/task_interactor.dart';
@@ -18,6 +16,7 @@ import 'package:taskify/core/home_widget/task_home_widget_service.dart';
 import 'package:taskify/core/network/network_info.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:taskify/features/activity/data/activity_di.dart';
+import 'package:taskify/features/settings/data/settings_di.dart';
 
 final locator = GetIt.instance;
 
@@ -33,9 +32,7 @@ Future<void> initServiceLocator(
   await initDatabase(appDatabase);
   initAuthStorageDependencies();
   await initDio();
-  initApiDependencies();
   await initRepositories();
-  initInteractors();
   locator.registerLazySingleton(
     () => TaskHomeWidgetService(locator<TaskInteractor>()),
   );
@@ -52,6 +49,7 @@ Future<void> initRepositories() async {
   initTasksDependencies();
   initActivityDependencies();
   initFriendsDependencies();
+  initSettingsDependencies();
   initProfileDependencies();
   initAppStartupDependencies();
 }

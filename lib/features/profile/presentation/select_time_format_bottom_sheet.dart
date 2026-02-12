@@ -1,6 +1,6 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
-import 'package:taskify/domain/models/time_format_type.dart';
+import 'package:taskify/features/settings/domain/models/time_format_type.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
 class SelectTimeFormatBottomSheet extends StatelessWidget {
@@ -42,8 +42,10 @@ class SelectTimeFormatBottomSheet extends StatelessWidget {
               CardAction(
                 title: l10n?.timeFormat24 ?? '',
                 description: descriptionFor(TimeFormatType.hour24),
-                descriptionColor:
-                    descriptionColorFor(context, TimeFormatType.hour24),
+                descriptionColor: descriptionColorFor(
+                  context,
+                  TimeFormatType.hour24,
+                ),
                 onPressed: () =>
                     _onTimeFormatPressed(context, TimeFormatType.hour24),
               ),
@@ -52,8 +54,10 @@ class SelectTimeFormatBottomSheet extends StatelessWidget {
               CardAction(
                 title: l10n?.timeFormat12 ?? '',
                 description: descriptionFor(TimeFormatType.hour12),
-                descriptionColor:
-                    descriptionColorFor(context, TimeFormatType.hour12),
+                descriptionColor: descriptionColorFor(
+                  context,
+                  TimeFormatType.hour12,
+                ),
                 onPressed: () =>
                     _onTimeFormatPressed(context, TimeFormatType.hour12),
               ),

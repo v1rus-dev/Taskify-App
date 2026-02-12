@@ -6,13 +6,13 @@ import 'package:taskify/data/api/api_di.dart';
 import 'package:taskify/data/interactors/interactors_di.dart';
 import 'package:taskify/data/sync/sync_di.dart';
 import 'package:taskify/features/home/data/home_di.dart';
-import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
+import 'package:taskify/features/tasks/domain/usecases/task_interactor.dart';
 import 'package:taskify/core/config/server_env.dart';
 import 'package:taskify/core/services/dio_client.dart';
 import 'package:taskify/core/auth/access_token_provider.dart';
 import 'package:taskify/features/tasks/data/tasks_di.dart';
 import 'package:taskify/features/profile/data/profile_di.dart';
-import 'package:taskify/data/friends/friends_di.dart';
+import 'package:taskify/features/friends/data/friends_di.dart';
 import 'package:taskify/core/app_startup/app_startup_di.dart';
 import 'package:taskify/core/home_widget/task_home_widget_service.dart';
 import 'package:taskify/core/network/network_info.dart';
@@ -49,10 +49,10 @@ Future<void> initRepositories() async {
   initSyncDependencies();
   initHomeDependencies();
   initAuthDependencies();
-  initProfileDependencies();
   initTasksDependencies();
   initActivityDependencies();
   initFriendsDependencies();
+  initProfileDependencies();
   initAppStartupDependencies();
 }
 

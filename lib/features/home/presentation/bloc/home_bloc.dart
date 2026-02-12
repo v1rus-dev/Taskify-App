@@ -1,10 +1,10 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
-import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
+import 'package:taskify/features/tasks/domain/usecases/task_interactor.dart';
 import 'package:taskify/features/tasks/data/models/task_wrapper.dart';
 import 'package:taskify/features/tasks/data/models/tasks_view_type.dart';
 
@@ -123,3 +123,4 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     return super.close();
   }
 }
+

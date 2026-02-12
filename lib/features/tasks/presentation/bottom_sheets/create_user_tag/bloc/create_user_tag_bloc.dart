@@ -1,9 +1,9 @@
-import 'package:bloc/bloc.dart';
+﻿import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:taskify/core/services/locator.dart';
-import 'package:taskify/domain/tags/models/default_tag_color.dart';
-import 'package:taskify/domain/tags/models/tag.dart';
+import 'package:taskify/features/tasks/domain/models/default_tag_color.dart';
+import 'package:taskify/features/tasks/domain/models/tag.dart';
 import 'package:taskify/features/tasks/domain/usecases/tag_interactor.dart';
 
 part 'create_user_tag_event.dart';
@@ -136,3 +136,4 @@ class CreateUserTagBloc extends Bloc<CreateUserTagEvent, CreateUserTagState> {
     return DefaultTagColor.values.first.color;
   }
 }
+

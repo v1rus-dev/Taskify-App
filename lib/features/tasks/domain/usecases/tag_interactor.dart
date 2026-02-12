@@ -1,7 +1,7 @@
-import 'package:dart_either/dart_either.dart';
+﻿import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
-import 'package:taskify/domain/tags/models/tag.dart';
-import 'package:taskify/domain/tags/repository/tag_repository.dart';
+import 'package:taskify/features/tasks/domain/models/tag.dart';
+import 'package:taskify/features/tasks/domain/repositories/tag_repository.dart';
 
 class TagInteractor {
   TagInteractor(this._repository);
@@ -43,3 +43,4 @@ class TagInteractor {
     return _repository.setTaskTags(taskId, tags);
   }
 }
+

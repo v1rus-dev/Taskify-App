@@ -1,6 +1,6 @@
-import 'package:design/design.dart';
+﻿import 'package:design/design.dart';
 import 'package:flutter/material.dart';
-import 'package:taskify/domain/tags/models/tag.dart';
+import 'package:taskify/features/tasks/domain/models/tag.dart';
 import 'package:taskify/features/activity/presentation/bloc/activity_bloc.dart';
 import 'package:taskify/core/widgets/tag_cheap.dart';
 import 'package:taskify/l10n/app_localizations.dart';
@@ -67,3 +67,4 @@ class MostUsedTagsCard extends StatelessWidget {
     );
   }
 }
+

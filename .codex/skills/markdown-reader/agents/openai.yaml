@@ -1,0 +1,4 @@
+interface:
+  display_name: "Markdown Reader"
+  short_description: "Read Markdown files accurately and safely."
+  default_prompt: "Use $markdown-reader to inspect this .md file structure and summarize it without losing meaning."

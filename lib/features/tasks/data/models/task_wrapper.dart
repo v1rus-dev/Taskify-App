@@ -1,6 +1,6 @@
-import 'package:equatable/equatable.dart';
-import 'package:taskify/domain/tags/models/sub_task.dart';
-import 'package:taskify/domain/tags/models/tag.dart';
+﻿import 'package:equatable/equatable.dart';
+import 'package:taskify/features/tasks/domain/models/sub_task.dart';
+import 'package:taskify/features/tasks/domain/models/tag.dart';
 import 'package:taskify/features/tasks/data/models/task_entity.dart';
 
 class TaskWrapperEntity extends Equatable {
@@ -29,3 +29,4 @@ class TaskWrapperEntity extends Equatable {
   @override
   List<Object?> get props => [task, subTasks, tags];
 }
+

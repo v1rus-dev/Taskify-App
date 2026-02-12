@@ -1,13 +1,13 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 
 import 'package:equatable/equatable.dart';
 import 'package:taskify/core/services/talker_service.dart';
-import 'package:taskify/domain/tags/models/sub_task.dart';
+import 'package:taskify/features/tasks/domain/models/sub_task.dart';
 import 'package:taskify/features/tasks/data/models/task_wrapper.dart';
 import 'package:taskify/features/tasks/domain/usecases/sub_task_interactor.dart';
-import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
+import 'package:taskify/features/tasks/domain/usecases/task_interactor.dart';
 
 part 'task_info_event.dart';
 part 'task_info_state.dart';
@@ -81,3 +81,4 @@ class TaskInfoBloc extends Bloc<TaskInfoEvent, TaskInfoState> {
     return super.close();
   }
 }
+

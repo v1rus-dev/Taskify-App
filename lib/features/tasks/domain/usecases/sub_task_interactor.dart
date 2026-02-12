@@ -1,6 +1,6 @@
-import 'package:dart_either/dart_either.dart';
+﻿import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
-import 'package:taskify/domain/tags/models/sub_task.dart';
+import 'package:taskify/features/tasks/domain/models/sub_task.dart';
 import 'package:taskify/features/tasks/domain/repositories/sub_task_repository.dart';
 
 class SubTaskInteractor {
@@ -38,3 +38,4 @@ class SubTaskInteractor {
     return _repository.observeSubTasksByTaskId(taskId);
   }
 }
+

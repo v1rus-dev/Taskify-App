@@ -1,10 +1,10 @@
-import 'package:animated_line_through/animated_line_through.dart';
+﻿import 'package:animated_line_through/animated_line_through.dart';
 import 'package:design/themes/color/app_color_extensions.dart';
 import 'package:design/widgets/app_shadow.dart';
 import 'package:design/widgets/task_checkbox.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/domain/tags/models/sub_task.dart';
+import 'package:taskify/features/tasks/domain/models/sub_task.dart';
 
 class TaskInfoSubTasksCard extends StatelessWidget {
   const TaskInfoSubTasksCard({
@@ -133,3 +133,4 @@ class TaskInfoSubTasksCard extends StatelessWidget {
 }
 
 enum _SubTaskPositionType { top, middle, bottom, single }
+

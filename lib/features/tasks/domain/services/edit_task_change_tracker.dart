@@ -1,4 +1,4 @@
-import 'package:taskify/domain/tags/models/tag.dart';
+﻿import 'package:taskify/features/tasks/domain/models/tag.dart';
 import 'package:taskify/features/tasks/data/models/task_entity.dart';
 import 'package:taskify/features/tasks/domain/services/edit_task_date_calculator.dart';
 import 'package:taskify/features/tasks/domain/services/edit_task_snapshots.dart';
@@ -141,3 +141,4 @@ class EditTaskChangeTracker {
     return true;
   }
 }
+

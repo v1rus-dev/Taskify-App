@@ -8,7 +8,7 @@ import 'package:taskify/features/root/presentation/root_screen.dart';
 import 'package:taskify/features/profile/presentation/profile_screen.dart';
 import 'package:taskify/features/spaces/presentation/screen/spaces_screen.dart';
 import 'package:taskify/features/activity/presentation/screen/activity_screen.dart';
-import 'package:taskify/features/friends_list/presentation/friends_list_screen.dart';
+import 'package:taskify/features/friends/presentation/friends_list/screen/friends_list_screen.dart';
 import 'package:taskify/features/debug/presentation/debug_screen.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -24,7 +24,9 @@ final GoRouter appRouter = GoRouter(
     }
     if (loc.startsWith('taskify://task/') || path.startsWith('task/')) {
       final segments = state.uri.pathSegments;
-      final id = segments.isNotEmpty ? segments.last : state.uri.path.split('/').lastOrNull;
+      final id = segments.isNotEmpty
+          ? segments.last
+          : state.uri.path.split('/').lastOrNull;
       if (id != null && id.isNotEmpty) {
         return '${RouterPaths.editTask}?id=$id';
       }
@@ -73,7 +75,8 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: RouterPaths.editTask,
       pageBuilder: (context, state) {
-        final taskId = state.extra as int? ??
+        final taskId =
+            state.extra as int? ??
             int.tryParse(state.uri.queryParameters['id'] ?? '');
         return bottomUpTransitionBuilder(
           ValueKey('editTask-$taskId'),

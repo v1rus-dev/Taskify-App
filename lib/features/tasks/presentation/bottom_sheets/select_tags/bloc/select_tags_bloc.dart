@@ -1,10 +1,10 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:taskify/core/services/locator.dart';
-import 'package:taskify/domain/tags/models/default_tag.dart';
-import 'package:taskify/domain/tags/models/tag.dart';
+import 'package:taskify/features/tasks/domain/models/default_tag.dart';
+import 'package:taskify/features/tasks/domain/models/tag.dart';
 import 'package:taskify/features/tasks/domain/usecases/tag_interactor.dart';
 
 part 'select_tags_event.dart';
@@ -98,3 +98,4 @@ class SelectTagsBloc extends Bloc<SelectTagsEvent, SelectTagsState> {
     return super.close();
   }
 }
+

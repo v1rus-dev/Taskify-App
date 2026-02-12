@@ -1,4 +1,4 @@
-import 'package:design/design.dart';
+﻿import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reorderable_list_2.dart';
@@ -12,7 +12,7 @@ import 'package:taskify/features/home/presentation/widgets/task_card.dart';
 import 'package:taskify/features/home/presentation/bloc/home_bloc.dart';
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
-import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
+import 'package:taskify/features/tasks/domain/usecases/task_interactor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreenPage extends StatelessWidget {
@@ -149,3 +149,4 @@ class _HomeScreen extends StatelessWidget {
     );
   }
 }
+

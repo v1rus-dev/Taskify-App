@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
 import 'package:taskify/features/tasks/data/models/task_duration_type.dart';
-import 'package:taskify/domain/tags/models/tag.dart';
+import 'package:taskify/features/tasks/domain/models/tag.dart';
 import 'package:taskify/features/tasks/domain/models/sub_task_draft.dart';
 import 'package:taskify/features/tasks/domain/usecases/tag_interactor.dart';
 import 'package:taskify/features/tasks/domain/usecases/save_edited_task_interactor.dart';
@@ -15,7 +15,7 @@ import 'package:taskify/features/tasks/domain/services/edit_task_change_tracker.
 import 'package:taskify/features/tasks/domain/services/edit_task_date_calculator.dart';
 import 'package:taskify/features/tasks/domain/services/edit_task_snapshots.dart';
 import 'package:taskify/features/tasks/presentation/models/sub_task_model_ui.dart';
-import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
+import 'package:taskify/features/tasks/domain/usecases/task_interactor.dart';
 
 part 'edit_task_event.dart';
 part 'edit_task_state.dart';
@@ -456,3 +456,4 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     return super.close();
   }
 }
+

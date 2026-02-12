@@ -1,13 +1,13 @@
-import 'package:dart_either/dart_either.dart';
+﻿import 'package:dart_either/dart_either.dart';
 import 'package:equatable/equatable.dart';
 import 'package:taskify/core/error/failures.dart';
-import 'package:taskify/domain/tags/models/sub_task.dart';
-import 'package:taskify/domain/tags/models/tag.dart';
+import 'package:taskify/features/tasks/domain/models/sub_task.dart';
+import 'package:taskify/features/tasks/domain/models/tag.dart';
 import 'package:taskify/features/tasks/data/models/task_entity.dart';
 import 'package:taskify/features/tasks/domain/models/sub_task_draft.dart';
 import 'package:taskify/features/tasks/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/tasks/domain/usecases/tag_interactor.dart';
-import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
+import 'package:taskify/features/tasks/domain/usecases/task_interactor.dart';
 
 class SaveEditedTaskParams extends Equatable {
   const SaveEditedTaskParams({
@@ -268,3 +268,4 @@ class SaveEditedTaskInteractor {
     return const Right(null);
   }
 }
+

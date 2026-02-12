@@ -1,12 +1,12 @@
-import 'package:dart_either/dart_either.dart';
+﻿import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
 import 'package:taskify/features/tasks/data/sources/sub_task_local_datasource.dart';
 import 'package:taskify/features/tasks/data/mappers/sub_task_mapper.dart';
-import 'package:taskify/domain/tags/models/sub_task.dart';
+import 'package:taskify/features/tasks/domain/models/sub_task.dart';
 import 'package:taskify/features/tasks/domain/repositories/sub_task_repository.dart';
-import 'package:taskify/features/home/data/datasources/task_local_datasource.dart';
+import 'package:taskify/features/tasks/data/sources/task_local_datasource.dart';
 import 'package:taskify/domain/sync/models/sync_op_data_entity.dart';
 import 'package:taskify/domain/sync/models/sync_queue_entry_entity.dart';
 import 'package:taskify/domain/sync/repositories/sync_repository.dart';
@@ -245,3 +245,4 @@ class _TaskSyncInfo {
   final int? networkId;
   final String? clientId;
 }
+

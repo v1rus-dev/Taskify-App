@@ -1,4 +1,4 @@
-import 'package:design/design.dart';
+﻿import 'package:design/design.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,7 +13,7 @@ import 'package:taskify/features/tasks/presentation/edit_task/widgets/edit_task_
 import 'package:taskify/features/tasks/presentation/edit_task/widgets/edit_task_date_period_card.dart';
 import 'package:taskify/features/tasks/presentation/edit_task/widgets/edit_task_sub_tasks_slivers.dart';
 import 'package:taskify/features/tasks/presentation/edit_task/widgets/edit_task_tags_card.dart';
-import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
+import 'package:taskify/features/tasks/domain/usecases/task_interactor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/features/tasks/presentation/edit_task/bloc/edit_task_bloc.dart';
 import 'package:taskify/features/tasks/presentation/edit_sub_task/bloc/edit_sub_task_bloc.dart';
@@ -360,3 +360,4 @@ class _SubTaskSnapshot extends Equatable {
   @override
   List<Object?> get props => [id, localKey, title, isCompleted];
 }
+

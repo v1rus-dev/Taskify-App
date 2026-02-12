@@ -1,8 +1,8 @@
-import 'package:design/design.dart';
+﻿import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/domain/tags/models/tag.dart';
+import 'package:taskify/features/tasks/domain/models/tag.dart';
 import 'bloc/select_tags_bloc.dart';
 import 'widgets/select_tags_sections.dart';
 import 'package:taskify/features/tasks/presentation/edit_task/bloc/edit_task_bloc.dart';
@@ -125,3 +125,4 @@ class SelectTagsBottomSheet extends StatelessWidget {
     );
   }
 }
+

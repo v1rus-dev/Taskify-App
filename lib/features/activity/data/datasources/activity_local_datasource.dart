@@ -1,6 +1,6 @@
-import 'package:drift/drift.dart';
+﻿import 'package:drift/drift.dart';
 import 'package:taskify/core/database/app_database.dart';
-import 'package:taskify/domain/tags/models/default_tag.dart';
+import 'package:taskify/features/tasks/domain/models/default_tag.dart';
 import 'package:taskify/features/activity/domain/models/activity_date_utils.dart';
 import 'package:taskify/features/activity/domain/models/activity_top_tag.dart';
 
@@ -151,3 +151,4 @@ class ActivityLocalDataSourceImpl implements ActivityLocalDataSource {
     });
   }
 }
+

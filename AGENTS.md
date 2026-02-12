@@ -40,6 +40,21 @@ This is a Flutter app with the main code under `lib/` and design package in `des
 
 UI Components which can uses more then one feature, write reusable and keep in `design/lib/widgets`.
 
+### Tasks domain ownership
+
+- `features/tasks` is the owner of task/tag/subtask domain models, repositories and use cases.
+- Cross-feature task access must go through `features/tasks/domain/usecases/task_interactor.dart`.
+- Register task dependencies in `lib/features/tasks/data/tasks_di.dart`; `home` should not register `TaskRepository`.
+
+### Friends domain ownership
+
+- `features/friends` is the owner of friends models, repositories and use cases.
+- Cross-feature friends operations must go through `features/friends/domain/usecases/*`.
+- `profile` must not call friends API directly; use `RegenerateFriendTagUseCase`.
+- Friends presentation is organized by UI subfeatures:
+  `presentation/friends_list`, `presentation/add_friend_bottom_sheet`,
+  `presentation/friend_info_bottom_sheet`, `presentation/friend_request_bottom_sheet`.
+
 ### Auth session source of truth
 
 - `AuthRepository.getSession()` is the single source of truth for "is authenticated" in app-wide coordinators.
@@ -77,3 +92,7 @@ UI Components which can uses more then one feature, write reusable and keep in `
 ## Commit & Pull Request Quidelines
 
 - Commits: imperative mood; prefer Conventional Commits (e.g., ‘feat:‘, ‘fix:‘, ‘docs:‘) with a clear scope.- Friends screen should not auto-fetch on every open: subscribe to local streams and use pull-to-refresh for manual sync.
+
+## Local Skills
+
+- `markdown-reader` exists in `.codex/skills/markdown-reader` for structure-aware `.md` parsing and summarization.

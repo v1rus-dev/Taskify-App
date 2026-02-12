@@ -1,6 +1,7 @@
 import 'package:design/themes/themes.dart';
 import 'package:flutter/material.dart';
-import 'package:taskify/features/activity/domain/models/activity_models.dart';
+import 'package:taskify/features/activity/domain/models/activity_cell_level.dart';
+import 'package:taskify/features/activity/domain/models/activity_heatmap_cell.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
 class StatsCard extends StatelessWidget {

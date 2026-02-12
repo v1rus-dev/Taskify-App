@@ -28,12 +28,3 @@ final class ActivityTopTagsReceived extends ActivityEvent {
   @override
   List<Object?> get props => [topTags];
 }
-
-final class ActivityFailed extends ActivityEvent {
-  const ActivityFailed(this.message);
-
-  final String message;
-
-  @override
-  List<Object?> get props => [message];
-}

@@ -1,5 +1,5 @@
 import 'package:taskify/features/activity/data/repositories/activity_repository.dart';
-import 'package:taskify/features/activity/domain/models/activity_models.dart';
+import 'package:taskify/features/activity/domain/models/activity_top_tag.dart';
 
 class ActivityInteractor {
   ActivityInteractor(this._repository);

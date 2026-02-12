@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:taskify/features/activity/data/repositories/activity_repository.dart';
-import 'package:taskify/features/activity/domain/models/activity_models.dart';
+import 'package:taskify/features/activity/domain/models/activity_top_tag.dart';
 import 'package:taskify/features/activity/domain/usecases/activity_interactor.dart';
 import 'package:taskify/features/activity/presentation/bloc/activity_bloc.dart';
 

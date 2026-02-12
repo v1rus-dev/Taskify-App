@@ -1,8 +1,12 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:talker/talker.dart';
+import 'package:taskify/core/services/talker_service.dart';
+import 'package:taskify/features/activity/domain/models/activity_cell_level.dart';
 import 'dart:async';
 import 'package:taskify/features/activity/domain/models/activity_date_utils.dart';
-import 'package:taskify/features/activity/domain/models/activity_models.dart';
+import 'package:taskify/features/activity/domain/models/activity_heatmap_cell.dart';
+import 'package:taskify/features/activity/domain/models/activity_top_tag.dart';
 import 'package:taskify/features/activity/domain/usecases/activity_interactor.dart';
 
 part 'activity_event.dart';
@@ -18,7 +22,6 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
     on<ActivityStarted>(_onStarted);
     on<ActivityCompletedMapReceived>(_onCompletedMapReceived);
     on<ActivityTopTagsReceived>(_onTopTagsReceived);
-    on<ActivityFailed>(_onFailed);
   }
 
   final ActivityInteractor activityInteractor;
@@ -46,9 +49,7 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
 
     emit(
       state.copyWith(
-        status: ActivityStatus.loading,
-        stats: state.stats.copyWith(rangeStart: rangeStart, rangeEnd: rangeEnd),
-        errorMessage: '',
+        stats: state.stats.copyWith(rangeStart: rangeStart, rangeEnd: rangeEnd)
       ),
     );
 
@@ -58,7 +59,7 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
           (completedByDate) =>
               add(ActivityCompletedMapReceived(completedByDate)),
           onError: (Object error, StackTrace stackTrace) {
-            add(ActivityFailed(error.toString()));
+            TalkerService.instance.info('Completed map subs error: ${error}');
           },
         );
 
@@ -67,7 +68,7 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
         .listen(
           (topTags) => add(ActivityTopTagsReceived(topTags)),
           onError: (Object error, StackTrace stackTrace) {
-            add(ActivityFailed(error.toString()));
+            TalkerService.instance.info('Tag subs error: ${error}');
           },
         );
   }
@@ -96,7 +97,6 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
 
     emit(
       state.copyWith(
-        status: ActivityStatus.ready,
         stats: state.stats.copyWith(
           completedByDate: Map.unmodifiable(normalizedMap),
           heatmapCells: List.unmodifiable(heatmapCells),
@@ -105,8 +105,7 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
         streak: state.streak.copyWith(
           currentStreak: currentStreak,
           bestStreak: bestStreak,
-        ),
-        errorMessage: '',
+        )
       ),
     );
   }
@@ -117,16 +116,8 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
   ) {
     emit(
       state.copyWith(
-        status: ActivityStatus.ready,
         tags: state.tags.copyWith(topTags: List.unmodifiable(event.topTags)),
-        errorMessage: '',
       ),
-    );
-  }
-
-  void _onFailed(ActivityFailed event, Emitter<ActivityState> emit) {
-    emit(
-      state.copyWith(status: ActivityStatus.error, errorMessage: event.message),
     );
   }
 
@@ -161,7 +152,7 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
         ActivityHeatmapCell(
           date: date,
           count: count,
-          level: ActivityCellLevelX.fromCount(count),
+          level: ActivityCellLevelExtension.fromCount(count),
         ),
       );
     }

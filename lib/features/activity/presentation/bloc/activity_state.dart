@@ -88,51 +88,41 @@ class TagsInfo extends Equatable {
 
 class ActivityState extends Equatable {
   const ActivityState({
-    required this.status,
     required this.today,
     required this.stats,
     required this.streak,
     required this.tags,
-    required this.errorMessage,
   });
 
   factory ActivityState.initial(DateTime today) {
     final normalizedToday = activityDay(today);
     return ActivityState(
-      status: ActivityStatus.initial,
       today: normalizedToday,
       stats: StatsInfo.initial(normalizedToday),
       streak: const StreakInfo.initial(),
       tags: const TagsInfo.initial(),
-      errorMessage: '',
     );
   }
 
-  final ActivityStatus status;
   final DateTime today;
   final StatsInfo stats;
   final StreakInfo streak;
   final TagsInfo tags;
-  final String errorMessage;
 
   ActivityState copyWith({
-    ActivityStatus? status,
     DateTime? today,
     StatsInfo? stats,
     StreakInfo? streak,
     TagsInfo? tags,
-    String? errorMessage,
   }) {
     return ActivityState(
-      status: status ?? this.status,
       today: today ?? this.today,
       stats: stats ?? this.stats,
       streak: streak ?? this.streak,
       tags: tags ?? this.tags,
-      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [status, today, stats, streak, tags, errorMessage];
+  List<Object?> get props => [today, stats, streak, tags];
 }

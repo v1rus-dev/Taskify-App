@@ -2,7 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:taskify/data/database/app_database.dart';
 import 'package:taskify/domain/tags/models/default_tag.dart';
 import 'package:taskify/features/activity/domain/models/activity_date_utils.dart';
-import 'package:taskify/features/activity/domain/models/activity_models.dart';
+import 'package:taskify/features/activity/domain/models/activity_top_tag.dart';
 
 abstract class ActivityLocalDataSource {
   Stream<Map<DateTime, int>> observeCompletedCountByDate({

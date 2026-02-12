@@ -1,5 +1,5 @@
 import 'package:taskify/features/activity/data/datasources/activity_local_datasource.dart';
-import 'package:taskify/features/activity/domain/models/activity_models.dart';
+import 'package:taskify/features/activity/domain/models/activity_top_tag.dart';
 
 abstract class ActivityRepository {
   Stream<Map<DateTime, int>> observeCompletedCountByDate({

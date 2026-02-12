@@ -1,190 +1,264 @@
-# Sync (Offline-First) Overview
+﻿# Sync в Taskify (Client Side)
 
-This document explains the offline-first sync approach implemented on the server for Taskify.
-It is intended for the mobile client team.
+Этот документ описывает текущую реализацию синхронизации на клиенте (Flutter), после выноса в `features/sync`.
 
-## Goals
-- Offline-friendly creates/updates/deletes
-- No payload stored in the sync log
-- Safe idempotent push from client
-- Simple pull with cursor
+## 1. Цель синхронизации
 
-## Key Concepts
+Синхронизация в Taskify построена как offline-first поток:
+- локальные изменения применяются сразу в Drift;
+- изменения ставятся в локальную очередь sync-операций;
+- при триггере выполняется push локальной очереди и pull серверных изменений;
+- локальное состояние синка (`cursor`, `deviceId`, `lastSyncedAt`) хранится в БД.
 
-### 1) Client IDs (`client_id`)
-The client generates UUIDs for records created offline.
-Server stores `client_id` in core tables to map offline records to server IDs.
+## 2. Границы ответственности (Ownership)
 
-Tables:
-- `tasks.client_id`
-- `subtasks.client_id`
-- `tags.client_id`
+Sync полностью принадлежит `features/sync`:
+- `lib/features/sync/data/**`
+- `lib/features/sync/domain/**`
 
-Mapping is returned by the server during push.
+Что важно:
+- не добавлять новый sync-код в старые глобальные пути `lib/data/sync`, `lib/domain/sync`, `lib/core/sync`;
+- внешние фичи работают с sync через публичные use case (`EnqueueSyncOpUseCase`, `RequestSyncUseCase`), а не через `SyncRepository` напрямую.
 
-### 2) Sync Events (Server Log)
-The server logs *what changed* in a compact event table.
-No payload is stored. On pull, server reads fresh data from the DB.
+## 3. Структура и ключевые классы
 
-Table: `sync_events`
-- `id` (cursor)
-- `user_id`
-- `entity` (`task` | `subtask` | `tag`)
-- `entity_id`
-- `op` (`create` | `update` | `delete`)
-- `occurred_at`
+## 3.1 Domain API (публичный контракт)
 
-### 3) Sync Ops (Idempotency)
-Client sends operations with `op_id`.
-Server stores `op_id` per user to deduplicate.
+Файлы:
+- `lib/features/sync/domain/usecases/enqueue_sync_op_use_case.dart`
+- `lib/features/sync/domain/usecases/request_sync_use_case.dart`
+- `lib/features/sync/domain/usecases/run_sync_use_case.dart`
+- `lib/features/sync/domain/usecases/get_sync_state_use_case.dart`
+- `lib/features/sync/domain/usecases/save_sync_state_use_case.dart`
 
-Table: `sync_ops`
-- `user_id`
-- `op_id`
-- `device_id` (optional)
-- `created_at`
+Назначение:
+- `EnqueueSyncOpUseCase`: добавить операцию в локальную очередь.
+- `RequestSyncUseCase`: попросить синк (debounced), не блокируя UI.
+- `RunSyncUseCase`: выполнить полный sync цикл (push + pull).
+- `GetSyncStateUseCase` / `SaveSyncStateUseCase`: доступ к sync state.
 
-## API Endpoints
+## 3.2 Оркестрация
 
-### Pull changes
-`GET /sync/changes?cursor=0&limit=200&compact=true`
+Файл:
+- `lib/features/sync/domain/services/sync_coordinator.dart`
 
-- `cursor` — last seen event id (start at 0)
-- `limit` — max events per page
-- `compact=true` — return only last event per entity within the page
+`SyncCoordinator` отвечает за:
+- триггеры (`onAppStart`, `setAuthenticated`, `onForeground`, `onNetworkRestored`);
+- debounce (`scheduleSync`, по умолчанию 3 секунды);
+- защиту от параллельных запусков (`_isSyncing`);
+- повторный запуск после завершения, если во время sync пришел новый запрос (`_pending`);
+- получение/сохранение `deviceId` через `FirebaseInstallations` и `sync_state`.
 
-Response:
-```json
-{
-  "next_cursor": 123,
-  "changes": [
-    {
-      "id": 120,
-      "entity": "task",
-      "entity_id": 10,
-      "op": "update",
-      "occurred_at": "2026-01-22T12:00:00Z",
-      "data": {
-        "id": 10,
-        "title": "...",
-        "deleted_at": null,
-        "client_id": "..."
-      }
-    },
-    {
-      "id": 121,
-      "entity": "subtask",
-      "entity_id": 55,
-      "op": "delete",
-      "occurred_at": "2026-01-22T12:01:00Z",
-      "data": {
-        "id": 55,
-        "deleted_at": "2026-01-22T12:01:00Z"
-      }
-    }
-  ]
-}
+Важно:
+- coordinator проверяет авторизацию через `AuthRepository.getSession()` (source of truth).
+- если пользователь не авторизован, sync не запускается.
+
+## 3.3 Бизнес-алгоритм sync
+
+Файл:
+- `lib/features/sync/domain/usecases/sync_interactor.dart`
+
+`SyncInteractor.sync(deviceId)` делает следующее:
+1. Читает `SyncState` (`lastCursor`, `deviceId`, `lastSyncedAt`).
+2. Читает очередь операций (`getQueuedOps`).
+3. Если очередь не пустая:
+- выполняет push (`pushChanges`);
+- удаляет подтвержденные `ack` операции из очереди;
+- применяет `idMap` (маппинг `clientId -> networkId`);
+- логирует серверные `errors`.
+4. Выполняет pull (`pullChanges(cursor)`), получает `changes` и `nextCursor`.
+5. Применяет `changes` локально.
+6. Сохраняет новый state (`lastCursor`, `lastSyncedAt`, `deviceId`).
+
+## 3.4 Data слой
+
+Файлы:
+- `lib/features/sync/data/repositories/sync_repository_impl.dart`
+- `lib/features/sync/data/datasources/sync_local_datasource.dart`
+- `lib/features/sync/data/datasources/sync_remote_datasource.dart`
+
+`SyncRepositoryImpl`:
+- маппит domain <-> data модели;
+- проксирует вызовы в local/remote data source;
+- скрывает детали JSON/DTO от domain.
+
+`SyncLocalDataSource`:
+- работает с Drift таблицами `sync_queue_table`, `sync_state_table`;
+- enqueue/remove queued ops;
+- применяет `idMap` в `tasksTable` и `subtasksTable`;
+- применяет pull changes в локальные `tasksTable` и `subtasksTable`.
+
+`SyncRemoteDataSource`:
+- `POST /sync/push`
+- `GET /sync/changes?cursor=...&limit=...&compact=...`
+
+## 3.5 DI
+
+Файл:
+- `lib/features/sync/data/sync_di.dart`
+
+Регистрирует:
+- data source: `SyncLocalDataSource`, `SyncRemoteDataSource`;
+- `SyncRepository`;
+- `SyncInteractor`;
+- публичные use case;
+- `SyncCoordinator`;
+- `RequestSyncUseCase`.
+
+Глобальная инициализация вызывается через:
+- `lib/core/services/locator.dart` -> `initSyncDependencies()`.
+
+## 4. Локальные таблицы и что в них хранится
+
+## 4.1 `sync_queue_table`
+
+Файл:
+- `lib/core/database/tables/sync_queue_table.dart`
+
+Поля:
+- `opId`, `entity`, `op`
+- `clientId`, `networkId`
+- `payload` (JSON)
+- `createdAt`
+
+Назначение:
+- durable очередь исходящих операций.
+
+## 4.2 `sync_state_table`
+
+Файл:
+- `lib/core/database/tables/sync_state_table.dart`
+
+Поля:
+- `id` (фиксированно `defaultId = 0`)
+- `deviceId`
+- `lastCursor`
+- `lastSyncedAt`
+
+Назначение:
+- хранение позиции pull и метаданных последнего синка.
+
+## 5. Формат sync-операций
+
+Операция содержит:
+- `op_id`: idempotency ключ;
+- `entity`: например `task`, `subtask`;
+- `op`: `create | update | delete`;
+- `id`: server id (`networkId`) если уже известен;
+- `client_id`: локальный стабильный id для offline create;
+- `data`: payload операции (`title`, `description`, `is_completed`, `text`, `task_id`, `task_client_id` и т.д.).
+
+Формируется через:
+- `EnqueueSyncOpCommand`
+- `EnqueueSyncOpData`
+
+## 6. Текущие точки интеграции в приложении
+
+## 6.1 Auth
+
+Файл:
+- `lib/core/auth/auth_cubit.dart`
+
+Поведение:
+- в конструкторе вызывает `_syncCoordinator?.onAppStart()`;
+- при sign in / restore session вызывает `_syncCoordinator?.setAuthenticated(true)`;
+- при sign out вызывает `_syncCoordinator?.setAuthenticated(false)`.
+
+## 6.2 Home
+
+Файл:
+- `lib/features/home/presentation/bloc/home_bloc.dart`
+
+Поведение:
+- при `HomeStarted` вызывает `requestSyncUseCase(reason: 'foreground')`.
+
+## 6.3 Tasks/Subtasks
+
+Файлы:
+- `lib/features/tasks/data/repositories/task_repository_impl.dart`
+- `lib/features/tasks/data/repositories/sub_task_repository_impl.dart`
+
+Поведение:
+- после успешной локальной записи создают `EnqueueSyncOpCommand`;
+- добавляют op через `EnqueueSyncOpUseCase`;
+- запрашивают синк через `RequestSyncUseCase`.
+
+Это гарантирует последовательность:
+- сначала локальная консистентность;
+- потом eventual consistency с сервером.
+
+## 7. Как пользоваться sync в новой фиче
+
+Базовый паттерн для любой фичи:
+
+1. Сначала записать изменение локально (в Drift).
+2. Сформировать sync op и добавить в очередь.
+3. Запросить синк.
+
+Пример:
+
+```dart
+final enqueue = locator<EnqueueSyncOpUseCase>();
+final requestSync = locator<RequestSyncUseCase>();
+
+await enqueue(
+  EnqueueSyncOpCommand(
+    opId: const Uuid().v4(),
+    entity: 'task',
+    op: 'update',
+    id: task.networkId,
+    clientId: task.clientId,
+    data: EnqueueSyncOpData(
+      title: task.title,
+      description: task.description,
+      isCompleted: task.isCompleted,
+    ),
+  ),
+);
+
+requestSync(reason: 'task_update');
 ```
 
-Notes:
-- `data` is fetched live from the DB.
-- For soft-deleted records, `deleted_at` is set.
-- If a record is hard-deleted and not found, `data` may be `null` (currently tasks/subtasks/tags are soft-deleted).
+Рекомендации:
+- `opId` всегда уникальный (UUID);
+- для offline create обязательно сохранять/передавать `clientId`;
+- для зависимых сущностей использовать `taskClientId`, если `taskId` еще не сматчен сервером.
 
-### Push changes
-`POST /sync/push`
+## 8. Контракты с backend
 
-Request:
-```json
-{
-  "device_id": "uuid",
-  "ops": [
-    {
-      "op_id": "uuid",
-      "entity": "task",
-      "op": "create",
-      "client_id": "uuid",
-      "data": { "title": "Test", "description": "...", "is_completed": false }
-    },
-    {
-      "op_id": "uuid",
-      "entity": "subtask",
-      "op": "create",
-      "client_id": "uuid",
-      "data": { "task_client_id": "uuid", "text": "Call", "is_completed": false }
-    }
-  ]
-}
-```
+Используются endpoint'ы:
+- `POST /sync/push`
+- `GET /sync/changes`
 
-Response:
-```json
-{
-  "ack": ["op_id_1", "op_id_2"],
-  "id_map": {
-    "task": [{"client_id": "uuid", "id": 101}],
-    "subtask": [{"client_id": "uuid", "id": 501}],
-    "tag": []
-  },
-  "errors": []
-}
-```
+Ожидаемые ключи:
+- push request: `device_id`, `ops[]`;
+- op: `op_id`, `entity`, `op`, `id`, `client_id`, `data`;
+- push response: `ack[]`, `id_map`, `errors[]`;
+- changes response: `next_cursor`, `changes[]`.
 
-Notes:
-- `op_id` ensures idempotency.
-- If the same `op_id` is sent again, server returns `ack` without reapplying.
-- `client_id` is mapped to server IDs in `id_map`.
+## 9. Ограничения текущей реализации
 
-## Client Flow (Recommended)
+На текущий момент в локальном применении pull (`applyChanges`) явно реализованы только:
+- `task`
+- `subtask`
 
-1) Offline create
-- Generate `client_id`
-- Save to local DB
-- Add op to queue
+И в `applyIdMap` обновляются только:
+- `tasksTable.networkId`
+- `subtasksTable.networkId`
 
-2) Push
-- Send queued ops to `/sync/push`
-- Apply `id_map` to replace `client_id` with real `id`
+Если расширяем sync на новые entity, нужно:
+- добавить обработку в `SyncLocalDataSourceImpl.applyChanges`;
+- добавить `idMap` применение для новых таблиц;
+- добавить enqueue из соответствующей feature.
 
-3) Pull
-- Call `/sync/changes?cursor=...&compact=true`
-- Apply changes in order
-- Store `next_cursor`
+## 10. Отладка и smoke-check
 
-## Entities & Operations
+Логи идут через `TalkerService` с тегом `syncTag`.
 
-Supported entities: `task`, `subtask`, `tag`
-
-Supported ops: `create`, `update`, `delete`
-
-### Subtask create using task_client_id
-If a task was created offline and not yet mapped, use `task_client_id` in subtask `data`.
-Server resolves task via `client_id`.
-
-## Soft Delete
-Tasks, subtasks, tags use `deleted_at`.
-- Delete requests set `deleted_at`.
-- Sync changes include `deleted_at` in `data`.
-
-## Known Limitations / Next Steps
-- Task↔tag relations are not pushed via `/sync/push` yet.
-  Use existing task update APIs or extend push to include `tag_client_ids`.
-- No conflict resolution beyond last-write-wins (LWW).
-- `compact=true` only collapses within the current page.
-
-## DB Fields Reference (Sync)
-
-### tasks
-- `id`, `client_id`, `deleted_at`, `updated_at`
-
-### subtasks
-- `id`, `client_id`, `deleted_at`, `updated_at`
-
-### tags
-- `id`, `client_id`, `deleted_at`, `updated_at`
-
-### sync_events
-- `id`, `user_id`, `entity`, `entity_id`, `op`, `occurred_at`
-
-### sync_ops
-- `id`, `user_id`, `op_id`, `device_id`, `created_at`
+Минимальная smoke-проверка:
+1. Создать/обновить/удалить task offline.
+2. Убедиться, что запись попала в `sync_queue_table`.
+3. Дождаться запуска sync и очистки `ack` операций.
+4. Проверить, что `networkId` проставился через `idMap`.
+5. Проверить обновление `sync_state_table.lastCursor` и `lastSyncedAt`.
+6. Проверить применение pull-изменений в локальных таблицах.

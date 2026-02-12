@@ -1,9 +1,9 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
-import 'package:taskify/data/auth/models/auth_user_response_model.dart';
-import 'package:taskify/data/auth/sources/auth_local_data_source.dart';
-import 'package:taskify/data/mappers/auth_mapper.dart';
-import 'package:taskify/data/api/friends_api.dart';
+import 'package:taskify/features/auth/data/models/auth_user_response_model.dart';
+import 'package:taskify/features/auth/data/sources/auth_local_data_source.dart';
+import 'package:taskify/features/auth/data/mappers/auth_mapper.dart';
+import 'package:taskify/features/friends/domain/usecases/regenerate_friend_tag_use_case.dart';
 
 abstract class ProfileRepository {
   Future<Either<Failure, AuthUserResponseModel>> getProfile();
@@ -15,11 +15,11 @@ abstract class ProfileRepository {
 
 class ProfileRepositoryImpl implements ProfileRepository {
   final AuthLocalDataSource authLocalDataSource;
-  final FriendsApi friendsApi;
+  final RegenerateFriendTagUseCase regenerateFriendTagUseCase;
 
   ProfileRepositoryImpl({
     required this.authLocalDataSource,
-    required this.friendsApi,
+    required this.regenerateFriendTagUseCase,
   });
 
   @override
@@ -49,31 +49,31 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, void>> clearProfile() {
     return authLocalDataSource.clearUser().then(
-          (value) => value.fold(
-            ifLeft: (failure) => Left(failure),
-            ifRight: (_) => Right(null),
-          ),
-        );
+      (value) => value.fold(
+        ifLeft: (failure) => Left(failure),
+        ifRight: (_) => Right(null),
+      ),
+    );
   }
 
   @override
   Stream<Either<Failure, AuthUserResponseModel?>> observeProfile() {
     return authLocalDataSource.observeUser().map(
-          (result) => result.fold(
-            ifLeft: (failure) => Left(failure),
-            ifRight: (user) => Right(user?.toModel()),
-          ),
-        );
+      (result) => result.fold(
+        ifLeft: (failure) => Left(failure),
+        ifRight: (user) => Right(user?.toModel()),
+      ),
+    );
   }
 
   @override
   Future<Either<Failure, AuthUserResponseModel>> generateNewFriendCode() async {
-    final tagResult = await friendsApi.regenerateFriendTag();
+    final tagResult = await regenerateFriendTagUseCase();
     Failure? tagFailure;
     String? friendTag;
     tagResult.fold(
       ifLeft: (left) => tagFailure = left,
-      ifRight: (right) => friendTag = right.friendTag,
+      ifRight: (right) => friendTag = right,
     );
     if (tagFailure != null) {
       return Left(tagFailure!);
@@ -109,10 +109,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       updatedUser.toEntity(),
     );
     Failure? saveFailure;
-    saveResult.fold(
-      ifLeft: (left) => saveFailure = left,
-      ifRight: (_) {},
-    );
+    saveResult.fold(ifLeft: (left) => saveFailure = left, ifRight: (_) {});
     if (saveFailure != null) {
       return Left(saveFailure!);
     }

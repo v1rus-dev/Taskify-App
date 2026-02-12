@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/core/providers/locale_notifier.dart';
 import 'package:taskify/core/providers/theme_notifier.dart';
-import 'package:taskify/domain/models/time_format_type.dart';
 import 'package:taskify/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:taskify/features/profile/presentation/language_selection.dart';
 import 'package:taskify/features/profile/presentation/select_language_bottom_sheet.dart';
 import 'package:taskify/features/profile/presentation/select_theme_bottom_sheet.dart';
 import 'package:taskify/features/profile/presentation/select_time_format_bottom_sheet.dart';
+import 'package:taskify/features/settings/domain/models/time_format_type.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
 class AppConfigurationPart extends StatelessWidget {
@@ -67,9 +67,7 @@ class AppConfigurationPart extends StatelessWidget {
     final result = await showAppBottomSheet<LanguageSelection>(
       context: context,
       type: AppBottomSheetType.floating,
-      child: SelectLanguageBottomSheet(
-        selectedLocale: localeCubit.state,
-      ),
+      child: SelectLanguageBottomSheet(selectedLocale: localeCubit.state),
     );
     if (context.mounted && result != null) {
       await localeCubit.setLocale(
@@ -103,8 +101,7 @@ class AppConfigurationPart extends StatelessWidget {
                     CardActionEntry(
                       CardAction(
                         title: l10n?.language ?? '',
-                        description:
-                            l10n?.localeDisplayName(locale) ?? '',
+                        description: l10n?.localeDisplayName(locale) ?? '',
                         onPressed: () => _openLanguageSheet(context),
                       ),
                     ),
@@ -113,10 +110,7 @@ class AppConfigurationPart extends StatelessWidget {
                         title: l10n?.theme ?? '',
                         description: themeState.isLoading
                             ? ''
-                            : _themeLabel(
-                                context,
-                                themeState.themeMode,
-                              ),
+                            : _themeLabel(context, themeState.themeMode),
                         onPressed: () => _openThemeSheet(context),
                       ),
                     ),

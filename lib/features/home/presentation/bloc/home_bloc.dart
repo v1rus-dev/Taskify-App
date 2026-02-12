@@ -1,24 +1,18 @@
 import 'dart:async';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/core/services/talker_service.dart';
-import 'package:taskify/core/sync/sync_coordinator.dart';
-import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
-import 'package:taskify/domain/tasks/models/task_wrapper.dart';
-import 'package:taskify/domain/tasks/models/tasks_view_type.dart';
+import 'package:taskify/features/sync/domain/usecases/request_sync_use_case.dart';
+import 'package:taskify/features/tasks/data/models/task_wrapper.dart';
+import 'package:taskify/features/tasks/data/models/tasks_view_type.dart';
+import 'package:taskify/features/tasks/domain/usecases/task_interactor.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final TaskInteractor taskInteractor;
-  final SyncCoordinator syncCoordinator;
-
-  StreamSubscription<List<TaskWrapperEntity>>? _tasksSubscription;
-  List<TaskWrapperEntity> _allTasks = [];
-
-  HomeBloc({required this.taskInteractor, required this.syncCoordinator})
+  HomeBloc({required this.taskInteractor, required this.requestSyncUseCase})
     : super(
         HomeState(
           selectedDate: DateTime.now(),
@@ -34,9 +28,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<HomeSelectDate>(_onSelectDate);
   }
 
+  final TaskInteractor taskInteractor;
+  final RequestSyncUseCase requestSyncUseCase;
+
+  StreamSubscription<List<TaskWrapperEntity>>? _tasksSubscription;
+  List<TaskWrapperEntity> _allTasks = [];
+
   void _onStarted(HomeStarted event, Emitter<HomeState> emit) {
     _observeTasks();
-    syncCoordinator.onForeground();
+    requestSyncUseCase(reason: 'foreground');
   }
 
   void _onTasksUpdated(HomeTasksUpdated event, Emitter<HomeState> emit) {
@@ -62,8 +62,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     result.fold(
       ifLeft: (failure) =>
           TalkerService.instance.error('syncTag ${failure.message}'),
-      ifRight: (task) =>
-          TalkerService.instance.info('syncTag Task updated: ${task.id}'),
+      ifRight: (updatedTask) => TalkerService.instance.info(
+        'syncTag Task updated: ${updatedTask.id}',
+      ),
     );
   }
 

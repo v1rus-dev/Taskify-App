@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:taskify/domain/auth/models/auth_session_entity.dart';
+import 'package:taskify/features/auth/domain/models/auth_session_entity.dart';
 
 class AuthState extends Equatable {
   const AuthState({

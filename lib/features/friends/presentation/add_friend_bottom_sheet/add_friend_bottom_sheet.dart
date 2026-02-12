@@ -1,0 +1,90 @@
+import 'package:design/design.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
+import 'package:taskify/l10n/app_localizations.dart';
+import 'package:taskify/features/friends/presentation/add_friend_bottom_sheet/bloc/add_friend_bloc.dart';
+import 'package:taskify/features/friends/presentation/add_friend_bottom_sheet/widgets/add_friend_header.dart';
+import 'package:taskify/features/friends/presentation/add_friend_bottom_sheet/models/add_friend_state_type.dart';
+import 'package:taskify/features/friends/presentation/add_friend_bottom_sheet/widgets/add_friend_text_field.dart';
+import 'package:taskify/features/friends/presentation/add_friend_bottom_sheet/widgets/add_friend_qr_code_scanner.dart';
+import 'package:taskify/features/friends/domain/friend_code.dart';
+
+class AddFriendBottomSheetPage extends StatelessWidget {
+  const AddFriendBottomSheetPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => AddFriendBloc(),
+      child: AddFriendBottomSheet(),
+    );
+  }
+}
+
+class AddFriendBottomSheet extends StatefulWidget {
+  const AddFriendBottomSheet({super.key});
+
+  @override
+  State<AddFriendBottomSheet> createState() => _AddFriendBottomSheetState();
+}
+
+class _AddFriendBottomSheetState extends State<AddFriendBottomSheet>
+    with SingleTickerProviderStateMixin {
+  final TextEditingController friendCodeController = TextEditingController();
+
+  void _onAddFriendPressed(BuildContext context) {
+    if (FriendCode.isValid(friendCodeController.text)) {
+      context.pop(friendCodeController.text);
+      return;
+    }
+  }
+
+  @override
+  void dispose() {
+    friendCodeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingBottomSheetLayout(
+      children: [
+        const AddFriendHeader(),
+        const Gap(16),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeInOut,
+          alignment: Alignment.topCenter,
+          child: BlocBuilder<AddFriendBloc, AddFriendState>(
+            builder: (context, state) {
+              return switch (state.stateType) {
+                AddFriendStateType.textField => AddFriendTextField(
+                  key: const ValueKey('textField'),
+                  controller: friendCodeController,
+                ),
+                AddFriendStateType.qrCode => AddFriendQrCodeScanner(
+                  key: const ValueKey('qrCode'),
+                  controller: friendCodeController,
+                ),
+              };
+            },
+          ),
+        ),
+        const Gap(20),
+        ValueListenableBuilder(
+          valueListenable: friendCodeController,
+          builder: (context, value, child) {
+            final isValid = FriendCode.isValid(value.text);
+            return AppTextButton(
+              text: AppLocalizations.of(context)?.addFriend ?? '',
+              isEnabled: isValid,
+              onPressed: () => _onAddFriendPressed(context),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}

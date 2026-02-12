@@ -2,11 +2,6 @@ import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
-import 'package:design/widgets/screen_app_bar.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taskify/core/services/locator.dart';
-import 'package:taskify/data/interactors/app_configuration_interactor.dart';
-import 'package:taskify/features/profile/data/repository/profile_repository.dart';
 import 'package:taskify/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:taskify/features/profile/presentation/widgets/account_part.dart';
 import 'package:taskify/features/profile/presentation/widgets/app_configuration_part.dart';
@@ -18,13 +13,7 @@ class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
-  Widget build(BuildContext context) => BlocProvider(
-    create: (context) => ProfileBloc(
-      appConfigurationInteractor: locator<AppConfigurationInteractor>(),
-      profileRepository: locator<ProfileRepository>(),
-    )..add(const ProfileStarted()),
-    child: const ProfileScreen(),
-  );
+  Widget build(BuildContext context) => const ProfileScreen();
 }
 
 class ProfileScreen extends StatelessWidget {

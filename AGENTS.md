@@ -22,8 +22,6 @@ This is a Flutter app with the main code under `lib/` and design package in `des
 -`app`- application initialization.
 -`app/router` - navigation system powered by GoRouter.
 -`core` - shared utilities, constants, and cross-cutting concerns.
--`data` - implementation of the data layer, which keep database (Drift), datasource, and api (Dio). And implementation of shared buisness logic from `domain`;
--`domain` - shared domain models and shared buisness logic.
 -`features` - features powered by feature-first.
 -`l10n` - application translation module.
 
@@ -40,11 +38,43 @@ This is a Flutter app with the main code under `lib/` and design package in `des
 
 UI Components which can uses more then one feature, write reusable and keep in `design/lib/widgets`.
 
+### Tasks domain ownership
+
+- `features/tasks` is the owner of task/tag/subtask domain models, repositories and use cases.
+- Cross-feature task access must go through `features/tasks/domain/usecases/task_interactor.dart`.
+- Register task dependencies in `lib/features/tasks/data/tasks_di.dart`; `home` should not register `TaskRepository`.
+
+### Friends domain ownership
+
+- `features/friends` is the owner of friends models, repositories and use cases.
+- Cross-feature friends operations must go through `features/friends/domain/usecases/*`.
+- `profile` must not call friends API directly; use `RegenerateFriendTagUseCase`.
+- Friends presentation is organized by UI subfeatures:
+  `presentation/friends_list`, `presentation/add_friend_bottom_sheet`,
+  `presentation/friend_info_bottom_sheet`, `presentation/friend_request_bottom_sheet`.
+
+### Sync domain ownership
+
+- `features/sync` is the owner of sync models, repositories, use cases and orchestration (`SyncCoordinator`).
+- Do not add new global sync code under `lib/data/sync`, `lib/domain/sync`, or `lib/core/sync`.
+- Cross-feature sync usage must go through sync use cases (for example `EnqueueSyncOpUseCase`, `RequestSyncUseCase`), not direct `SyncRepository` access.
+
 ### Auth session source of truth
 
 - `AuthRepository.getSession()` is the single source of truth for "is authenticated" in app-wide coordinators.
 - Session restore must support both Firebase providers (Google/Apple) and non-Firebase local sessions (test accounts via saved tokens + local user).
 - Startup/sync coordinators should refresh auth state through `AuthRepository.getSession()` on app start, not rely only on in-memory cubit state.
+
+### Settings and auth ownership
+
+- `features/settings` owns app configuration use cases and settings domain models (for example time format).
+- `features/auth` owns auth API and auth preferences storage (`AppPreferences`).
+- Do not add new global business layers under `lib/data` or `lib/domain`; keep composition root feature-only.
+
+### Bottom navigation BLoC scope
+
+- BLoCs for root bottom-navigation tabs (`home`, `spaces`, `activity`, `profile`) are initialized in `features/root/presentation/root_screen.dart`.
+- Tab screens must reuse these existing BLoCs and should not create their own `BlocProvider(create: ...)` instances.
 
 ## Dependency Injection
 
@@ -77,3 +107,7 @@ UI Components which can uses more then one feature, write reusable and keep in `
 ## Commit & Pull Request Quidelines
 
 - Commits: imperative mood; prefer Conventional Commits (e.g., ‘feat:‘, ‘fix:‘, ‘docs:‘) with a clear scope.- Friends screen should not auto-fetch on every open: subscribe to local streams and use pull-to-refresh for manual sync.
+
+## Local Skills
+
+- `markdown-reader` exists in `.codex/skills/markdown-reader` for structure-aware `.md` parsing and summarization.

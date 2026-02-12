@@ -1,7 +1,7 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:taskify/data/auth/models/auth_user_response_model.dart';
+import 'package:taskify/features/auth/data/models/auth_user_response_model.dart';
 import 'package:taskify/features/profile/presentation/bottom_sheets/friend_code/friend_code_bottom_sheet.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 

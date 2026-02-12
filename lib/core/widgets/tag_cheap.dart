@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:taskify/domain/tags/models/tag.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:taskify/features/tasks/domain/models/tag.dart';
 
 class TagCheap extends StatelessWidget {
   const TagCheap({super.key, required this.tag, required this.onPressed});
@@ -43,3 +43,4 @@ class TagCheap extends StatelessWidget {
     );
   }
 }
+

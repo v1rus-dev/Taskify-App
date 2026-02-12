@@ -1,6 +1,6 @@
-import 'package:design/design.dart';
+﻿import 'package:design/design.dart';
 import 'package:flutter/material.dart';
-import 'package:taskify/domain/tags/models/sub_task.dart';
+import 'package:taskify/features/tasks/domain/models/sub_task.dart';
 
 class SubTaskCounter extends StatelessWidget {
   const SubTaskCounter({super.key, required this.subTasks});
@@ -25,3 +25,4 @@ class SubTaskCounter extends StatelessWidget {
     );
   }
 }
+

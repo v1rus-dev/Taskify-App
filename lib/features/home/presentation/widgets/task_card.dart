@@ -2,7 +2,7 @@ import 'package:animated_line_through/animated_line_through.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:taskify/domain/tasks/models/task_wrapper.dart';
+import 'package:taskify/features/tasks/data/models/task_wrapper.dart';
 import 'package:design/design.dart';
 import 'package:taskify/features/home/presentation/widgets/sub_task_counter.dart';
 

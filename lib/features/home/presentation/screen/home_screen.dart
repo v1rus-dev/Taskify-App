@@ -1,32 +1,23 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reorderable_list_2.dart';
 import 'package:implicitly_animated_reorderable_list_2/transitions.dart';
 import 'package:sliver_tools/sliver_tools.dart';
-import 'package:taskify/domain/tasks/models/task_wrapper.dart';
 import 'package:taskify/features/home/bottom_sheets/task_info/presentation/task_info_bottom_sheet.dart';
+import 'package:taskify/features/home/presentation/bloc/home_bloc.dart';
 import 'package:taskify/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:taskify/features/home/presentation/widgets/home_hided_header.dart';
 import 'package:taskify/features/home/presentation/widgets/task_card.dart';
-import 'package:taskify/features/home/presentation/bloc/home_bloc.dart';
-import 'package:taskify/core/services/locator.dart';
-import 'package:taskify/core/sync/sync_coordinator.dart';
-import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taskify/features/tasks/data/models/task_wrapper.dart';
 
 class HomeScreenPage extends StatelessWidget {
   const HomeScreenPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => HomeBloc(
-        taskInteractor: locator<TaskInteractor>(),
-        syncCoordinator: locator<SyncCoordinator>(),
-      )..add(const HomeStarted()),
-      child: const _HomeScreen(),
-    );
+    return const _HomeScreen();
   }
 }
 

@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
+﻿import 'package:flutter/cupertino.dart';
 import 'package:taskify/core/widgets/tag_cheap.dart';
-import 'package:taskify/domain/tags/models/tag.dart';
+import 'package:taskify/features/tasks/domain/models/tag.dart';
 
 class TaskInfoTagsPart extends StatelessWidget {
   const TaskInfoTagsPart({super.key, required this.tags});
@@ -19,3 +19,4 @@ class TaskInfoTagsPart extends StatelessWidget {
     );
   }
 }
+

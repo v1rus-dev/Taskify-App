@@ -1,4 +1,4 @@
-﻿{
+{
   "appTitle": "Taskify",
   "writeANewTask": "Write a new task",
   "description": "Description",
@@ -76,5 +76,16 @@
   "addFriendDescription": "Enter a friend code or scan a QR code",
   "enterCode": "Enter code",
   "cameraAccessRequired": "Camera access is required to scan QR codes",
-  "openSettings": "Open settings"
+  "openSettings": "Open settings",
+  "stats": "Stats",
+  "last3Months": "Last 3 months",
+  "completeTaskToSeeYourProgress": "Complete tasks to see your progress",
+  "completeTasksToStartOne": "Start your streak",
+  "activeDayStreak": "Active day streak",
+  "daysOne": "1 day",
+  "daysOther": "{count} days",
+  "yourBestStreakAmountOne": "Your best streak is 1 day",
+  "yourBestStreakAmountOther": "Your best streak is {count} days",
+  "mostUsedTags": "Most used tags",
+  "emptyTags": "Add tags to your tasks to see them here"
 }

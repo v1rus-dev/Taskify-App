@@ -99,6 +99,48 @@ class AppLocalizations {
   String get enterCode => translate('enterCode');
   String get cameraAccessRequired => translate('cameraAccessRequired');
   String get openSettings => translate('openSettings');
+  String get stats => translate('stats');
+  String get last3Months => translate('last3Months');
+  String get completeTaskToSeeYourProgress => translate('completeTaskToSeeYourProgress');
+  String get completeTasksToStartOne => translate('completeTasksToStartOne');
+  String get activeDayStreak => translate('activeDayStreak');
+  String get daysOne => translate('daysOne');
+  String get daysFew => translate('daysFew');
+  String get daysMany => translate('daysMany');
+  String get daysOther => translate('daysOther');
+  String get emptyTags => translate('emptyTags');
+
+  static String _pluralFormSuffix(Locale locale, int count) {
+    switch (locale.languageCode) {
+      case 'ru':
+        if (count % 10 == 1 && count % 100 != 11) return 'One';
+        if (count % 10 >= 2 &&
+            count % 10 <= 4 &&
+            (count % 100 < 12 || count % 100 > 14)) return 'Few';
+        return 'Many';
+      default:
+        return count == 1 ? 'One' : 'Other';
+    }
+  }
+
+  String _pluralKey(String base, Locale locale, int count) {
+    final suffix = _pluralFormSuffix(locale, count);
+    if (locale.languageCode == 'ru') return base + suffix;
+    return base + (suffix == 'One' ? 'One' : 'Other');
+  }
+
+  String days(BuildContext context, int count) {
+    final locale = Localizations.localeOf(context);
+    final key = _pluralKey('days', locale, count);
+    return translate(key).replaceAll('{count}', count.toString());
+  }
+
+  String yourBestStreakAmount(BuildContext context, int count) {
+    final locale = Localizations.localeOf(context);
+    final key = _pluralKey('yourBestStreakAmount', locale, count);
+    return translate(key).replaceAll('{count}', count.toString());
+  }
+  String get mostUsedTags => translate('mostUsedTags');
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();

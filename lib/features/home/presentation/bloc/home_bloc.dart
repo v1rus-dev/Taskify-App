@@ -5,8 +5,8 @@ import 'package:equatable/equatable.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/sync/sync_coordinator.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
-import 'package:taskify/domain/tasks/models/task_wrapper.dart';
-import 'package:taskify/domain/tasks/models/tasks_view_type.dart';
+import 'package:taskify/features/tasks/data/models/task_wrapper.dart';
+import 'package:taskify/features/tasks/data/models/tasks_view_type.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';

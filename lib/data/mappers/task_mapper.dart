@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
-import 'package:taskify/data/database/app_database.dart' as db;
-import 'package:taskify/domain/tasks/models/task.dart';
+import 'package:taskify/core/database/app_database.dart' as db;
+import 'package:taskify/features/tasks/data/models/task_entity.dart';
 
 extension TaskDbMapper on db.TasksTableData {
   TaskEntity toDomain() {

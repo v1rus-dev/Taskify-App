@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
-import 'package:taskify/data/database/app_database.dart';
-import 'package:taskify/domain/auth/models/auth_user_entity.dart';
+import 'package:taskify/core/database/app_database.dart';
+import 'package:taskify/features/auth/domain/models/auth_user_entity.dart';
 
 extension UsersTableDataMapper on UsersTableData {
   AuthUserEntity toDomain() {

@@ -1,6 +1,6 @@
 import 'package:taskify/core/services/talker_service.dart';
-import 'package:taskify/domain/app_startup/app_start_task.dart';
-import 'package:taskify/domain/auth/repository/auth_repository.dart';
+import 'package:taskify/core/utils/app_start_task.dart';
+import 'package:taskify/features/auth/domain/repository/auth_repository.dart';
 
 class AppStartupCoordinator {
   AppStartupCoordinator({

@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
-import 'package:taskify/domain/tasks/models/task_duration_type.dart';
+import 'package:taskify/features/tasks/data/models/task_duration_type.dart';
 import 'package:taskify/domain/tags/models/tag.dart';
 import 'package:taskify/features/edit_task/domain/models/sub_task_draft.dart';
 import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';

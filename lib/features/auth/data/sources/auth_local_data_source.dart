@@ -1,9 +1,9 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:drift/drift.dart';
 import 'package:taskify/core/error/failures.dart';
-import 'package:taskify/data/auth/mappers/auth_user_mapper.dart';
-import 'package:taskify/data/database/app_database.dart';
-import 'package:taskify/domain/auth/models/auth_user_entity.dart';
+import 'package:taskify/features/auth/data/mappers/auth_user_mapper.dart';
+import 'package:taskify/core/database/app_database.dart';
+import 'package:taskify/features/auth/domain/models/auth_user_entity.dart';
 
 abstract class AuthLocalDataSource {
   Future<Either<Failure, AuthUserEntity?>> getUser();

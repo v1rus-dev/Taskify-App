@@ -1,5 +1,5 @@
 import 'package:taskify/domain/tags/models/tag.dart';
-import 'package:taskify/domain/tasks/models/task.dart';
+import 'package:taskify/features/tasks/data/models/task_entity.dart';
 import 'package:taskify/features/edit_task/domain/services/edit_task_date_calculator.dart';
 import 'package:taskify/features/edit_task/domain/services/edit_task_snapshots.dart';
 

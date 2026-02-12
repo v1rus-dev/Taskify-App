@@ -1,7 +1,7 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
-import 'package:taskify/data/auth/models/auth_user_response_model.dart';
-import 'package:taskify/data/auth/sources/auth_local_data_source.dart';
+import 'package:taskify/features/auth/data/models/auth_user_response_model.dart';
+import 'package:taskify/features/auth/data/sources/auth_local_data_source.dart';
 import 'package:taskify/data/mappers/auth_mapper.dart';
 import 'package:taskify/data/api/friends_api.dart';
 

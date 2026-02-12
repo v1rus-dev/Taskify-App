@@ -1,5 +1,5 @@
 import 'package:taskify/core/services/locator.dart';
-import 'package:taskify/data/database/app_database.dart';
+import 'package:taskify/core/database/app_database.dart';
 import 'package:taskify/features/edit_task/data/datasources/sub_task_local_datasource.dart';
 import 'package:taskify/features/edit_task/data/datasources/tag_local_datasource.dart';
 import 'package:taskify/features/home/data/datasources/task_local_datasource.dart';

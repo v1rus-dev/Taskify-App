@@ -1,5 +1,5 @@
-import 'package:taskify/data/auth/models/auth_user_response_model.dart';
-import 'package:taskify/domain/auth/models/auth_user_entity.dart';
+import 'package:taskify/features/auth/data/models/auth_user_response_model.dart';
+import 'package:taskify/features/auth/domain/models/auth_user_entity.dart';
 
 extension AuthUserResponseModelMapper on AuthUserResponseModel {
   AuthUserEntity toEntity() {

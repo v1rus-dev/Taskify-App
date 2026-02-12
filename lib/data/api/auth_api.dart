@@ -1,7 +1,7 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/dio_client.dart';
-import 'package:taskify/data/auth/models/auth_tokens_response_model.dart';
+import 'package:taskify/features/auth/data/models/auth_tokens_response_model.dart';
 
 class AuthApi {
   AuthApi(this._client);

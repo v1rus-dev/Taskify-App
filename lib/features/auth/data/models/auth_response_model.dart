@@ -1,4 +1,4 @@
-import 'package:taskify/data/auth/models/auth_user_response_model.dart';
+import 'package:taskify/features/auth/data/models/auth_user_response_model.dart';
 
 class AuthResponseModel {
   const AuthResponseModel({

@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:taskify/data/database/app_database.dart' as db;
+import 'package:taskify/core/database/app_database.dart' as db;
 import 'package:taskify/data/friends/models/friend_request_item_response_model.dart';
 import 'package:taskify/data/friends/models/friend_response_model.dart';
 import 'package:taskify/domain/friends/models/friend_entity.dart';

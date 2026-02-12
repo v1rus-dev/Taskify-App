@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:taskify/domain/tasks/models/task.dart';
+import 'package:taskify/features/tasks/data/models/task_entity.dart';
 
 class EditTaskSnapshot extends Equatable {
   const EditTaskSnapshot({

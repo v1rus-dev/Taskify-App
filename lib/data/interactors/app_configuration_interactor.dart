@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
-import 'package:taskify/data/database/app_database.dart';
-import 'package:taskify/data/database/tables/app_configurations_table.dart';
+import 'package:taskify/core/database/app_database.dart';
+import 'package:taskify/core/database/tables/app_configurations_table.dart';
 import 'package:taskify/domain/models/time_format_type.dart';
 
 class AppConfigurationInteractor {

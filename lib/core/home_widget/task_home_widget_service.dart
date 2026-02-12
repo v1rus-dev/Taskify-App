@@ -5,7 +5,7 @@ import 'package:home_widget/home_widget.dart';
 import 'package:taskify/app/router/app_router.dart';
 import 'package:taskify/app/router/router_paths.dart';
 import 'package:taskify/core/services/talker_service.dart';
-import 'package:taskify/domain/tasks/models/task_wrapper.dart';
+import 'package:taskify/features/tasks/data/models/task_wrapper.dart';
 import 'package:taskify/features/home/domain/usecases/task_interactor.dart';
 
 class TaskHomeWidgetService {

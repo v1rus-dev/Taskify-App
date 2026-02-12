@@ -1,7 +1,7 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:drift/drift.dart';
 import 'package:taskify/core/error/failures.dart';
-import 'package:taskify/data/database/app_database.dart' as db;
+import 'package:taskify/core/database/app_database.dart' as db;
 import 'package:taskify/core/services/talker_service.dart';
 
 abstract class SubTaskLocalDataSource {

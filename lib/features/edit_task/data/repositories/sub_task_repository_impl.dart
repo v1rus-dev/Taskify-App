@@ -5,7 +5,7 @@ import 'package:taskify/core/sync/sync_coordinator.dart';
 import 'package:taskify/features/edit_task/data/datasources/sub_task_local_datasource.dart';
 import 'package:taskify/features/edit_task/data/mappers/sub_task_mapper.dart';
 import 'package:taskify/domain/tags/models/sub_task.dart';
-import 'package:taskify/features/edit_task/domain/repositories/sub_task_repository.dart';
+import 'package:taskify/features/edit_task/domain/repository/sub_task_repository.dart';
 import 'package:taskify/features/home/data/datasources/task_local_datasource.dart';
 import 'package:taskify/domain/sync/models/sync_op_data_entity.dart';
 import 'package:taskify/domain/sync/models/sync_queue_entry_entity.dart';

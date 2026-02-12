@@ -2,7 +2,7 @@ import 'package:dart_either/dart_either.dart';
 import 'package:drift/drift.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/data/mappers/tag_mapper.dart';
-import 'package:taskify/data/database/app_database.dart' as db;
+import 'package:taskify/core/database/app_database.dart' as db;
 import 'package:taskify/domain/tags/models/default_tag.dart';
 import 'package:taskify/domain/tags/models/tag.dart';
 import 'package:taskify/domain/tags/repository/tag_repository.dart';

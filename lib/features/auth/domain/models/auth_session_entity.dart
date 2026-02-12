@@ -1,4 +1,4 @@
-import 'package:taskify/domain/auth/models/auth_providers.dart';
+import 'package:taskify/features/auth/domain/models/auth_providers.dart';
 
 class AuthSessionEntity {
   const AuthSessionEntity({

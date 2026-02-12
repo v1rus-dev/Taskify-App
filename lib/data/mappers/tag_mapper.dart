@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/painting.dart';
-import 'package:taskify/data/database/app_database.dart' as db;
+import 'package:taskify/core/database/app_database.dart' as db;
 import 'package:taskify/domain/tags/models/tag.dart';
 
 extension CustomTagDbMapper on db.CustomTagsTableData {

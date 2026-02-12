@@ -1,6 +1,6 @@
 import 'package:taskify/core/app_startup/app_startup_coordinator.dart';
 import 'package:taskify/core/services/locator.dart';
-import 'package:taskify/domain/auth/repository/auth_repository.dart';
+import 'package:taskify/features/auth/domain/repository/auth_repository.dart';
 import 'package:taskify/domain/friends/usecases/friends_interactor.dart';
 import 'package:taskify/domain/friends/usecases/friends_startup_task.dart';
 

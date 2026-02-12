@@ -1,7 +1,7 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
-import 'package:taskify/domain/tasks/models/task.dart';
-import 'package:taskify/domain/tasks/models/task_wrapper.dart';
+import 'package:taskify/features/tasks/data/models/task_entity.dart';
+import 'package:taskify/features/tasks/data/models/task_wrapper.dart';
 
 abstract class TaskRepository {
   Future<Either<Failure, List<TaskEntity>>> getTasks();

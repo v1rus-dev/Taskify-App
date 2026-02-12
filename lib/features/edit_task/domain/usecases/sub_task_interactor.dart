@@ -1,7 +1,7 @@
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/domain/tags/models/sub_task.dart';
-import 'package:taskify/features/edit_task/domain/repositories/sub_task_repository.dart';
+import 'package:taskify/features/edit_task/domain/repository/sub_task_repository.dart';
 
 class SubTaskInteractor {
   SubTaskInteractor(this._repository);

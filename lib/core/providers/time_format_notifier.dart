@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskify/data/interactors/app_configuration_interactor.dart';
 import 'package:taskify/core/services/locator.dart';
-import 'package:taskify/data/database/app_database.dart';
+import 'package:taskify/core/database/app_database.dart';
 import 'package:taskify/domain/models/time_format_type.dart';
 
 class TimeFormatState {

@@ -2,8 +2,8 @@ import 'package:design/design.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/core/providers/time_format_notifier.dart';
-import 'package:taskify/domain/tasks/ext/task_entity_ext.dart';
-import 'package:taskify/domain/tasks/models/task_wrapper.dart';
+import 'package:taskify/features/tasks/data/models/task_entity.dart';
+import 'package:taskify/features/tasks/data/models/task_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 

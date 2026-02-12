@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/domain/tags/models/sub_task.dart';
 import 'package:taskify/domain/tags/models/tag.dart';
-import 'package:taskify/domain/tasks/models/task.dart';
+import 'package:taskify/features/tasks/data/models/task_entity.dart';
 import 'package:taskify/features/edit_task/domain/models/sub_task_draft.dart';
 import 'package:taskify/features/edit_task/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/edit_task/domain/usecases/tag_interactor.dart';

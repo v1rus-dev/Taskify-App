@@ -1,5 +1,5 @@
 import 'package:taskify/core/services/talker_service.dart';
-import 'package:taskify/domain/app_startup/app_start_task.dart';
+import 'package:taskify/core/utils/app_start_task.dart';
 import 'package:taskify/domain/friends/usecases/friends_interactor.dart';
 
 class FriendsStartupTask implements AppStartTask {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taskify/app/router/app_transitions.dart';
 import 'package:taskify/app/router/router_paths.dart';
-import 'package:taskify/features/edit_task/presentation/edit_task_screen.dart';
+import 'package:taskify/features/tasks/presentation/edit_task/edit_task_screen.dart';
 import 'package:taskify/features/home/presentation/screen/home_screen.dart';
 import 'package:taskify/features/root/presentation/root_screen.dart';
 import 'package:taskify/features/profile/presentation/profile_screen.dart';

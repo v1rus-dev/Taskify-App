@@ -6,7 +6,7 @@ import 'package:taskify/core/database/app_database.dart' as db;
 import 'package:taskify/domain/tags/models/default_tag.dart';
 import 'package:taskify/domain/tags/models/tag.dart';
 import 'package:taskify/domain/tags/repository/tag_repository.dart';
-import 'package:taskify/features/edit_task/data/datasources/tag_local_datasource.dart';
+import 'package:taskify/features/tasks/data/sources/tag_local_datasource.dart';
 
 class TagRepositoryImpl implements TagRepository {
   TagRepositoryImpl(this._localDataSource);

@@ -1,7 +1,7 @@
 import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/core/database/app_database.dart';
-import 'package:taskify/features/edit_task/data/datasources/sub_task_local_datasource.dart';
-import 'package:taskify/features/edit_task/data/datasources/tag_local_datasource.dart';
+import 'package:taskify/features/tasks/data/sources/sub_task_local_datasource.dart';
+import 'package:taskify/features/tasks/data/sources/tag_local_datasource.dart';
 import 'package:taskify/features/home/data/datasources/task_local_datasource.dart';
 import 'package:taskify/data/repositories/task_repository_impl.dart';
 import 'package:taskify/domain/repository/task_repository.dart';

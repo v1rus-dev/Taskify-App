@@ -260,52 +260,52 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               taskId: widget.taskId,
               onClose: _onClosePressed,
             ),
-            body: CustomScrollView(
-              controller: scrollController,
-              slivers: [
-                const SliverGap(20),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  sliver: SliverToBoxAdapter(child: _buildTitleTextField()),
-                ),
-                const SliverGap(12),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  sliver: SliverToBoxAdapter(
-                    child: EditTaskDescriptionCard(
-                      descriptionController: descriptionController,
-                      onChanged: _onDescriptionChanged,
+            body: SafeArea(
+              top: false,
+              bottom: true,
+              child: CustomScrollView(
+                controller: scrollController,
+                slivers: [
+                  const SliverGap(20),
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    sliver: SliverToBoxAdapter(child: _buildTitleTextField()),
+                  ),
+                  const SliverGap(12),
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    sliver: SliverToBoxAdapter(
+                      child: EditTaskDescriptionCard(
+                        descriptionController: descriptionController,
+                        onChanged: _onDescriptionChanged,
+                      ),
                     ),
                   ),
-                ),
-                const SliverGap(12),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  sliver: SliverToBoxAdapter(child: EditTaskDatePeriodCard()),
-                ),
-                const SliverGap(12),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  sliver: SliverToBoxAdapter(child: EditTaskRecurrenceCard()),
-                ),
-                const SliverGap(12),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  sliver: SliverToBoxAdapter(child: EditTaskReminderCard()),
-                ),
-                const SliverGap(12),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  sliver: SliverToBoxAdapter(child: EditTaskTagsCard()),
-                ),
-                const SliverGap(12),
-                const EditTaskSubTasksSlivers(),
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: MediaQuery.viewPaddingOf(context).bottom + 16,
+                  const SliverGap(12),
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    sliver: SliverToBoxAdapter(child: EditTaskDatePeriodCard()),
                   ),
-                ),
-              ],
+                  const SliverGap(12),
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    sliver: SliverToBoxAdapter(child: EditTaskRecurrenceCard()),
+                  ),
+                  const SliverGap(12),
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    sliver: SliverToBoxAdapter(child: EditTaskReminderCard()),
+                  ),
+                  const SliverGap(12),
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    sliver: SliverToBoxAdapter(child: EditTaskTagsCard()),
+                  ),
+                  const SliverGap(12),
+                  const EditTaskSubTasksSlivers(),
+                  const SliverGap(16),
+                ],
+              ),
             ),
           ),
         ),

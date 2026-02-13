@@ -1,9 +1,11 @@
-﻿import 'package:dart_either/dart_either.dart';
+import 'package:dart_either/dart_either.dart';
 import 'package:equatable/equatable.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/features/tasks/domain/models/sub_task.dart';
 import 'package:taskify/features/tasks/domain/models/tag.dart';
 import 'package:taskify/features/tasks/data/models/task_entity.dart';
+import 'package:taskify/features/tasks/data/models/task_recurrence.dart';
+import 'package:taskify/features/tasks/data/models/task_reminder.dart';
 import 'package:taskify/features/tasks/domain/models/sub_task_draft.dart';
 import 'package:taskify/features/tasks/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/tasks/domain/usecases/tag_interactor.dart';
@@ -19,6 +21,8 @@ class SaveEditedTaskParams extends Equatable {
     required this.startTime,
     required this.endTime,
     required this.isAllDay,
+    required this.recurrence,
+    required this.reminder,
     required this.createdAt,
     required this.tags,
     required this.subTasks,
@@ -34,6 +38,8 @@ class SaveEditedTaskParams extends Equatable {
   final DateTime? startTime;
   final DateTime? endTime;
   final bool isAllDay;
+  final TaskRecurrence? recurrence;
+  final TaskReminder? reminder;
   final DateTime? createdAt;
   final List<TagEntity> tags;
   final List<SubTaskDraft> subTasks;
@@ -42,20 +48,22 @@ class SaveEditedTaskParams extends Equatable {
 
   @override
   List<Object?> get props => [
-        taskId,
-        title,
-        description,
-        isCompleted,
-        selectedDate,
-        startTime,
-        endTime,
-        isAllDay,
-        createdAt,
-        tags,
-        subTasks,
-        shouldSyncTags,
-        shouldUpsertTask,
-      ];
+    taskId,
+    title,
+    description,
+    isCompleted,
+    selectedDate,
+    startTime,
+    endTime,
+    isAllDay,
+    recurrence,
+    reminder,
+    createdAt,
+    tags,
+    subTasks,
+    shouldSyncTags,
+    shouldUpsertTask,
+  ];
 }
 
 class SaveEditedTaskResult extends Equatable {
@@ -92,6 +100,8 @@ class SaveEditedTaskInteractor {
             title: params.title,
             description: params.description,
             date: params.selectedDate,
+            recurrence: params.recurrence,
+            reminder: params.reminder,
             createdAt: params.createdAt ?? DateTime.now(),
           ),
         );
@@ -109,6 +119,8 @@ class SaveEditedTaskInteractor {
             title: params.title,
             description: params.description,
             date: params.selectedDate,
+            recurrence: params.recurrence,
+            reminder: params.reminder,
             createdAt: params.createdAt ?? DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -150,12 +162,15 @@ class SaveEditedTaskInteractor {
       }
     }
 
-    final resolvedTask = savedTask ??
+    final resolvedTask =
+        savedTask ??
         TaskEntity(
           id: taskIdResolved,
           title: params.title,
           description: params.description,
           date: params.selectedDate,
+          recurrence: params.recurrence,
+          reminder: params.reminder,
           createdAt: params.createdAt ?? DateTime.now(),
           updatedAt: params.shouldUpsertTask ? DateTime.now() : null,
         );
@@ -268,4 +283,3 @@ class SaveEditedTaskInteractor {
     return const Right(null);
   }
 }
-

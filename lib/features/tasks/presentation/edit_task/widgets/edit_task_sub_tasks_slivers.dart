@@ -16,15 +16,11 @@ class EditTaskSubTasksSlivers extends StatelessWidget {
   }
 
   void _onAddSubTaskPressed(BuildContext context) {
-    context
-        .read<EditSubTaskBloc>()
-        .add(const EditSubTaskAdded());
+    context.read<EditSubTaskBloc>().add(const EditSubTaskAdded());
   }
 
   void _onSubTaskDismissed(BuildContext context, int localKey) {
-    context
-        .read<EditSubTaskBloc>()
-        .add(EditSubTaskRemovedByLocalKey(localKey));
+    context.read<EditSubTaskBloc>().add(EditSubTaskRemovedByLocalKey(localKey));
   }
 
   @override
@@ -57,17 +53,12 @@ class EditTaskSubTasksSlivers extends StatelessWidget {
                         isFirst: isFirst,
                         showBottomDivider: !isLast,
                         autoFocus: subTask.title.isEmpty,
-                        onToggle: () => context
-                            .read<EditSubTaskBloc>()
-                            .add(EditSubTaskToggle(index)),
+                        onToggle: () => context.read<EditSubTaskBloc>().add(
+                          EditSubTaskToggle(index),
+                        ),
                         onTextChanged: (text) => context
                             .read<EditSubTaskBloc>()
-                            .add(
-                              EditSubTaskTextChanged(
-                                index,
-                                text,
-                              ),
-                            ),
+                            .add(EditSubTaskTextChanged(index, text)),
                         onEmptyFocusLost: () =>
                             _onSubTaskDismissed(context, subTask.localKey),
                         dragIndex: index,
@@ -184,7 +175,9 @@ class _EditSubTaskItemState extends State<_EditSubTaskItem> {
 
   BorderRadius _resolveRadius() {
     return widget.isFirst
-        ? BorderRadius.vertical(top: Radius.circular(AppRadius.defaultCardRadius))
+        ? BorderRadius.vertical(
+            top: Radius.circular(AppRadius.defaultCardRadius),
+          )
         : BorderRadius.zero;
   }
 
@@ -223,7 +216,7 @@ class _EditSubTaskItemState extends State<_EditSubTaskItem> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     child: TextField(
                       onChanged: widget.onTextChanged,
                       controller: _controller,
@@ -260,11 +253,7 @@ class _EditSubTaskItemState extends State<_EditSubTaskItem> {
           if (widget.showBottomDivider)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Divider(
-                height: 1,
-                thickness: 1,
-                color: dividerColor,
-              ),
+              child: Divider(height: 1, thickness: 1, color: dividerColor),
             ),
         ],
       ),
@@ -298,10 +287,7 @@ class _SwipeDeleteBackground extends StatelessWidget {
 }
 
 class _AddSubTaskRow extends StatelessWidget {
-  const _AddSubTaskRow({
-    required this.isStandalone,
-    required this.onPressed,
-  });
+  const _AddSubTaskRow({required this.isStandalone, required this.onPressed});
 
   final bool isStandalone;
   final VoidCallback onPressed;
@@ -335,11 +321,7 @@ class _AddSubTaskRow extends StatelessWidget {
           if (!isStandalone)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Divider(
-                height: 1,
-                thickness: 1,
-                color: dividerColor,
-              ),
+              child: Divider(height: 1, thickness: 1, color: dividerColor),
             ),
           Material(
             color: Colors.transparent,
@@ -348,7 +330,10 @@ class _AddSubTaskRow extends StatelessWidget {
               onTap: _onPressed,
               borderRadius: _resolveRadius(),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
                 child: Row(
                   children: [
                     Expanded(
@@ -365,10 +350,7 @@ class _AddSubTaskRow extends StatelessWidget {
                       package: AppIcons.packageName,
                       width: 20,
                       height: 20,
-                      colorFilter: ColorFilter.mode(
-                        textColor,
-                        BlendMode.srcIn,
-                      ),
+                      colorFilter: ColorFilter.mode(textColor, BlendMode.srcIn),
                     ),
                   ],
                 ),

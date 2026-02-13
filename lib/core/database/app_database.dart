@@ -35,7 +35,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
@@ -66,6 +66,12 @@ class AppDatabase extends _$AppDatabase {
           await m.database.customStatement(
             'DROP TABLE IF EXISTS outgoing_friend_requests_table;',
           );
+        }
+        if (from < 6) {
+          await m.addColumn(tasksTable, tasksTable.recurrenceFrequency);
+        }
+        if (from < 7) {
+          await m.addColumn(tasksTable, tasksTable.reminderType);
         }
       },
     );

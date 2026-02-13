@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:taskify/core/widgets/tag_cheap.dart';
@@ -50,7 +50,7 @@ class EditTaskTagsCard extends StatelessWidget {
         onTap: () => _onAddTagsPressed(context),
         borderRadius: _borderRadiusByHasTags(hasTags),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Row(
             children: [
               Flexible(
@@ -96,14 +96,17 @@ class EditTaskTagsCard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsetsGeometry.symmetric(
                     horizontal: 16,
-                    vertical: 12,
+                    vertical: 16,
                   ),
                   child: Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: [
                       ...state.selectedTags.map(
-                        (tag) => TagCheap(tag: tag, onPressed: () => _onTagPressed(context, tag)),
+                        (tag) => TagCheap(
+                          tag: tag,
+                          onPressed: () => _onTagPressed(context, tag),
+                        ),
                       ),
                     ],
                   ),
@@ -124,4 +127,3 @@ class EditTaskTagsCard extends StatelessWidget {
     );
   }
 }
-

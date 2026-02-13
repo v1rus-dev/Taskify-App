@@ -11,6 +11,8 @@ class TasksTable extends Table {
   DateTimeColumn get startTime => dateTime().nullable()();
   DateTimeColumn get endTime => dateTime().nullable()();
   BoolColumn get isAllDay => boolean().withDefault(const Constant(true))();
+  TextColumn get recurrenceFrequency => text().nullable()();
+  TextColumn get reminderType => text().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
   DateTimeColumn get deletedAt => dateTime().nullable()();

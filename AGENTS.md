@@ -24,6 +24,7 @@ This is a Flutter app with the main code under `lib/` and design package in `des
 -`core` - shared utilities, constants, and cross-cutting concerns.
 -`features` - features powered by feature-first.
 -`l10n` - application translation module.
+-`l10n/app_localizations.dart` - manual localization wrapper; when adding keys in `intl_*.arb`, add corresponding getters in this file.
 
 `design/lib` areas includes:
 -`bottom_sheets` - base bottom sheets widgets.

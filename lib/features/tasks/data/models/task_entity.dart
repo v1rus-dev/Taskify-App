@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
+import 'package:taskify/features/tasks/data/models/task_recurrence.dart';
+import 'package:taskify/features/tasks/data/models/task_reminder.dart';
 
 class TaskEntity extends Equatable {
   const TaskEntity({
@@ -13,6 +15,8 @@ class TaskEntity extends Equatable {
     this.startTime,
     this.endTime,
     this.isAllDay = true,
+    this.recurrence,
+    this.reminder,
     required this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -28,6 +32,8 @@ class TaskEntity extends Equatable {
   final DateTime? startTime;
   final DateTime? endTime;
   final bool isAllDay;
+  final TaskRecurrence? recurrence;
+  final TaskReminder? reminder;
   final DateTime createdAt;
   final DateTime? updatedAt;
   final DateTime? deletedAt;
@@ -43,6 +49,8 @@ class TaskEntity extends Equatable {
     DateTime? startTime,
     DateTime? endTime,
     bool? isAllDay,
+    TaskRecurrence? recurrence,
+    TaskReminder? reminder,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? deletedAt,
@@ -58,6 +66,8 @@ class TaskEntity extends Equatable {
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
       isAllDay: isAllDay ?? this.isAllDay,
+      recurrence: recurrence ?? this.recurrence,
+      reminder: reminder ?? this.reminder,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
@@ -66,28 +76,26 @@ class TaskEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        networkId,
-        clientId,
-        title,
-        description,
-        isCompleted,
-        date,
-        startTime,
-        endTime,
-        isAllDay,
-        createdAt,
-        updatedAt,
-        deletedAt,
-      ];
+    id,
+    networkId,
+    clientId,
+    title,
+    description,
+    isCompleted,
+    date,
+    startTime,
+    endTime,
+    isAllDay,
+    recurrence,
+    reminder,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ];
 }
 
-
 extension TaskEntityExtension on TaskEntity {
-  String duration({
-    required bool use24Hour,
-    required String allDayLabel,
-  }) {
+  String duration({required bool use24Hour, required String allDayLabel}) {
     if (isAllDay) {
       return allDayLabel;
     }

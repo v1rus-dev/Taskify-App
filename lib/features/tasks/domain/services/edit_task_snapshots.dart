@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:taskify/features/tasks/data/models/task_entity.dart';
+import 'package:taskify/features/tasks/data/models/task_recurrence.dart';
+import 'package:taskify/features/tasks/data/models/task_reminder.dart';
 
 class EditTaskSnapshot extends Equatable {
   const EditTaskSnapshot({
@@ -10,6 +12,8 @@ class EditTaskSnapshot extends Equatable {
     required this.startTime,
     required this.endTime,
     required this.isAllDay,
+    required this.recurrence,
+    required this.reminder,
   });
 
   final String title;
@@ -19,6 +23,8 @@ class EditTaskSnapshot extends Equatable {
   final DateTime? startTime;
   final DateTime? endTime;
   final bool isAllDay;
+  final TaskRecurrence? recurrence;
+  final TaskReminder? reminder;
 
   factory EditTaskSnapshot.fromTask(TaskEntity task) {
     return EditTaskSnapshot(
@@ -29,19 +35,23 @@ class EditTaskSnapshot extends Equatable {
       startTime: task.startTime,
       endTime: task.endTime,
       isAllDay: task.isAllDay,
+      recurrence: task.recurrence,
+      reminder: task.reminder,
     );
   }
 
   @override
   List<Object?> get props => [
-        title,
-        description,
-        isCompleted,
-        date,
-        startTime,
-        endTime,
-        isAllDay,
-      ];
+    title,
+    description,
+    isCompleted,
+    date,
+    startTime,
+    endTime,
+    isAllDay,
+    recurrence,
+    reminder,
+  ];
 }
 
 class SubTaskSnapshot extends Equatable {

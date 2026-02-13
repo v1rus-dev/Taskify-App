@@ -34,6 +34,24 @@ class AppLocalizations {
   String get selected => translate('selected');
   String get date => translate('date');
   String get period => translate('period');
+  String get recurrence => translate('recurrence');
+  String get doesNotRepeat => translate('doesNotRepeat');
+  String get recurrenceDaily => translate('recurrenceDaily');
+  String get recurrenceWeekly => translate('recurrenceWeekly');
+  String get recurrenceMonthly => translate('recurrenceMonthly');
+  String get recurrenceYearly => translate('recurrenceYearly');
+  String get reminder => translate('reminder');
+  String get noReminder => translate('noReminder');
+  String get reminderAtTime => translate('reminderAtTime');
+  String get reminderFiveMinutesBefore =>
+      translate('reminderFiveMinutesBefore');
+  String get reminderTenMinutesBefore => translate('reminderTenMinutesBefore');
+  String get reminderFifteenMinutesBefore =>
+      translate('reminderFifteenMinutesBefore');
+  String get reminderThirtyMinutesBefore =>
+      translate('reminderThirtyMinutesBefore');
+  String get reminderOneHourBefore => translate('reminderOneHourBefore');
+  String get reminderOneDayBefore => translate('reminderOneDayBefore');
   String get allDay => translate('allDay');
   String get startTime => translate('startTime');
   String get endTime => translate('endTime');
@@ -101,7 +119,8 @@ class AppLocalizations {
   String get openSettings => translate('openSettings');
   String get stats => translate('stats');
   String get last3Months => translate('last3Months');
-  String get completeTaskToSeeYourProgress => translate('completeTaskToSeeYourProgress');
+  String get completeTaskToSeeYourProgress =>
+      translate('completeTaskToSeeYourProgress');
   String get completeTasksToStartOne => translate('completeTasksToStartOne');
   String get activeDayStreak => translate('activeDayStreak');
   String get daysOne => translate('daysOne');
@@ -113,10 +132,14 @@ class AppLocalizations {
   static String _pluralFormSuffix(Locale locale, int count) {
     switch (locale.languageCode) {
       case 'ru':
-        if (count % 10 == 1 && count % 100 != 11) return 'One';
+        if (count % 10 == 1 && count % 100 != 11) {
+          return 'One';
+        }
         if (count % 10 >= 2 &&
             count % 10 <= 4 &&
-            (count % 100 < 12 || count % 100 > 14)) return 'Few';
+            (count % 100 < 12 || count % 100 > 14)) {
+          return 'Few';
+        }
         return 'Many';
       default:
         return count == 1 ? 'One' : 'Other';
@@ -125,7 +148,9 @@ class AppLocalizations {
 
   String _pluralKey(String base, Locale locale, int count) {
     final suffix = _pluralFormSuffix(locale, count);
-    if (locale.languageCode == 'ru') return base + suffix;
+    if (locale.languageCode == 'ru') {
+      return base + suffix;
+    }
     return base + (suffix == 'One' ? 'One' : 'Other');
   }
 
@@ -140,6 +165,7 @@ class AppLocalizations {
     final key = _pluralKey('yourBestStreakAmount', locale, count);
     return translate(key).replaceAll('{count}', count.toString());
   }
+
   String get mostUsedTags => translate('mostUsedTags');
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
@@ -155,7 +181,9 @@ class AppLocalizations {
   static const List<Locale> supportedLocales = [Locale('en'), Locale('ru')];
 
   String localeDisplayName(Locale? locale) {
-    if (locale == null) return languageSystem;
+    if (locale == null) {
+      return languageSystem;
+    }
     return switch (locale.languageCode) {
       'en' => languageEnglish,
       'ru' => languageRussian,

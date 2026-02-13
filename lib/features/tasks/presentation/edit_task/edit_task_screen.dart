@@ -1,4 +1,4 @@
-﻿import 'package:design/design.dart';
+import 'package:design/design.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,9 +8,13 @@ import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/features/tasks/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/tasks/domain/usecases/tag_interactor.dart';
 import 'package:taskify/features/tasks/domain/usecases/save_edited_task_interactor.dart';
+import 'package:taskify/features/tasks/data/models/task_recurrence.dart';
+import 'package:taskify/features/tasks/data/models/task_reminder.dart';
 import 'package:taskify/features/tasks/presentation/edit_task/widgets/edit_task_app_bar.dart';
 import 'package:taskify/features/tasks/presentation/edit_task/widgets/edit_task_description_card.dart';
 import 'package:taskify/features/tasks/presentation/edit_task/widgets/edit_task_date_period_card.dart';
+import 'package:taskify/features/tasks/presentation/edit_task/widgets/edit_task_recurrence_card.dart';
+import 'package:taskify/features/tasks/presentation/edit_task/widgets/edit_task_reminder_card.dart';
 import 'package:taskify/features/tasks/presentation/edit_task/widgets/edit_task_sub_tasks_slivers.dart';
 import 'package:taskify/features/tasks/presentation/edit_task/widgets/edit_task_tags_card.dart';
 import 'package:taskify/features/tasks/domain/usecases/task_interactor.dart';
@@ -181,6 +185,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       startTime: editState.startTime,
       endTime: editState.endTime,
       isAllDay: editState.isAllDay,
+      recurrence: editState.recurrence,
+      reminder: editState.reminder,
       tagKeys: tagKeys,
       subTasks: subTasks
           .map(
@@ -280,11 +286,25 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                 const SliverGap(12),
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverToBoxAdapter(child: EditTaskRecurrenceCard()),
+                ),
+                const SliverGap(12),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverToBoxAdapter(child: EditTaskReminderCard()),
+                ),
+                const SliverGap(12),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   sliver: SliverToBoxAdapter(child: EditTaskTagsCard()),
                 ),
                 const SliverGap(12),
                 const EditTaskSubTasksSlivers(),
-                const SliverGap(12),
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: MediaQuery.viewPaddingOf(context).bottom + 16,
+                  ),
+                ),
               ],
             ),
           ),
@@ -303,6 +323,8 @@ class _EditTaskSnapshot extends Equatable {
     required this.startTime,
     required this.endTime,
     required this.isAllDay,
+    required this.recurrence,
+    required this.reminder,
     required this.tagKeys,
     required this.subTasks,
   });
@@ -314,6 +336,8 @@ class _EditTaskSnapshot extends Equatable {
   final DateTime? startTime;
   final DateTime? endTime;
   final bool isAllDay;
+  final TaskRecurrence? recurrence;
+  final TaskReminder? reminder;
   final List<String> tagKeys;
   final List<_SubTaskSnapshot> subTasks;
 
@@ -339,6 +363,8 @@ class _EditTaskSnapshot extends Equatable {
     startTime,
     endTime,
     isAllDay,
+    recurrence,
+    reminder,
     tagKeys,
     subTasks,
   ];
@@ -360,4 +386,3 @@ class _SubTaskSnapshot extends Equatable {
   @override
   List<Object?> get props => [id, localKey, title, isCompleted];
 }
-

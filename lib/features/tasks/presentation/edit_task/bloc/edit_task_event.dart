@@ -29,6 +29,24 @@ class EditTaskDescriptionChanged extends EditTaskEvent {
   List<Object?> get props => [description];
 }
 
+class EditTaskRecurrenceChanged extends EditTaskEvent {
+  const EditTaskRecurrenceChanged(this.recurrence);
+
+  final TaskRecurrence? recurrence;
+
+  @override
+  List<Object?> get props => [recurrence];
+}
+
+class EditTaskReminderChanged extends EditTaskEvent {
+  const EditTaskReminderChanged(this.reminder);
+
+  final TaskReminder? reminder;
+
+  @override
+  List<Object?> get props => [reminder];
+}
+
 class EditTaskSelectDate extends EditTaskEvent {
   const EditTaskSelectDate(
     this.date,
@@ -108,10 +126,7 @@ class EditTaskAutoSaveRequested extends EditTaskEvent {
 }
 
 class EditTaskSubTasksChanged extends EditTaskEvent {
-  const EditTaskSubTasksChanged(
-    this.subTasks, {
-    this.shouldSchedule = true,
-  });
+  const EditTaskSubTasksChanged(this.subTasks, {this.shouldSchedule = true});
 
   final List<SubTaskModelUi> subTasks;
   final bool shouldSchedule;

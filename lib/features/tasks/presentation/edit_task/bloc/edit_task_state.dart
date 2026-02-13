@@ -13,6 +13,8 @@ class EditTaskState extends Equatable {
     this.startTime,
     this.endTime,
     this.isAllDay = true,
+    this.recurrence,
+    this.reminder,
     this.titleIsNotEmpty = false,
     this.isDateModified = false,
     this.selectedTags = const <TagEntity>[],
@@ -28,6 +30,8 @@ class EditTaskState extends Equatable {
   final DateTime? startTime;
   final DateTime? endTime;
   final bool isAllDay;
+  final TaskRecurrence? recurrence;
+  final TaskReminder? reminder;
   final bool titleIsNotEmpty;
   final bool isDateModified;
   final List<TagEntity> selectedTags;
@@ -43,6 +47,10 @@ class EditTaskState extends Equatable {
     DateTime? startTime,
     DateTime? endTime,
     bool? isAllDay,
+    TaskRecurrence? recurrence,
+    TaskReminder? reminder,
+    bool clearRecurrence = false,
+    bool clearReminder = false,
     bool? titleIsNotEmpty,
     bool? isDateModified,
     List<TagEntity>? selectedTags,
@@ -58,6 +66,8 @@ class EditTaskState extends Equatable {
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
       isAllDay: isAllDay ?? this.isAllDay,
+      recurrence: clearRecurrence ? null : recurrence ?? this.recurrence,
+      reminder: clearReminder ? null : reminder ?? this.reminder,
       titleIsNotEmpty: titleIsNotEmpty ?? this.titleIsNotEmpty,
       isDateModified: isDateModified ?? this.isDateModified,
       selectedTags: selectedTags ?? this.selectedTags,
@@ -67,18 +77,20 @@ class EditTaskState extends Equatable {
 
   @override
   List<Object?> get props => [
-        title,
-        description,
-        taskId,
-        networkId,
-        isCompleted,
-        selectedDate,
-        startTime,
-        endTime,
-        isAllDay,
-        titleIsNotEmpty,
-        isDateModified,
-        selectedTags,
-        saveStatus,
-      ];
+    title,
+    description,
+    taskId,
+    networkId,
+    isCompleted,
+    selectedDate,
+    startTime,
+    endTime,
+    isAllDay,
+    recurrence,
+    reminder,
+    titleIsNotEmpty,
+    isDateModified,
+    selectedTags,
+    saveStatus,
+  ];
 }

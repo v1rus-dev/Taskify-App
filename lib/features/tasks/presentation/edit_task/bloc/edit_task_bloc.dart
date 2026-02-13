@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
 import 'package:taskify/features/tasks/data/models/task_duration_type.dart';
+import 'package:taskify/features/tasks/data/models/task_recurrence.dart';
+import 'package:taskify/features/tasks/data/models/task_reminder.dart';
 import 'package:taskify/features/tasks/domain/models/tag.dart';
 import 'package:taskify/features/tasks/domain/models/sub_task_draft.dart';
 import 'package:taskify/features/tasks/domain/usecases/tag_interactor.dart';
@@ -61,6 +63,8 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     on<EditTaskStarted>(_onStarted);
     on<EditTaskTitleChanged>(_onTitleChanged);
     on<EditTaskDescriptionChanged>(_onDescriptionChanged);
+    on<EditTaskRecurrenceChanged>(_onRecurrenceChanged);
+    on<EditTaskReminderChanged>(_onReminderChanged);
     on<EditTaskSelectDate>(_onSelectDate);
     on<EditTaskDateSelected>(_onDateSelected);
     on<EditTaskDurationTypeSelected>(_onDurationTypeSelected);
@@ -102,6 +106,32 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     Emitter<EditTaskState> emit,
   ) {
     emit(state.copyWith(description: event.description));
+    _scheduleAutoSave();
+  }
+
+  void _onRecurrenceChanged(
+    EditTaskRecurrenceChanged event,
+    Emitter<EditTaskState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        recurrence: event.recurrence,
+        clearRecurrence: event.recurrence == null,
+      ),
+    );
+    _scheduleAutoSave();
+  }
+
+  void _onReminderChanged(
+    EditTaskReminderChanged event,
+    Emitter<EditTaskState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        reminder: event.reminder,
+        clearReminder: event.reminder == null,
+      ),
+    );
     _scheduleAutoSave();
   }
 
@@ -276,6 +306,8 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
             startTime: task.startTime,
             endTime: task.endTime,
             isAllDay: task.isAllDay,
+            recurrence: task.recurrence,
+            reminder: task.reminder,
             isDateModified: false,
             selectedTags: tags,
           ),
@@ -328,6 +360,8 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
       startTime: state.startTime,
       endTime: state.endTime,
       isAllDay: state.isAllDay,
+      recurrence: state.recurrence,
+      reminder: state.reminder,
     );
   }
 
@@ -415,6 +449,8 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
         startTime: snapshot.startTime,
         endTime: snapshot.endTime,
         isAllDay: snapshot.isAllDay,
+        recurrence: snapshot.recurrence,
+        reminder: snapshot.reminder,
         createdAt: _changeTracker.createdAt,
         tags: state.selectedTags,
         subTasks: _buildSubTaskDrafts(subTasks),
@@ -456,4 +492,3 @@ class EditTaskBloc extends Bloc<EditTaskEvent, EditTaskState>
     return super.close();
   }
 }
-

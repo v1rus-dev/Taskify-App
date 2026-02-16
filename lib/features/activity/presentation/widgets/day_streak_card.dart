@@ -15,45 +15,39 @@ class DayStreakCard extends StatelessWidget {
     return SizedBox(
       height: 120,
       child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    l10n?.activeDayStreak ?? '',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColorExtensions.getTextPrimaryColor(context),
-                    ),
-                  ),
-                  Text(
-                    l10n?.days(context, streakInfo.currentStreak) ?? '',
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColorExtensions.getTextPrimaryColor(context),
-                    ),
-                  ),
-                ],
-              ),
-              Text(
-                l10n?.completeTasksToStartOne ?? '',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: AppColorExtensions.getTextSecondaryColor(context),
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
         ),
-      );
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              l10n?.activeDayStreak ?? '',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+                color: AppColorExtensions.getTextPrimaryColor(context),
+              ),
+            ),
+            Text(
+              l10n?.days(context, streakInfo.currentStreak) ?? '',
+              style: theme.textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+                color: AppColorExtensions.getTextPrimaryColor(context),
+              ),
+            ),
+            Text(
+              l10n?.completeTasksToStartOne ?? '',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: AppColorExtensions.getTextSecondaryColor(context),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

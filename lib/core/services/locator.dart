@@ -4,6 +4,7 @@ import 'package:taskify/core/database/database_di.dart';
 import 'package:taskify/features/auth/data/auth_di.dart';
 import 'package:taskify/features/sync/data/sync_di.dart';
 import 'package:taskify/features/home/data/home_di.dart';
+import 'package:taskify/features/notifications/data/notifications_di.dart';
 import 'package:taskify/features/tasks/domain/usecases/task_interactor.dart';
 import 'package:taskify/core/config/server_env.dart';
 import 'package:taskify/core/services/dio_client.dart';
@@ -46,6 +47,7 @@ Future<void> initRepositories() async {
   initSyncDependencies();
   initHomeDependencies();
   initAuthDependencies();
+  initNotificationsDependencies();
   initTasksDependencies();
   initActivityDependencies();
   initFriendsDependencies();

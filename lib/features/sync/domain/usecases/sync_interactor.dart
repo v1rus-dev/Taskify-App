@@ -1,4 +1,5 @@
 import 'package:dart_either/dart_either.dart';
+import 'package:taskify/core/config/feature_toggles.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/features/sync/domain/models/sync_op_entity.dart';
@@ -12,6 +13,11 @@ class SyncInteractor {
   final SyncRepository _repository;
 
   Future<Either<Failure, void>> sync({required String deviceId}) async {
+    if (!isSyncNetworkEnabled) {
+      TalkerService.instance.info('syncTag sync skipped (network disabled)');
+      return const Right(null);
+    }
+
     TalkerService.instance.info('syncTag sync start');
     final stateResult = await _repository.getState();
     Failure? failure;

@@ -60,6 +60,14 @@ UI Components which can uses more then one feature, write reusable and keep in `
 - Do not add new global sync code under `lib/data/sync`, `lib/domain/sync`, or `lib/core/sync`.
 - Cross-feature sync usage must go through sync use cases (for example `EnqueueSyncOpUseCase`, `RequestSyncUseCase`), not direct `SyncRepository` access.
 
+### Notifications domain ownership
+
+- `features/notifications` is the owner of local task reminders and notification scheduling.
+- Cross-feature reminder operations must go through notifications use cases (`SyncTaskReminderUseCase`, `CancelTaskReminderUseCase`, `ReconcileTaskRemindersUseCase`), not direct plugin calls.
+- Task reminder reconciliation is executed at app startup via `TaskRemindersStartupTask`.
+- Reminder notification id is equal to `task.id`; preserve this mapping for cancel/reconcile flows.
+- Local reminder scheduling uses `zonedSchedule` with UTC `TZDateTime`; convert from local task time consistently when adding new scheduling logic.
+
 ### Auth session source of truth
 
 - `AuthRepository.getSession()` is the single source of truth for "is authenticated" in app-wide coordinators.

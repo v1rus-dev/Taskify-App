@@ -55,26 +55,40 @@ class _TaskInfoBottomSheetContent extends StatelessWidget {
           return const SizedBox.shrink();
         }
         final task = state.task;
+        final maxSheetHeight = MediaQuery.sizeOf(context).height * 0.75;
         return Padding(
           padding: EdgeInsets.only(bottom: AppInsets.sheetVertical),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              TaskInfoHeaderPart(
-                task: task,
-                onCheckBoxPressed: () => _onTaskCheckBoxPressed(context),
-              ),
-              TaskInfoTagsPart(tags: task.tags),
-              TaskInfoDescriptionPart(
-                description: task.task.description ?? '',
-              ),
-              TaskInfoSubTasksPart(subTasks: task.subTasks),
-              const Gap(24),
-              AppSecondaryButton(
-                title: l10n?.edit ?? '',
-                onPressed: _onEditPressed,
-              ),
-            ],
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: maxSheetHeight),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        TaskInfoHeaderPart(
+                          task: task,
+                          onCheckBoxPressed: () => _onTaskCheckBoxPressed(context),
+                        ),
+                        TaskInfoTagsPart(tags: task.tags),
+                        TaskInfoDescriptionPart(
+                          description: task.task.description ?? '',
+                        ),
+                        TaskInfoSubTasksPart(subTasks: task.subTasks),
+                      ],
+                    ),
+                  ),
+                ),
+                const Gap(24),
+                AppSecondaryButton(
+                  title: l10n?.edit ?? '',
+                  onPressed: _onEditPressed,
+                ),
+              ],
+            ),
           ),
         );
       },

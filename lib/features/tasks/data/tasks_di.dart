@@ -1,5 +1,7 @@
 import 'package:taskify/core/database/app_database.dart';
 import 'package:taskify/core/services/locator.dart';
+import 'package:taskify/features/notifications/domain/usecases/cancel_task_reminder_use_case.dart';
+import 'package:taskify/features/notifications/domain/usecases/sync_task_reminder_use_case.dart';
 import 'package:taskify/features/sync/domain/usecases/enqueue_sync_op_use_case.dart';
 import 'package:taskify/features/sync/domain/usecases/request_sync_use_case.dart';
 import 'package:taskify/features/tasks/data/repositories/sub_task_repository_impl.dart';
@@ -34,6 +36,8 @@ void initTasksDependencies() {
       locator<TagLocalDataSource>(),
       locator<EnqueueSyncOpUseCase>(),
       locator<RequestSyncUseCase>(),
+      () => locator<SyncTaskReminderUseCase>(),
+      () => locator<CancelTaskReminderUseCase>(),
     ),
   );
   locator.registerLazySingleton<SubTaskRepository>(

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:dart_either/dart_either.dart';
 import 'package:taskify/core/error/failures.dart';
 import 'package:taskify/core/services/talker_service.dart';
+import 'package:taskify/features/notifications/domain/usecases/cancel_task_reminder_use_case.dart';
+import 'package:taskify/features/notifications/domain/usecases/sync_task_reminder_use_case.dart';
 import 'package:taskify/core/database/app_database.dart' as db;
 import 'package:taskify/features/sync/domain/usecases/enqueue_sync_op_use_case.dart';
 import 'package:taskify/features/sync/domain/usecases/request_sync_use_case.dart';
@@ -26,6 +28,12 @@ class TaskRepositoryImpl implements TaskRepository {
   final TagLocalDataSource tagLocalDataSource;
   final EnqueueSyncOpUseCase enqueueSyncOpUseCase;
   final RequestSyncUseCase requestSyncUseCase;
+  final SyncTaskReminderUseCase Function() _getSyncTaskReminderUseCase;
+  final CancelTaskReminderUseCase Function() _getCancelTaskReminderUseCase;
+  late final SyncTaskReminderUseCase _syncTaskReminderUseCase =
+      _getSyncTaskReminderUseCase();
+  late final CancelTaskReminderUseCase _cancelTaskReminderUseCase =
+      _getCancelTaskReminderUseCase();
   final Uuid _uuid = const Uuid();
   static final Map<int, DefaultTagEntity> _defaultTagsById = {
     for (final tag in DefaultTag.values)
@@ -38,7 +46,10 @@ class TaskRepositoryImpl implements TaskRepository {
     this.tagLocalDataSource,
     this.enqueueSyncOpUseCase,
     this.requestSyncUseCase,
-  );
+    SyncTaskReminderUseCase Function() getSyncTaskReminderUseCase,
+    CancelTaskReminderUseCase Function() getCancelTaskReminderUseCase,
+  ) : _getSyncTaskReminderUseCase = getSyncTaskReminderUseCase,
+       _getCancelTaskReminderUseCase = getCancelTaskReminderUseCase;
 
   @override
   Future<Either<Failure, List<TaskEntity>>> getTasks() async {
@@ -85,6 +96,7 @@ class TaskRepositoryImpl implements TaskRepository {
     if (failure != null) {
       return Left(failure!);
     }
+    await _syncTaskReminderUseCase(created!);
     await _enqueueTaskOp(task: created!, op: 'create');
     requestSyncUseCase(reason: 'task_create');
     return Right(created!);
@@ -103,6 +115,7 @@ class TaskRepositoryImpl implements TaskRepository {
     if (failure != null) {
       return Left(failure!);
     }
+    await _syncTaskReminderUseCase(updated!);
     await _enqueueTaskOp(task: updated!, op: 'update');
     requestSyncUseCase(reason: 'task_update');
     return Right(updated!);
@@ -117,6 +130,7 @@ class TaskRepositoryImpl implements TaskRepository {
     await result.fold(
       ifLeft: (_) async {},
       ifRight: (_) async {
+        await _cancelTaskReminderUseCase(id);
         await _enqueueTaskDelete(task);
         requestSyncUseCase(reason: 'task_delete');
       },

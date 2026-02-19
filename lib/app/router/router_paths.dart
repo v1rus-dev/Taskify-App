@@ -7,4 +7,5 @@ class RouterPaths {
   static const String activity = '/activity';
   static const String friendsList = '/friends_list';
   static const String debug = '/debug';
+  static const String debugNotifications = '/debug/notifications';
 }

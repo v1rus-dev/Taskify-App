@@ -28,6 +28,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Scan QR codes to add friends</string>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>Taskify sends reminders for your upcoming tasks</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

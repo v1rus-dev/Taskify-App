@@ -1,18 +1,14 @@
-import 'package:design/widgets/widgets.dart';
+import 'package:design/design.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:taskify/features/debug/presentation/bloc/debug_bloc.dart';
+import 'package:taskify/app/router/router_paths.dart';
 
 class DebugScreenPage extends StatelessWidget {
   const DebugScreenPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => DebugBloc(),
-      child: const DebugScreen(),
-    );
+    return const DebugScreen();
   }
 }
 
@@ -23,14 +19,34 @@ class DebugScreen extends StatelessWidget {
     context.pop();
   }
 
+  void _openNotificationsDebug(BuildContext context) {
+    context.push(RouterPaths.debugNotifications);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ScreenAppBar(title: 'Debug', onBack: () => _onBackPressed(context)),
-      body: BlocBuilder<DebugBloc, DebugState>(
-      builder: (context, state) {
-        return const Center(child: Text('Debug Screen'));
-      },
-    ));
+      appBar: ScreenAppBar(
+        title: 'Debug',
+        onBack: () => _onBackPressed(context),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: CardWithActions(
+            actions: [
+              CardActionEntry(
+                CardAction(
+                  title: 'Notifications',
+                  description: 'Pending + test reminders',
+                  onPressed: () => _openNotificationsDebug(context),
+                ),
+              ),
+            ],
+            showAppShadow: false,
+          ),
+        ),
+      ),
+    );
   }
 }

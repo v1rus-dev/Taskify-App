@@ -3,6 +3,7 @@ import 'package:taskify/core/services/locator.dart';
 import 'package:taskify/features/auth/domain/repository/auth_repository.dart';
 import 'package:taskify/features/friends/domain/usecases/friends_interactor.dart';
 import 'package:taskify/features/friends/domain/usecases/friends_startup_task.dart';
+import 'package:taskify/features/notifications/domain/usecases/task_reminders_startup_task.dart';
 
 void initAppStartupDependencies() {
   locator.registerLazySingleton(
@@ -10,7 +11,7 @@ void initAppStartupDependencies() {
   );
   locator.registerLazySingleton<AppStartupCoordinator>(
     () => AppStartupCoordinator(
-      tasks: [locator<FriendsStartupTask>()],
+      tasks: [locator<TaskRemindersStartupTask>(), locator<FriendsStartupTask>()],
       authRepository: locator<AuthRepository>(),
     ),
   );

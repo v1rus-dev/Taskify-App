@@ -1,12 +1,9 @@
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:taskify/core/widgets/bloc_side_effect_listener.dart';
 import 'package:taskify/features/profile/presentation/bloc/profile_bloc.dart';
-import 'package:taskify/features/profile/presentation/widgets/account_part.dart';
 import 'package:taskify/features/profile/presentation/widgets/app_configuration_part.dart';
 import 'package:taskify/features/profile/presentation/widgets/debug_part.dart';
-import 'package:taskify/features/profile/presentation/widgets/profile_part.dart';
 import 'package:taskify/l10n/app_localizations.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -35,7 +32,7 @@ class ProfileScreen extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: ScreenAppBar(title: l10n?.profile ?? ''),
+        appBar: ScreenAppBar(title: l10n?.settings ?? ''),
         body: Column(
           children: [
             Expanded(
@@ -43,12 +40,8 @@ class ProfileScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    const ProfilePart(),
-                    const Gap(12),
                     const AppConfigurationPart(),
                     const DebugPart(),
-                    const Gap(12),
-                    AccountPart(),
                   ],
                 ),
               ),

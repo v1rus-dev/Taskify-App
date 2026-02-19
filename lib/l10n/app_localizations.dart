@@ -28,6 +28,7 @@ class AppLocalizations {
   String get spaces => translate('spaces');
   String get activity => translate('activity');
   String get profile => translate('profile');
+  String get settings => translate('settings');
   String get timeFormat => translate('timeFormat');
   String get timeFormat24 => translate('timeFormat24');
   String get timeFormat12 => translate('timeFormat12');

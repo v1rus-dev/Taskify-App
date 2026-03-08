@@ -35,6 +35,10 @@ class _TaskInfoBottomSheetContent extends StatelessWidget {
 
   const _TaskInfoBottomSheetContent({required this.taskId});
 
+  static const double _maxSheetHeightFactor = 0.75;
+  static const double _initialDraggableSize = 1.0;
+  static const double _minDraggableSize = 0.4;
+
   void _onTaskCheckBoxPressed(BuildContext context) {
     context.read<TaskInfoBloc>().add(const TaskInfoTaskCheckBoxPressed());
   }
@@ -55,39 +59,50 @@ class _TaskInfoBottomSheetContent extends StatelessWidget {
           return const SizedBox.shrink();
         }
         final task = state.task;
-        final maxSheetHeight = MediaQuery.sizeOf(context).height * 0.75;
+        final maxSheetHeight =
+            MediaQuery.sizeOf(context).height * _maxSheetHeightFactor;
         return Padding(
           padding: EdgeInsets.only(bottom: AppInsets.sheetVertical),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: maxSheetHeight),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Flexible(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        TaskInfoHeaderPart(
-                          task: task,
-                          onCheckBoxPressed: () => _onTaskCheckBoxPressed(context),
+          child: SizedBox(
+            height: maxSheetHeight,
+            child: DraggableScrollableSheet(
+              expand: false,
+              maxChildSize: 1.0,
+              minChildSize: _minDraggableSize,
+              initialChildSize: _initialDraggableSize,
+              builder: (context, scrollController) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        controller: scrollController,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            TaskInfoHeaderPart(
+                              task: task,
+                              onCheckBoxPressed: () =>
+                                  _onTaskCheckBoxPressed(context),
+                            ),
+                            TaskInfoTagsPart(tags: task.tags),
+                            TaskInfoDescriptionPart(
+                              description: task.task.description ?? '',
+                            ),
+                            TaskInfoSubTasksPart(subTasks: task.subTasks),
+                          ],
                         ),
-                        TaskInfoTagsPart(tags: task.tags),
-                        TaskInfoDescriptionPart(
-                          description: task.task.description ?? '',
-                        ),
-                        TaskInfoSubTasksPart(subTasks: task.subTasks),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-                const Gap(24),
-                AppSecondaryButton(
-                  title: l10n?.edit ?? '',
-                  onPressed: _onEditPressed,
-                ),
-              ],
+                    const Gap(24),
+                    AppSecondaryButton(
+                      title: l10n?.edit ?? '',
+                      onPressed: _onEditPressed,
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         );

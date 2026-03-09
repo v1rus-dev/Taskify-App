@@ -131,6 +131,9 @@ class AppLocalizations {
   String get daysMany => translate('daysMany');
   String get daysOther => translate('daysOther');
   String get emptyTags => translate('emptyTags');
+  String get discardTaskDraftTitle => translate('discardTaskDraftTitle');
+  String get discardTaskDraftDescription =>
+      translate('discardTaskDraftDescription');
 
   static String _pluralFormSuffix(Locale locale, int count) {
     switch (locale.languageCode) {

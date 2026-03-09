@@ -69,6 +69,7 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return BlocBuilder<EditTaskBloc, EditTaskState>(
       builder: (context, state) {
+        final hasPersistedTask = taskId != null || state.taskId != null;
         return Container(
           padding: EdgeInsets.only(top: safeAreaTop, left: 12.0, right: 12.0),
           decoration: BoxDecoration(
@@ -85,7 +86,7 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
               Row(
                 children: [
-                  if (taskId != null) ...[
+                  if (hasPersistedTask) ...[
                     _buildIconButton(
                       context,
                       iconPath: AppIcons.trash,
@@ -93,11 +94,13 @@ class EditTaskAppBar extends StatelessWidget implements PreferredSizeWidget {
                           _onDelete(context, context.read<EditTaskBloc>()),
                     ),
                   ],
-                  const Gap(4),
-                  TaskCheckbox(
-                    isChecked: state.isCompleted,
-                    onPressed: () => _onTaskCheckBoxPressed(context),
-                  ),
+                  if (hasPersistedTask) ...[
+                    const Gap(4),
+                    TaskCheckbox(
+                      isChecked: state.isCompleted,
+                      onPressed: () => _onTaskCheckBoxPressed(context),
+                    ),
+                  ],
                 ],
               ),
             ],

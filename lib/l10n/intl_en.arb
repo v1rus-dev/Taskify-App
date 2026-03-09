@@ -105,5 +105,8 @@
   "yourBestStreakAmountOne": "Your best streak is 1 day",
   "yourBestStreakAmountOther": "Your best streak is {count} days",
   "mostUsedTags": "Most used tags",
-  "emptyTags": "Add tags to your tasks to see them here"
+  "emptyTags": "Add tags to your tasks to see them here",
+  "discardTaskDraftTitle": "Close without saving",
+  "discardTaskDraftDescription": "Changes will not be saved. You must enter a title for saving the task."
 }
+

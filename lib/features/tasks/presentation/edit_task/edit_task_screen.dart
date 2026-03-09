@@ -94,6 +94,10 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   }
 
   Future<void> _onClosePressed() async {
+    if (_shouldConfirmDiscard()) {
+      await _showDiscardChangesDialog();
+      return;
+    }
     if (!_shouldSaveTask()) {
       if (mounted) {
         context.pop();
@@ -170,6 +174,31 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       return true;
     }
     return existingSnapshot != currentSnapshot;
+  }
+
+  bool _shouldConfirmDiscard() {
+    final currentSnapshot = _buildSnapshot();
+    if (currentSnapshot.isEmpty || currentSnapshot.title.trim().isNotEmpty) {
+      return false;
+    }
+    final existingSnapshot = _snapshotState;
+    if (existingSnapshot == null) {
+      return true;
+    }
+    return existingSnapshot != currentSnapshot;
+  }
+
+  Future<void> _showDiscardChangesDialog() async {
+    final localizations = AppLocalizations.of(context);
+    final shouldClose = await showAppConfirmDialog(
+      context: context,
+      title: localizations?.discardTaskDraftTitle ?? '',
+      description: localizations?.discardTaskDraftDescription ?? '',
+      barrierDismissible: true,
+    );
+    if (shouldClose == true && mounted) {
+      context.pop();
+    }
   }
 
   _EditTaskSnapshot _buildSnapshot() {

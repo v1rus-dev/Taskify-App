@@ -29,6 +29,15 @@ class HomeUpdateTaskCompletion extends HomeEvent {
   List<Object?> get props => [task];
 }
 
+class HomeUpdateSubTaskCompletion extends HomeEvent {
+  const HomeUpdateSubTaskCompletion(this.subTask);
+
+  final SubTaskEntity subTask;
+
+  @override
+  List<Object?> get props => [subTask];
+}
+
 class HomeChangeTasksViewType extends HomeEvent {
   const HomeChangeTasksViewType(this.tasksViewType);
 

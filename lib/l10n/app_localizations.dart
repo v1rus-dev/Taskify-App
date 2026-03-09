@@ -75,6 +75,8 @@ class AppLocalizations {
   String get tagsHelpText => translate('tagsHelpText');
   String get addTag => translate('addTag');
   String get addSubTask => translate('addSubTask');
+  String get showAll => translate('showAll');
+  String get hideAll => translate('hideAll');
   String get edit => translate('edit');
   String get exitFromAccount => translate('exitFromAccount');
   String get exitFromAccountConfirmDescription =>

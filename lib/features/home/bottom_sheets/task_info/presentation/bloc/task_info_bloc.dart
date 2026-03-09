@@ -1,6 +1,6 @@
-﻿import 'dart:async';
+import 'dart:async';
 
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:equatable/equatable.dart';
 import 'package:taskify/core/services/talker_service.dart';
@@ -81,4 +81,3 @@ class TaskInfoBloc extends Bloc<TaskInfoEvent, TaskInfoState> {
     return super.close();
   }
 }
-

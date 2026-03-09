@@ -37,7 +37,7 @@ class _TaskInfoBottomSheetContent extends StatelessWidget {
 
   static const double _maxSheetHeightFactor = 0.75;
   static const double _initialDraggableSize = 1.0;
-  static const double _minDraggableSize = 0.4;
+  static const double _minDraggableSize = 0.82;
 
   void _onTaskCheckBoxPressed(BuildContext context) {
     context.read<TaskInfoBloc>().add(const TaskInfoTaskCheckBoxPressed());
@@ -63,13 +63,14 @@ class _TaskInfoBottomSheetContent extends StatelessWidget {
             MediaQuery.sizeOf(context).height * _maxSheetHeightFactor;
         return Padding(
           padding: EdgeInsets.only(bottom: AppInsets.sheetVertical),
-          child: SizedBox(
-            height: maxSheetHeight,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: maxSheetHeight),
             child: DraggableScrollableSheet(
               expand: false,
               maxChildSize: 1.0,
               minChildSize: _minDraggableSize,
               initialChildSize: _initialDraggableSize,
+              shouldCloseOnMinExtent: true,
               builder: (context, scrollController) {
                 return Column(
                   mainAxisSize: MainAxisSize.min,

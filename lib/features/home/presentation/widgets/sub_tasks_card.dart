@@ -1,26 +1,33 @@
-﻿import 'package:animated_line_through/animated_line_through.dart';
-import 'package:design/themes/color/app_color_extensions.dart';
-import 'package:design/widgets/app_shadow.dart';
-import 'package:design/widgets/task_checkbox.dart';
+import 'package:animated_line_through/animated_line_through.dart';
+import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/features/tasks/domain/models/sub_task.dart';
 
-class TaskInfoSubTasksCard extends StatelessWidget {
-  const TaskInfoSubTasksCard({
+class SubTasksCard extends StatelessWidget {
+  const SubTasksCard({
     super.key,
     required this.subTasks,
     required this.onCheckboxPressed,
+    this.footerActionTitle,
+    this.onFooterActionPressed,
+    this.isEmbedded = false,
   });
 
   final List<SubTaskEntity> subTasks;
   final Function(SubTaskEntity) onCheckboxPressed;
+  final String? footerActionTitle;
+  final VoidCallback? onFooterActionPressed;
+  final bool isEmbedded;
 
   void _onCheckboxPressed(SubTaskEntity subTask) {
     onCheckboxPressed(subTask);
   }
 
   BorderRadius _borderRadiusForPosition(_SubTaskPositionType positionType) {
+    if (isEmbedded) {
+      return BorderRadius.zero;
+    }
     switch (positionType) {
       case _SubTaskPositionType.top:
         return const BorderRadius.vertical(top: Radius.circular(16));
@@ -51,7 +58,7 @@ class TaskInfoSubTasksCard extends StatelessWidget {
         onTap: () => _onCheckboxPressed(subTask),
         borderRadius: radius,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -87,26 +94,49 @@ class TaskInfoSubTasksCard extends StatelessWidget {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (subTasks.isEmpty) {
-      return const SizedBox.shrink();
-    }
+  Widget _buildFooterAction(
+    BuildContext context,
+    _SubTaskPositionType positionType,
+  ) {
+    final theme = Theme.of(context);
+    final radius = _borderRadiusForPosition(positionType);
+    return Material(
+      color: Colors.transparent,
+      borderRadius: radius,
+      child: InkWell(
+        borderRadius: radius,
+        onTap: onFooterActionPressed,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+          child: Text(
+            footerActionTitle ?? '',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: AppColorExtensions.getTextPrimaryColor(context),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
+  Widget _buildContent(BuildContext context) {
     final children = <Widget>[];
+    final hasFooterAction =
+        footerActionTitle != null && onFooterActionPressed != null;
+    final totalItems = subTasks.length + (hasFooterAction ? 1 : 0);
 
     for (var i = 0; i < subTasks.length; i++) {
       final positionType = i == 0
-          ? subTasks.length == 1
+          ? totalItems == 1
                 ? _SubTaskPositionType.single
                 : _SubTaskPositionType.top
-          : i == subTasks.length - 1
+          : i == totalItems - 1
           ? _SubTaskPositionType.bottom
           : _SubTaskPositionType.middle;
 
       children.add(_buildSubTaskItem(context, subTasks[i], positionType));
 
-      if (i != subTasks.length - 1) {
+      if (i != subTasks.length - 1 || hasFooterAction) {
         children.add(
           Divider(
             height: 1,
@@ -119,6 +149,26 @@ class TaskInfoSubTasksCard extends StatelessWidget {
       }
     }
 
+    if (hasFooterAction) {
+      final positionType = subTasks.isEmpty
+          ? _SubTaskPositionType.single
+          : _SubTaskPositionType.bottom;
+      children.add(_buildFooterAction(context, positionType));
+    }
+
+    return Column(mainAxisSize: MainAxisSize.min, children: children);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (subTasks.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    if (isEmbedded) {
+      return _buildContent(context);
+    }
+
     return AppShadow(
       borderRadius: BorderRadius.circular(16),
       child: Container(
@@ -126,11 +176,10 @@ class TaskInfoSubTasksCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           color: AppColorExtensions.getCardColor(context),
         ),
-        child: Column(mainAxisSize: MainAxisSize.min, children: children),
+        child: _buildContent(context),
       ),
     );
   }
 }
 
 enum _SubTaskPositionType { top, middle, bottom, single }
-

@@ -6,29 +6,36 @@ import 'package:taskify/core/services/talker_service.dart';
 import 'package:taskify/features/sync/domain/usecases/request_sync_use_case.dart';
 import 'package:taskify/features/tasks/data/models/task_wrapper.dart';
 import 'package:taskify/features/tasks/data/models/tasks_view_type.dart';
+import 'package:taskify/features/tasks/domain/models/sub_task.dart';
+import 'package:taskify/features/tasks/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/tasks/domain/usecases/task_interactor.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  HomeBloc({required this.taskInteractor, required this.requestSyncUseCase})
-    : super(
-        HomeState(
-          selectedDate: DateTime.now(),
-          currentDate: DateTime.now(),
-          tasks: [],
-        ),
-      ) {
+  HomeBloc({
+    required this.taskInteractor,
+    required this.subTaskInteractor,
+    required this.requestSyncUseCase,
+  }) : super(
+         HomeState(
+           selectedDate: DateTime.now(),
+           currentDate: DateTime.now(),
+           tasks: [],
+         ),
+       ) {
     on<HomeStarted>(_onStarted);
     on<HomeTasksUpdated>(_onTasksUpdated);
     on<HomeUpdateTaskCompletion>(_onUpdateTaskCompletion);
+    on<HomeUpdateSubTaskCompletion>(_onUpdateSubTaskCompletion);
     on<HomeChangeTasksViewType>(_onChangeTasksViewType);
     on<HomeChangeCalendarVisibility>(_onChangeCalendarVisibility);
     on<HomeSelectDate>(_onSelectDate);
   }
 
   final TaskInteractor taskInteractor;
+  final SubTaskInteractor subTaskInteractor;
   final RequestSyncUseCase requestSyncUseCase;
 
   StreamSubscription<List<TaskWrapperEntity>>? _tasksSubscription;
@@ -64,6 +71,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           TalkerService.instance.error('syncTag ${failure.message}'),
       ifRight: (updatedTask) => TalkerService.instance.info(
         'syncTag Task updated: ${updatedTask.id}',
+      ),
+    );
+  }
+
+  void _onUpdateSubTaskCompletion(
+    HomeUpdateSubTaskCompletion event,
+    Emitter<HomeState> emit,
+  ) async {
+    final subTask = event.subTask;
+    final result = await subTaskInteractor.updateSubTasks([
+      subTask.copyWith(isCompleted: !subTask.isCompleted),
+    ]);
+    result.fold(
+      ifLeft: (failure) =>
+          TalkerService.instance.error('syncTag ${failure.message}'),
+      ifRight: (updatedSubTasks) => TalkerService.instance.info(
+        'syncTag Sub tasks updated: ${updatedSubTasks.length}',
       ),
     );
   }

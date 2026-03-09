@@ -1,9 +1,9 @@
-﻿import 'package:design/design.dart';
+import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:taskify/features/tasks/domain/models/sub_task.dart';
 import 'package:taskify/features/home/bottom_sheets/task_info/presentation/bloc/task_info_bloc.dart';
-import 'package:taskify/features/home/bottom_sheets/task_info/presentation/widgets/task_info_sub_tasks_card.dart';
+import 'package:taskify/features/home/presentation/widgets/sub_tasks_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TaskInfoSubTasksPart extends StatelessWidget {
@@ -12,9 +12,7 @@ class TaskInfoSubTasksPart extends StatelessWidget {
   final List<SubTaskEntity> subTasks;
 
   void _onCheckboxPressed(BuildContext context, SubTaskEntity subTask) {
-    context.read<TaskInfoBloc>().add(
-      TaskInfoSubTaskCheckBoxPressed(subTask),
-    );
+    context.read<TaskInfoBloc>().add(TaskInfoSubTaskCheckBoxPressed(subTask));
   }
 
   @override
@@ -26,7 +24,7 @@ class TaskInfoSubTasksPart extends StatelessWidget {
           padding: EdgeInsets.symmetric(
             horizontal: AppInsets.sheetHorizontalSmall,
           ),
-          child: TaskInfoSubTasksCard(
+          child: SubTasksCard(
             subTasks: subTasks,
             onCheckboxPressed: (subTask) =>
                 _onCheckboxPressed(context, subTask),
@@ -36,4 +34,3 @@ class TaskInfoSubTasksPart extends StatelessWidget {
     );
   }
 }
-

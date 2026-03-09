@@ -14,6 +14,7 @@ import 'package:taskify/features/root/presentation/widgets/app_bottom_navigation
 import 'package:taskify/features/settings/domain/usecases/app_configuration_interactor.dart';
 import 'package:taskify/features/spaces/presentation/bloc/spaces_bloc.dart';
 import 'package:taskify/features/sync/domain/usecases/request_sync_use_case.dart';
+import 'package:taskify/features/tasks/domain/usecases/sub_task_interactor.dart';
 import 'package:taskify/features/tasks/domain/usecases/task_interactor.dart';
 
 class RootScreen extends StatefulWidget {
@@ -36,6 +37,7 @@ class _RootScreenState extends State<RootScreen> {
     super.initState();
     _homeBloc = HomeBloc(
       taskInteractor: locator<TaskInteractor>(),
+      subTaskInteractor: locator<SubTaskInteractor>(),
       requestSyncUseCase: locator<RequestSyncUseCase>(),
     )..add(const HomeStarted());
     _spacesBloc = SpacesBloc();

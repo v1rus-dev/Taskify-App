@@ -85,6 +85,10 @@ UI Components which can uses more then one feature, write reusable and keep in `
 - BLoCs for root bottom-navigation tabs (`home`, `spaces`, `activity`, `profile`) are initialized in `features/root/presentation/root_screen.dart`.
 - Tab screens must reuse these existing BLoCs and should not create their own `BlocProvider(create: ...)` instances.
 
+### Home sub-task UI reuse
+
+- Shared sub-task card UI for Home list items and task-info bottom sheet lives in `lib/features/home/presentation/widgets/sub_tasks_card.dart`.
+
 ## Dependency Injection
 
 - Use GetIt as a service locator for dependency injection `libs/core/services/locator.dart`.

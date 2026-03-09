@@ -9,8 +9,9 @@ import 'package:taskify/features/home/bottom_sheets/task_info/presentation/task_
 import 'package:taskify/features/home/presentation/bloc/home_bloc.dart';
 import 'package:taskify/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:taskify/features/home/presentation/widgets/home_hided_header.dart';
-import 'package:taskify/features/home/presentation/widgets/task_card.dart';
+import 'package:taskify/features/home/presentation/widgets/home_task_item.dart';
 import 'package:taskify/features/tasks/data/models/task_wrapper.dart';
+import 'package:taskify/features/tasks/domain/models/sub_task.dart';
 
 class HomeScreenPage extends StatelessWidget {
   const HomeScreenPage({super.key});
@@ -43,6 +44,10 @@ class _HomeScreen extends StatelessWidget {
     context.read<HomeBloc>().add(HomeUpdateTaskCompletion(task));
   }
 
+  void _onSubTaskCheckboxPressed(BuildContext context, SubTaskEntity subTask) {
+    context.read<HomeBloc>().add(HomeUpdateSubTaskCompletion(subTask));
+  }
+
   Widget _buildAnimatedTaskItem({
     required BuildContext context,
     required Animation<double> animation,
@@ -63,11 +68,14 @@ class _HomeScreen extends StatelessWidget {
         animation: animation,
         child: Column(
           children: [
-            TaskCard(
+            HomeTaskItem(
               key: ValueKey(item.task.id),
               task: item,
               onTaskClicked: () => _onTaskClicked(context, item),
-              onCheckboxPressed: () => _onTaskCheckboxPressed(context, item),
+              onTaskCheckboxPressed: () =>
+                  _onTaskCheckboxPressed(context, item),
+              onSubTaskCheckboxPressed: (subTask) =>
+                  _onSubTaskCheckboxPressed(context, subTask),
             ),
             const Gap(8),
           ],
